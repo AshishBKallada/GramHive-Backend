@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const authMiddleware_1 = __importDefault(require("../../../Middlewares/authMiddleware"));
+const multerProfile_1 = __importDefault(require("../../../Middlewares/multerProfile"));
+const cloudinaryConfig_1 = __importDefault(require("../../../Middlewares/cloudinaryConfig"));
+const profile_controller_1 = require("../../Controllers/user/profile-controller");
+const proile_repository_1 = require("../../../domain/repositories/user/proile-repository");
+const profileInteractor_1 = require("../../../domain/usecases/user/profileInteractor");
+const repository = new proile_repository_1.profileRepositoryImpl();
+const interactor = new profileInteractor_1.profileInteractorImpl(repository);
+const controller = new profile_controller_1.profileController(interactor);
+const profileRouter = express_1.default.Router();
+profileRouter.post('/update', authMiddleware_1.default, multerProfile_1.default, cloudinaryConfig_1.default, controller.updateProfile.bind(controller));
+profileRouter.get('/:userId', authMiddleware_1.default, controller.profilePosts.bind(controller));
+profileRouter.post('/followuser', controller.followUser.bind(controller));
+profileRouter.post('/unfollowuser', controller.followUser.bind(controller));
+exports.default = profileRouter;

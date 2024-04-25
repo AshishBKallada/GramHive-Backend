@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const user_controller_1 = require("../../Controllers/user/user-controller");
+const user_repository_1 = require("../../../domain/repositories/user/user-repository");
+const userInteractor_1 = require("../../../domain/usecases/user/userInteractor");
+const repository = new user_repository_1.UserRepositoryImpl();
+const interactor = new userInteractor_1.UserInteractorImpl(repository);
+const controller = new user_controller_1.userController(interactor);
+const userRouter = express_1.default.Router();
+userRouter.post('/login', controller.login.bind(controller));
+userRouter.post('/signup', controller.signup.bind(controller));
+userRouter.post('/sendmail', controller.sendMail.bind(controller));
+userRouter.post('/verifyotp', controller.verifyOTP.bind(controller));
+userRouter.get('/searchuser/:query', controller.searchUser.bind(controller));
+userRouter.get('/getsearchuser/:userId', controller.getSearchUser.bind(controller));
+exports.default = userRouter;
