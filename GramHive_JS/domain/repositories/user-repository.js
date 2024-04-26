@@ -17,11 +17,7 @@ const user_1 = __importDefault(require("../../data/data-sources/mongodb/models/u
 const otp_1 = __importDefault(require("../../data/data-sources/mongodb/models/otp"));
 const followers_1 = __importDefault(require("../../data/data-sources/mongodb/models/followers"));
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 class UserRepositoryImpl {
-    constructor() {
-        this.generateRandomOTP = (length) => Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
-    }
     findByCredentials(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('USER REPOSITORY ------------------');
@@ -77,41 +73,6 @@ class UserRepositoryImpl {
             console.log('3', email);
             const userExists = yield user_1.default.findOne({ email: email });
             return !!userExists;
-        });
-    }
-    sendMail(email) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('4', email);
-            const transporter = nodemailer.createTransport({
-                service: "Gmail",
-                auth: {
-                    user: 'ashercode4u@gmail.com',
-                    pass: 'grgf nmsi qsde wmli',
-                },
-                tls: {
-                    rejectUnauthorized: false,
-                },
-            });
-            return new Promise((resolve, reject) => {
-                const otp = this.generateRandomOTP(4);
-                console.log('OTP', otp);
-                const mailOptions = {
-                    from: 'ashercode@gmail.com',
-                    to: email,
-                    subject: 'hey this is a signup Verification mail from GramHive',
-                    text: `Your otp is ${otp}. Use this OTP to complete your signup process`,
-                };
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.error("Error sending email: ", error);
-                        reject({ success: false });
-                    }
-                    else {
-                        console.log("Email sent: ", info.response);
-                        resolve({ otp: otp, success: true });
-                    }
-                });
-            });
         });
     }
     saveToDB(signupData, otp) {

@@ -1,10 +1,12 @@
 import { SignupData } from '../entities/SignupData';
 import { User } from '../entities/user';
+import { IMailer } from '../interfaces/external-lib/IMailer';
 import { UserRepository } from '../interfaces/repositories/user-repository';
 import { UserInteractor } from '../interfaces/usecases/userInteractor';
 
 export class UserInteractorImpl implements UserInteractor {
-    constructor(private readonly Repository: UserRepository) { }
+
+    constructor(private readonly Repository: UserRepository,private readonly mailer :IMailer ) { }
 
     async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null }> {
         try {
@@ -46,9 +48,6 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-   
- 
-
     async sendMail(signupData: SignupData): Promise<{ userExists: boolean, isMailSent: boolean }> {
         console.log('2', signupData)
         const email = signupData.email;
@@ -58,7 +57,7 @@ export class UserInteractorImpl implements UserInteractor {
         }
 
         try {
-            const { otp, success } = await this.Repository.sendMail(email);
+            const { otp, success } = await this.mailer.sendMail(email);
             if (success) {
                 const saveToDB = await this.Repository.saveToDB(signupData, otp)
                 return { userExists: false, isMailSent: true };
@@ -70,7 +69,6 @@ export class UserInteractorImpl implements UserInteractor {
             return { userExists: false, isMailSent: false };
         }
     }
-
 
     async verifyotp(otp: string): Promise<{ success: boolean, token: string | null }> {
         try {
@@ -92,8 +90,6 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-  
-
     async getSearchData(filter: string): Promise<User[] | null> {
         try {
             console.log('2');
@@ -111,7 +107,7 @@ export class UserInteractorImpl implements UserInteractor {
             return null;
         }
     }
-     
+
     async getSearchUser(userId: string): Promise<{ user: User | null; followers: User[]; following: User[]; } | null> {
         try {
             const { user, followers, following } = await this.Repository.getSearchuser(userId);

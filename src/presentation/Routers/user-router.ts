@@ -2,9 +2,11 @@ import express from 'express';
 import { userController } from '../Controllers/user-controller';
 import { UserRepositoryImpl } from '../../domain/repositories/user-repository';
 import { UserInteractorImpl } from '../../domain/usecases/userInteractor';
+import { MailerImpl } from '../../domain/extrenal-libraries/mailer';
 
 const repository = new UserRepositoryImpl()
-const interactor = new UserInteractorImpl(repository)
+const mailer = new MailerImpl()
+const interactor = new UserInteractorImpl(repository,mailer)
 const controller = new userController(interactor)
 
 const  userRouter = express.Router();

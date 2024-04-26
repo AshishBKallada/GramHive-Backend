@@ -1,9 +1,9 @@
 
 import mongoose from "mongoose";
+import config from "../../../config/server";
 
 export async function connectToMongoDB(): Promise<void> {
-  const MONGODB_URI = 'mongodb://127.0.0.1:27017/gramhive';
-
+  const MONGODB_URI = config.MONGODB;
   try {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');

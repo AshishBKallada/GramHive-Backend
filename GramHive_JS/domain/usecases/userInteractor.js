@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserInteractorImpl = void 0;
 class UserInteractorImpl {
-    constructor(Repository) {
+    constructor(Repository, mailer) {
         this.Repository = Repository;
+        this.mailer = mailer;
     }
     login(credentials) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -62,7 +63,7 @@ class UserInteractorImpl {
                 return { userExists: true, isMailSent: false };
             }
             try {
-                const { otp, success } = yield this.Repository.sendMail(email);
+                const { otp, success } = yield this.mailer.sendMail(email);
                 if (success) {
                     const saveToDB = yield this.Repository.saveToDB(signupData, otp);
                     return { userExists: false, isMailSent: true };

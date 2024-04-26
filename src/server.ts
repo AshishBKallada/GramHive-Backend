@@ -1,14 +1,15 @@
 import express from 'express';
 import { connectToMongoDB } from './data/interfaces/data-sources/db-config';
-const cookieParser = require('cookie-parser');
 import routes from './frameworks/routes';
+import config from './config/server';
+import cors from 'cors'
+import cookieParser from 'cookie-parser';
 
 const app = express();
-const cors = require('cors');
-const port = 3000;
+const port = config.PORT;
 
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: config.ORIGIN, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

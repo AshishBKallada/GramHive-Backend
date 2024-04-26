@@ -12,20 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectToMongoDB = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const server_1 = __importDefault(require("../../../config/server"));
-function connectToMongoDB() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const MONGODB_URI = server_1.default.MONGODB;
-        try {
-            yield mongoose_1.default.connect(MONGODB_URI);
-            console.log('Connected to MongoDB');
-        }
-        catch (error) {
-            console.error('Error connecting to MongoDB:', error);
-            process.exit(1);
-        }
-    });
+exports.MailerImpl = void 0;
+const OTP_generator_1 = require("../../functions/OTP-generator");
+const send_Mail_1 = __importDefault(require("../../functions/send-Mail"));
+class MailerImpl {
+    sendMail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const otp = (0, OTP_generator_1.generateRandomOTP)(4);
+            console.log('OTP', otp);
+            const result = yield (0, send_Mail_1.default)(email, otp);
+            return { otp: otp, success: result.success };
+        });
+    }
 }
-exports.connectToMongoDB = connectToMongoDB;
+exports.MailerImpl = MailerImpl;

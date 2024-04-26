@@ -12,20 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connectToMongoDB = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const server_1 = __importDefault(require("../../../config/server"));
-function connectToMongoDB() {
+const mailer_1 = __importDefault(require("../config/mailer"));
+const nodemailer = require("nodemailer");
+function sendEmail(email, otp) {
     return __awaiter(this, void 0, void 0, function* () {
-        const MONGODB_URI = server_1.default.MONGODB;
+        const transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: mailer_1.default.user,
+                pass: mailer_1.default.pass,
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
+        });
+        const mailOptions = {
+            from: mailer_1.default.user,
+            to: email,
+            subject: 'hey this is a signup Verification mail from GramHive',
+            text: `Your otp is ${otp}. Use this OTP to complete your signup process`,
+        };
         try {
-            yield mongoose_1.default.connect(MONGODB_URI);
-            console.log('Connected to MongoDB');
+            const info = yield transporter.sendMail(mailOptions);
+            console.log("Email sent: ", info.response);
+            return { success: true };
         }
         catch (error) {
-            console.error('Error connecting to MongoDB:', error);
-            process.exit(1);
+            console.error("Error sending email: ", error);
+            return { success: false };
         }
     });
 }
-exports.connectToMongoDB = connectToMongoDB;
+exports.default = sendEmail;

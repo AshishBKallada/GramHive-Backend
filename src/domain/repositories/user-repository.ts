@@ -5,7 +5,6 @@ import { SignupData } from '../entities/SignupData';
 import otpModel from '../../data/data-sources/mongodb/models/otp';
 import followModel from '../../data/data-sources/mongodb/models/followers';
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 
 
 export class UserRepositoryImpl implements UserRepository {
@@ -76,46 +75,7 @@ export class UserRepositoryImpl implements UserRepository {
         return !!userExists;
     }
 
-    async sendMail(email: string): Promise<{ otp: string, success: boolean }> {
-        console.log('4', email);
-
-        const transporter = nodemailer.createTransport({
-            service: "Gmail",
-            auth: {
-                user: 'ashercode4u@gmail.com',
-                pass: 'grgf nmsi qsde wmli',
-            },
-            tls: {
-                rejectUnauthorized: false,
-            },
-        });
-
-        return new Promise<{ otp: string, success: boolean }>((resolve, reject) => {
-            const otp = this.generateRandomOTP(4);
-            console.log('OTP', otp)
-            const mailOptions = {
-                from: 'ashercode@gmail.com',
-                to: email,
-                subject: 'hey this is a signup Verification mail from GramHive',
-                text: `Your otp is ${otp}. Use this OTP to complete your signup process`,
-            };
-
-            transporter.sendMail(mailOptions, (error: Error | null, info: any) => {
-                if (error) {
-                    console.error("Error sending email: ", error);
-                    reject({ success: false });
-                } else {
-                    console.log("Email sent: ", info.response);
-                    resolve({ otp: otp, success: true });
-                }
-            });
-        });
-    }
-
-
-
-    generateRandomOTP = (length: number): string => Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
-
+  
     async saveToDB(signupData: SignupData, otp: string): Promise<boolean> {
         try {
             const { name, email, username, password } = signupData;
