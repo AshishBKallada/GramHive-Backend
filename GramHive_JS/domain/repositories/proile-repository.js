@@ -53,7 +53,6 @@ class profileRepositoryImpl {
     getProfilePosts(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('getPROfilePOSTS');
                 const posts = yield post_1.default.find({ userId: userId });
                 return posts.length > 0 ? posts : null;
             }
@@ -84,7 +83,7 @@ class profileRepositoryImpl {
     unfollowUser(userRelationship) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(userRelationship);
+                console.log('UNFOLLOW USER 3');
                 const deleteuserRelationship = yield followers_1.default.findOneAndDelete(userRelationship);
                 if (deleteuserRelationship) {
                     console.log('1');
@@ -97,6 +96,44 @@ class profileRepositoryImpl {
             catch (error) {
                 console.error('Error', error);
                 return false;
+            }
+        });
+    }
+    getFollowers(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const followerData = yield followers_1.default.find({ follower_id: userId });
+                const follower_ids = followerData.map((follower) => follower.followed_id);
+                const followers = yield user_1.default.find({ _id: { $in: follower_ids } });
+                if (followers) {
+                    return followers;
+                }
+                else {
+                    return null;
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    getFollowing(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const followingData = yield followers_1.default.find({ followed_id: userId });
+                const following_ids = followingData.map((follower) => follower.follower_id);
+                const following = yield user_1.default.find({ _id: { $in: following_ids } });
+                if (following) {
+                    return following;
+                }
+                else {
+                    return null;
+                }
+            }
+            catch (error) {
+                console.log(error);
+                return null;
             }
         });
     }

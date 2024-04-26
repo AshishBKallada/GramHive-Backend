@@ -5,8 +5,10 @@ import userModel from "../../data/data-sources/mongodb/models/user";
 import postModel from "../../data/data-sources/mongodb/models/post";
 import { PostData } from "../entities/PostData";
 import followModel from "../../data/data-sources/mongodb/models/followers";
+import { followers } from "../entities/follower";
 
-export class profileRepositoryImpl implements profileRepository{
+
+export class profileRepositoryImpl implements profileRepository {
     async updateProfile(newData: Partial<User>): Promise<User | null> {
         try {
             const userId = newData.userId;
@@ -35,8 +37,7 @@ export class profileRepositoryImpl implements profileRepository{
     }
     async getProfilePosts(userId: string): Promise<PostData[] | null> {
         try {
-            console.log('getPROfilePOSTS');
-            
+
             const posts = await postModel.find({ userId: userId });
             return posts.length > 0 ? posts : null;
         } catch (error) {
@@ -44,7 +45,7 @@ export class profileRepositoryImpl implements profileRepository{
             return null;
         }
     }
-    
+
     async followUser(userRelationship: UserRelationship): Promise<boolean> {
         try {
             console.log(userRelationship);
@@ -63,7 +64,7 @@ export class profileRepositoryImpl implements profileRepository{
     }
     async unfollowUser(userRelationship: UserRelationship): Promise<boolean> {
         try {
-            console.log(userRelationship);
+console.log('UNFOLLOW USER 3');
 
 
             const deleteuserRelationship = await followModel.findOneAndDelete(userRelationship);
@@ -79,4 +80,43 @@ export class profileRepositoryImpl implements profileRepository{
             return false;
         }
     }
+
+    async getFollowers(userId: string): Promise<followers[] | null> {
+        try {
+            const followerData = await followModel.find({ follower_id: userId })
+            const follower_ids = followerData.map((follower: any) => follower.followed_id);
+            const followers = await userModel.find({ _id: { $in: follower_ids } });
+
+            if (followers) {
+                return followers
+            } else {
+                return null;
+            }
+
+        } catch (error) {
+            console.log(error);
+            return null;
+
+        }
+    }
+
+    async getFollowing(userId: string): Promise<followers[] | null> {
+        try {
+            const followingData = await followModel.find({ followed_id: userId })
+            const following_ids = followingData.map((follower: any) => follower.follower_id);
+            const following = await userModel.find({ _id: { $in: following_ids } });
+
+            if (following) {
+                return following
+            } else {
+                return null;
+            }
+
+        } catch (error) {
+            console.log(error);
+            return null;
+
+        }
+    }
+
 }

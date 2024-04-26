@@ -34,18 +34,16 @@ class profileController {
             }
         });
     }
-    profilePosts(req, res) {
+    onGetProfileData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('1');
                 const userId = req.params.userId;
-                console.log('userId', userId);
-                const posts = yield this.interactor.profilePosts(userId);
-                if (posts) {
-                    res.status(200).json({ success: true, message: 'Retreived posts  successfully.', posts });
+                const { posts, followers, following } = yield this.interactor.getProfileData(userId);
+                if (posts && followers && following) {
+                    res.status(200).json({ success: true, message: 'Retreived profileData  successfully.', posts, followers, following });
                 }
                 else {
-                    res.status(400).json({ success: false, message: 'Failed to retreive posts .' });
+                    res.status(400).json({ success: false, message: 'Failed to retreive profileData .' });
                 }
             }
             catch (error) {
@@ -76,15 +74,54 @@ class profileController {
     unfollowUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('UNFOLLOW USER 1');
                 const { follower_id, followed_id } = req.body;
                 console.log(follower_id, followed_id);
-                const success = yield this.interactor.unfollowuser({ follower_id, followed_id });
+                const success = yield this.interactor.unfollowUser({ follower_id, followed_id });
                 if (success) {
                     console.log('aahd mwone avne unfollow akktnd');
                     return res.status(200).json({ success: true, message: 'User was followed successfully' });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to follow the user' });
+                }
+            }
+            catch (error) {
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        });
+    }
+    onGetFollowers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.params.userId;
+                console.log('CONTROLLER', userId);
+                const followers = yield this.interactor.getFollowers(userId);
+                if (followers) {
+                    console.log('Followers:', followers);
+                    return res.status(200).json({ success: true, message: 'Retreieved followers successfully', followers: followers });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to retreive followers' });
+                }
+            }
+            catch (error) {
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        });
+    }
+    onGetFollowing(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.params.userId;
+                console.log('CONTROLLER', userId);
+                const following = yield this.interactor.getFollowing(userId);
+                if (following) {
+                    console.log('Following:', following);
+                    return res.status(200).json({ success: true, message: 'Retreieved following successfully', following: following });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to retreive following' });
                 }
             }
             catch (error) {

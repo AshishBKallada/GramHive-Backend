@@ -36,12 +36,13 @@ class profileInteractorImpl {
             }
         });
     }
-    profilePosts(userId) {
+    getProfileData(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('2');
             try {
-                const profilePosts = yield this.Repository.getProfilePosts(userId);
-                return profilePosts;
+                const posts = yield this.Repository.getProfilePosts(userId);
+                const followers = yield this.Repository.getFollowers(userId);
+                const following = yield this.Repository.getFollowing(userId);
+                return { posts, followers, following };
             }
             catch (error) {
                 console.error('Error fetching profile posts:', error);
@@ -68,6 +69,7 @@ class profileInteractorImpl {
     unfollowUser(userRelationship) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('UNFOLLOW USER 2');
                 const success = yield this.Repository.unfollowUser(userRelationship);
                 if (success) {
                     return true;
@@ -78,6 +80,28 @@ class profileInteractorImpl {
             }
             catch (error) {
                 return false;
+            }
+        });
+    }
+    getFollowers(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const followers = yield this.Repository.getFollowers(userId);
+                return followers;
+            }
+            catch (errror) {
+                throw new Error("Failed to get followers.");
+            }
+        });
+    }
+    getFollowing(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const following = yield this.Repository.getFollowing(userId);
+                return following;
+            }
+            catch (errror) {
+                throw new Error("Failed to get following.");
             }
         });
     }
