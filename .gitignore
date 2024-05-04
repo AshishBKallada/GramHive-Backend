@@ -1,2 +1,2 @@
 .env 
-.firebaseKey
+src/firebaseKey/firebase-service-key.json
