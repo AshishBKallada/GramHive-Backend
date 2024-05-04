@@ -16,6 +16,7 @@ exports.profileRepositoryImpl = void 0;
 const user_1 = __importDefault(require("../../data/data-sources/mongodb/models/user"));
 const post_1 = __importDefault(require("../../data/data-sources/mongodb/models/post"));
 const followers_1 = __importDefault(require("../../data/data-sources/mongodb/models/followers"));
+const save_1 = __importDefault(require("../../data/data-sources/mongodb/models/save"));
 class profileRepositoryImpl {
     updateProfile(newData) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -50,10 +51,22 @@ class profileRepositoryImpl {
             }
         });
     }
-    getProfilePosts(userId) {
+    getProfilePosts(userId, savedPostsData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield post_1.default.find({ userId: userId });
+                const posts = yield post_1.default.find({ userId: userId }).populate('tags');
+                console.log('SAVED POSTSDATA', savedPostsData);
+                if (posts && savedPostsData) {
+                    const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
+                    posts.forEach(post => {
+                        console.log('post', post._id);
+                        post.isSaved = savedPostIds.includes(post._id.toString());
+                        if (post.isSaved) {
+                            console.log('set');
+                        }
+                    });
+                }
+                console.log('PROFILE REPO GET POSTS', posts);
                 return posts.length > 0 ? posts : null;
             }
             catch (error) {
@@ -83,10 +96,8 @@ class profileRepositoryImpl {
     unfollowUser(userRelationship) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('UNFOLLOW USER 3');
                 const deleteuserRelationship = yield followers_1.default.findOneAndDelete(userRelationship);
                 if (deleteuserRelationship) {
-                    console.log('1');
                     return true;
                 }
                 else {
@@ -133,6 +144,58 @@ class profileRepositoryImpl {
             }
             catch (error) {
                 console.log(error);
+                return null;
+            }
+        });
+    }
+    removeFollower(userRelationship) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isFollowerRemoved = yield followers_1.default.findOneAndDelete(userRelationship);
+                return isFollowerRemoved ? true : false;
+            }
+            catch (error) {
+                console.log(error);
+                return false;
+            }
+        });
+    }
+    getSavedPostIds(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const posts = yield save_1.default.find({ user: userId });
+                const postIds = posts.map(post => post.post);
+                return postIds;
+            }
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    fetchSavedPosts(postIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const savedPosts = yield post_1.default.find({ _id: { $in: postIds } })
+                    .populate('userId', '+name +username +image')
+                    .populate({ path: 'userId', select: '-password -gender -email -website -isBan -bio' });
+                return savedPosts ? savedPosts : null;
+            }
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    getSavedPostsData(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const savedPosts = yield save_1.default.find({ user: userId }).select('post');
+                const savedPostIds = savedPosts.map(savedPost => savedPost.post);
+                return savedPostIds;
+            }
+            catch (error) {
+                console.error('Error retreiving saved posts:', error);
                 return null;
             }
         });

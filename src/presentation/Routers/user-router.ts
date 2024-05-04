@@ -2,7 +2,7 @@ import express from 'express';
 import { userController } from '../Controllers/user-controller';
 import { UserRepositoryImpl } from '../../domain/repositories/user-repository';
 import { UserInteractorImpl } from '../../domain/usecases/userInteractor';
-import { MailerImpl } from '../../domain/extrenal-libraries/mailer';
+import { MailerImpl } from '../../domain/external-libraries/mailer';
 
 const repository = new UserRepositoryImpl()
 const mailer = new MailerImpl()

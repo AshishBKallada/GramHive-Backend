@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserInteractorImpl = void 0;
+const refreshToken_generator_1 = require("../../functions/refreshToken-generator");
 class UserInteractorImpl {
     constructor(Repository, mailer) {
         this.Repository = Repository;
@@ -23,7 +24,8 @@ class UserInteractorImpl {
                 console.log('Password:', credentials.password);
                 const { user, message, token } = yield this.Repository.findByCredentials(credentials.username, credentials.password);
                 console.log('Usecase', user, token, message);
-                return { user, message, token };
+                const refreshToken = yield (0, refreshToken_generator_1.generateRefreshToken)(user);
+                return { user, message, token, refreshToken };
             }
             catch (error) {
                 console.error('Error during login:', error);

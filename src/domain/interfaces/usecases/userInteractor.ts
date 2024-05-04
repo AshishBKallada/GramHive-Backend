@@ -2,7 +2,7 @@ import { User } from "../../entities/user";
 import { SignupData } from "../../entities/SignupData";
 
 export interface UserInteractor {
-    login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null }>;
+    login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null , refreshToken : string | null}>;
     signup(userData: { username: string, name: string, password: string, email: string, image: string }): Promise<{ user: User | null, token: string | null }>;
     sendMail(signupData: SignupData): Promise<{ userExists: boolean, isMailSent: boolean }>
     verifyotp(otp: string): Promise<{ success: boolean, token: string | null }>;

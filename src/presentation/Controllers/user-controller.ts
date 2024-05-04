@@ -14,12 +14,12 @@ export class userController {
             const { username, password } = req.body;
             console.log(username, password);
 
-            const { user, message, token } = await this.interactor.login({ username: username, password });
+            const { user, message, token, refreshToken } = await this.interactor.login({ username: username, password });
 
             if (user) {
-                console.log('userController:', user, 'Token', token);
+                console.log('userController:', user, 'Token', token,'refreshToken', refreshToken);
 
-                res.status(200).json({ message: 'Login successful', user, token: token });
+                res.status(200).json({ message: 'Login successful', user, token: token,refreshToken });
             } else {
                 console.log('1111');
 

@@ -1,3 +1,4 @@
+import { generateRefreshToken } from '../../functions/refreshToken-generator';
 import { SignupData } from '../entities/SignupData';
 import { User } from '../entities/user';
 import { IMailer } from '../interfaces/external-lib/IMailer';
@@ -8,7 +9,7 @@ export class UserInteractorImpl implements UserInteractor {
 
     constructor(private readonly Repository: UserRepository,private readonly mailer :IMailer ) { }
 
-    async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null }> {
+    async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null ,refreshToken: string | null}> {
         try {
             console.log('UserService: login');
             console.log('Username:', credentials.username);
@@ -16,7 +17,9 @@ export class UserInteractorImpl implements UserInteractor {
 
             const { user, message, token } = await this.Repository.findByCredentials(credentials.username, credentials.password);
             console.log('Usecase', user, token, message);
-            return { user, message, token };
+           
+            const refreshToken = await generateRefreshToken(user)
+            return { user, message, token ,refreshToken };
 
 
         } catch (error) {

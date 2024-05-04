@@ -2,11 +2,11 @@ import { postInteractor } from "../interfaces/usecases/postInteractor";
 import { PostRepository } from "../interfaces/repositories/post-repository";
 import { PostData } from "../entities/PostData";
 
-export class postInteractorImpl implements postInteractor{
+export class postInteractorImpl implements postInteractor {
 
-    constructor(private readonly Repository : PostRepository){}
+    constructor(private readonly Repository: PostRepository) { }
 
-    async getHomePosts(userId: string): Promise<PostData[] | null>{
+    async getHomePosts(userId: string): Promise<PostData[] | null> {
         console.log('2');
         try {
             const HomePosts = await this.Repository.getHomePosts(userId);
@@ -41,9 +41,9 @@ export class postInteractorImpl implements postInteractor{
         }
     }
 
-    async savePost(postId: string,userId:string): Promise<boolean> {
+    async savePost(postId: string, userId: string): Promise<boolean> {
         try {
-            const isSavePost = await this.Repository.savePost(postId,userId);
+            const isSavePost = await this.Repository.savePost(postId, userId);
             if (isSavePost) {
                 return true
             } else { return false }
@@ -52,6 +52,18 @@ export class postInteractorImpl implements postInteractor{
             return false;
         }
     }
+    async unsavePost(postId: string, userId: string): Promise<boolean> {
+        try {
+            const isSavePost = await this.Repository.unsavePost(postId, userId);
+            if (isSavePost) {
+                return true
+            } else { return false }
+        } catch (error) {
+            console.error('Error unsaving post:', error);
+            return false;
+        }
+    }
+
 
     async addLike(postId: string, userId: string): Promise<boolean> {
         try {
@@ -83,4 +95,36 @@ export class postInteractorImpl implements postInteractor{
             return null;
         }
     }
+
+    async reportPost(postId: string, author: string, userId: string): Promise<boolean> {
+        try {
+            const reportData = {
+                post: postId,
+                author: author,
+                userId: userId
+            }
+            console.log(reportData);
+
+            const isPostReported = await this.Repository.ReportPost(reportData);
+            if (isPostReported) {
+                console.log('true');
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error getting likes:', error);
+            return false;
+        }
+    }
+    async updatePost(postId: string,description:string, images: any, taggedPeople: any): Promise<boolean> {
+        try {
+            const isPostUpdated = await this.Repository.UpdatePost(postId,description, images, taggedPeople)
+            return isPostUpdated ? true : false
+        } catch (error) {
+            console.error('Error getting likes:', error);
+            return false;
+        }
+    }
+
 }

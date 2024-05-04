@@ -9,5 +9,6 @@ export interface profileInteractor{
     getProfileData(userId: string): Promise<{posts:PostData[] | null,followers:followers[] | null,following:followers[] | null}>;
     getFollowers(userId: string): Promise<followers[] | null>;
     getFollowing(userId: string): Promise<followers[] | null>;
-
+    RemoveFollower(userRelationship: UserRelationship): Promise<boolean>;
+    getSaved(userId: string): Promise<PostData[]>;
 }

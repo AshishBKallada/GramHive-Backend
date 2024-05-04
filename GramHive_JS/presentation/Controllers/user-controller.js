@@ -21,10 +21,10 @@ class userController {
                 console.log('logindata', req.body);
                 const { username, password } = req.body;
                 console.log(username, password);
-                const { user, message, token } = yield this.interactor.login({ username: username, password });
+                const { user, message, token, refreshToken } = yield this.interactor.login({ username: username, password });
                 if (user) {
-                    console.log('userController:', user, 'Token', token);
-                    res.status(200).json({ message: 'Login successful', user, token: token });
+                    console.log('userController:', user, 'Token', token, 'refreshToken', refreshToken);
+                    res.status(200).json({ message: 'Login successful', user, token: token, refreshToken });
                 }
                 else {
                     console.log('1111');

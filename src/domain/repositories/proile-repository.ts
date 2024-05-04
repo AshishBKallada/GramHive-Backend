@@ -6,7 +6,7 @@ import postModel from "../../data/data-sources/mongodb/models/post";
 import { PostData } from "../entities/PostData";
 import followModel from "../../data/data-sources/mongodb/models/followers";
 import { followers } from "../entities/follower";
-
+import saveModel from "../../data/data-sources/mongodb/models/save";
 
 export class profileRepositoryImpl implements profileRepository {
     async updateProfile(newData: Partial<User>): Promise<User | null> {
@@ -35,16 +35,31 @@ export class profileRepositoryImpl implements profileRepository {
             return null;
         }
     }
-    async getProfilePosts(userId: string): Promise<PostData[] | null> {
+    async getProfilePosts(userId: string, savedPostsData: any): Promise<PostData[] | null> {
         try {
-
-            const posts = await postModel.find({ userId: userId });
+            const posts = await postModel.find({ userId: userId }).populate('tags');
+            console.log('SAVED POSTSDATA', savedPostsData);
+    
+            if (posts && savedPostsData) {
+                const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
+                posts.forEach(post => {
+                    console.log('post', post._id);
+    
+                    post.isSaved = savedPostIds.includes(post._id.toString());
+                    if (post.isSaved) {
+                        console.log('set');
+                    }
+                });
+            }
+            console.log('PROFILE REPO GET POSTS', posts);
+    
             return posts.length > 0 ? posts : null;
         } catch (error) {
             console.error('Error retrieving posts:', error);
             return null;
         }
     }
+    
 
     async followUser(userRelationship: UserRelationship): Promise<boolean> {
         try {
@@ -64,12 +79,10 @@ export class profileRepositoryImpl implements profileRepository {
     }
     async unfollowUser(userRelationship: UserRelationship): Promise<boolean> {
         try {
-console.log('UNFOLLOW USER 3');
 
 
             const deleteuserRelationship = await followModel.findOneAndDelete(userRelationship);
             if (deleteuserRelationship) {
-                console.log('1');
 
                 return true;
             } else {
@@ -119,4 +132,53 @@ console.log('UNFOLLOW USER 3');
         }
     }
 
+    async removeFollower(userRelationship: UserRelationship): Promise<boolean> {
+        try {
+            const isFollowerRemoved = await followModel.findOneAndDelete(userRelationship)
+
+            return isFollowerRemoved ? true : false;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+
+    async getSavedPostIds(userId: string): Promise<any | null> {
+        try {
+
+            const posts = await saveModel.find({ user: userId });
+            const postIds = posts.map(post => post.post);
+            return postIds
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    async fetchSavedPosts(postIds: string[]): Promise<PostData[] | null> {
+        try {
+
+            const savedPosts = await postModel.find({ _id: { $in: postIds } })
+                .populate('userId', '+name +username +image')
+                .populate({ path: 'userId', select: '-password -gender -email -website -isBan -bio' });
+
+
+            return savedPosts ? savedPosts : null
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    async getSavedPostsData(userId: string): Promise<PostData[] | null> {
+        try {
+            const savedPosts = await saveModel.find({ user: userId }).select('post');
+            const savedPostIds = savedPosts.map(savedPost => savedPost.post);
+            return savedPostIds;
+
+        } catch (error) {
+            console.error('Error retreiving saved posts:', error);
+            return null;
+        }
+    }
 }

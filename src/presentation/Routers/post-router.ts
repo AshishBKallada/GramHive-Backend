@@ -14,12 +14,15 @@ const controller = new PostController(interactor)
 const postRouter = express.Router();
 
 
-postRouter.post('/addpost/:userId', userAuth, upload, uploadToCloudinary, controller.addPost.bind(controller));
+postRouter.post('/addpost/:userId', upload, uploadToCloudinary, controller.addPost.bind(controller));
 postRouter.post('/:postId/like', controller.addLike.bind(controller));
 postRouter.delete('/:postId/unlike', controller.removeLike.bind(controller));
 postRouter.get('/:postId/likes', controller.getLikes.bind(controller));
 postRouter.get('/home/:userId', controller.getHomePosts.bind(controller))
 postRouter.delete('/:postId/delete', controller.deletePost.bind(controller));
 postRouter.post('/:postId/save/:author', controller.savePost.bind(controller));
+postRouter.post('/:postId/unsave/:author', controller.onUnsavePost.bind(controller));
+postRouter.post('/report/:postId', controller.onReportPost.bind(controller));
+postRouter.put('/update/:postId', controller.onPostUpdate.bind(controller));
 
 export default postRouter;

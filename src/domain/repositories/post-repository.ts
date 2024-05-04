@@ -3,14 +3,13 @@ import { PostData } from "../entities/PostData";
 import postModel from "../../data/data-sources/mongodb/models/post";
 import saveModel from "../../data/data-sources/mongodb/models/save";
 import followModel from "../../data/data-sources/mongodb/models/followers";
+import reportModel from "../../data/data-sources/mongodb/models/report";
 
-export class PostRepositoryImpl implements PostRepository{
+export class PostRepositoryImpl implements PostRepository {
     async addPost(postData: PostData): Promise<boolean> {
         try {
-            console.log('3', postData);
 
             const isPostAdded = await postModel.create(postData);
-            console.log(isPostAdded);
 
             return isPostAdded ? true : false;
         } catch (error) {
@@ -18,7 +17,7 @@ export class PostRepositoryImpl implements PostRepository{
             return false;
         }
     }
-  
+
     async addLike(postId: string, userId: string): Promise<boolean> {
         try {
             const post = await postModel.findById(postId);
@@ -76,14 +75,12 @@ export class PostRepositoryImpl implements PostRepository{
 
     async getLikes(postId: string): Promise<likes[] | null> {
         try {
-            console.log('444', postId);
 
-            const post = await postModel.findById(postId)
+            const post = await postModel.findById(postId).populate('likes.user');
             if (!post) {
                 console.error('Post not found');
                 return null;
             }
-            console.log(post.likes);
             return post.likes;
 
         } catch (error) {
@@ -95,11 +92,23 @@ export class PostRepositoryImpl implements PostRepository{
         try {
             const users = await followModel.find({ followed_id: userId });
             const userIds = users.map(user => user.follower_id);
-            console.log('2222', userIds);
 
-            const posts = await postModel.find({ userId: { $in: userIds } }).populate('userId'); 
+            const posts = await postModel.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] }).populate('userId').populate('likes.user');
 
-            console.log('POSTS', posts);
+            const savedPosts = await saveModel.find({ user: userId }).select('post');
+            const savedPostsData = savedPosts.map(savedPost => savedPost.post);
+
+            if (posts && savedPostsData) {
+                const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
+                posts.forEach(post => {
+                    console.log('post', post._id);
+
+                    post.isSaved = savedPostIds.includes(post._id.toString());
+                    if (post.isSaved) {
+                        console.log('set');
+                    }
+                });
+            }
             return posts.length > 0 ? posts : null;
         } catch (error) {
             console.error('Error retrieving posts:', error);
@@ -107,31 +116,82 @@ export class PostRepositoryImpl implements PostRepository{
         }
     }
 
-    async deletePost(postId: string) : Promise<boolean>{
+    async deletePost(postId: string): Promise<boolean> {
         try {
-             const isPostDeleted = await postModel.findByIdAndDelete(postId);
-             if(isPostDeleted) {
+            const isPostDeleted = await postModel.findByIdAndDelete(postId);
+            if (isPostDeleted) {
                 return true;
-             }else{
+            } else {
                 return false;
-             }
+            }
         } catch (error) {
             console.error('Error retrieving posts:', error);
             return false;
         }
     }
-    async savePost(postId:string,userId:string): Promise<boolean> {
+    async savePost(postId: string, userId: string): Promise<boolean> {
         try {
-            const ispostSaved = await saveModel.create({user:userId,post:postId});
-            if(ispostSaved)
-                {
-                    return true
-                }else{
-                    return false;
-                }
+            const ispostSaved = await saveModel.create({ user: userId, post: postId });
+            if (ispostSaved) {
+                return true
+            } else {
+                return false;
+            }
         } catch (error) {
             console.error('Error retrieving posts:', error);
             return false;
         }
     }
+    async unsavePost(postId: string, userId: string): Promise<boolean> {
+        try {
+            const ispostUnsaved = await saveModel.findOneAndDelete({ user: userId, post: postId });
+            if (ispostUnsaved) {
+                return true
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error unsaving post:', error);
+            return false;
+        }
+    }
+
+    async ReportPost(reportData: any): Promise<boolean> {
+        try {
+            const isPostReported = await reportModel.create(reportData)
+            if (isPostReported) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            return false;
+        }
+    }
+    async UpdatePost(postId: string, description: string, images: any, taggedPeople: any): Promise<boolean> {
+        try {
+            const post = await postModel.findById(postId)
+            console.log('Post :', postId, description, images, taggedPeople);
+
+            const isPostUpdated = await postModel.updateOne(
+                { _id: postId },
+                { $set: { caption: description, images: images, tags: taggedPeople } }
+            );
+            if (isPostUpdated) {
+                console.log('Updated post:', isPostUpdated);
+
+            }
+
+            return isPostUpdated ? true : false;
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            return false;
+        }
+    }
+
+
+
+
+
 }

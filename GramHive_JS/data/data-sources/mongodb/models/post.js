@@ -8,8 +8,9 @@ const comment_1 = __importDefault(require("./comment"));
 const Like = require('./likes');
 const postSchema = new mongoose_1.default.Schema({
     userId: {
-        type: String,
-        // required: true,
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
     caption: {
         type: String,
@@ -23,7 +24,8 @@ const postSchema = new mongoose_1.default.Schema({
     ],
     tags: [
         {
-            type: String,
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
         }
     ],
@@ -32,6 +34,10 @@ const postSchema = new mongoose_1.default.Schema({
     isChecked: {
         type: Boolean,
         required: true,
+    },
+    isSaved: {
+        type: Boolean,
+        default: false,
     }
 });
 const postModel = mongoose_1.default.model('posts', postSchema);

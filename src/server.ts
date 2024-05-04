@@ -4,6 +4,7 @@ import routes from './frameworks/routes';
 import config from './config/server';
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
+import { initializeSocket } from './data/data-sources/socket-io/socketioconfig';
 
 const app = express();
 const port = config.PORT;
@@ -15,9 +16,9 @@ app.use(express.urlencoded({ extended: true }));
 
 connectToMongoDB();
 
-routes(app)
-
-
-app.listen(port, () => {
+const httpServer = app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+const io = initializeSocket(httpServer);
+routes(app)
+

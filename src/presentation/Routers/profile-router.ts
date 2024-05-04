@@ -13,11 +13,13 @@ const controller = new profileController(interactor)
 
 const profileRouter = express.Router();
 
-profileRouter.post('/update', userAuth, processUpload, uploadToCloudinary, controller.updateProfile.bind(controller));
-profileRouter.get('/:userId', userAuth, controller.onGetProfileData.bind(controller))
-profileRouter.post('/followuser', controller.followUser.bind(controller));
+profileRouter.post('/update', processUpload, uploadToCloudinary, controller.updateProfile.bind(controller));
+profileRouter.get('/:userId', controller.onGetProfileData.bind(controller))
+profileRouter.post('/followuser',controller.followUser.bind(controller));
 profileRouter.post('/unfollowuser', controller.unfollowUser.bind(controller))
 profileRouter.get('/:userId/getFollowers', controller.onGetFollowers.bind(controller))
 profileRouter.get('/:userId/getFollowing', controller.onGetFollowing.bind(controller))
+profileRouter.delete('/:userId/removefollower', controller.onRemoveFollower.bind(controller))
+profileRouter.get('/saved/:userId', controller.onGetSaved.bind(controller))
 
 export default profileRouter;

@@ -39,7 +39,8 @@ class profileInteractorImpl {
     getProfileData(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield this.Repository.getProfilePosts(userId);
+                const savedPostsData = yield this.Repository.getSavedPostsData(userId);
+                const posts = yield this.Repository.getProfilePosts(userId, savedPostsData);
                 const followers = yield this.Repository.getFollowers(userId);
                 const following = yield this.Repository.getFollowing(userId);
                 return { posts, followers, following };
@@ -102,6 +103,32 @@ class profileInteractorImpl {
             }
             catch (errror) {
                 throw new Error("Failed to get following.");
+            }
+        });
+    }
+    RemoveFollower(userRelationship) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isFollowerRemoved = yield this.Repository.removeFollower(userRelationship);
+                return isFollowerRemoved ? true : false;
+            }
+            catch (error) {
+                throw new Error("Failed to remove follower.");
+            }
+        });
+    }
+    getSaved(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const savedPostIds = yield this.Repository.getSavedPostIds(userId);
+                console.log(savedPostIds);
+                if (savedPostIds) {
+                    const savedPosts = yield this.Repository.fetchSavedPosts(savedPostIds);
+                    return savedPosts;
+                }
+            }
+            catch (error) {
+                throw new Error("Failed to retreive saved posts.");
             }
         });
     }

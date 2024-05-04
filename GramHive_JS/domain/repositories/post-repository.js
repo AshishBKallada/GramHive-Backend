@@ -16,13 +16,12 @@ exports.PostRepositoryImpl = void 0;
 const post_1 = __importDefault(require("../../data/data-sources/mongodb/models/post"));
 const save_1 = __importDefault(require("../../data/data-sources/mongodb/models/save"));
 const followers_1 = __importDefault(require("../../data/data-sources/mongodb/models/followers"));
+const report_1 = __importDefault(require("../../data/data-sources/mongodb/models/report"));
 class PostRepositoryImpl {
     addPost(postData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('3', postData);
                 const isPostAdded = yield post_1.default.create(postData);
-                console.log(isPostAdded);
                 return isPostAdded ? true : false;
             }
             catch (error) {
@@ -87,13 +86,11 @@ class PostRepositoryImpl {
     getLikes(postId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('444', postId);
-                const post = yield post_1.default.findById(postId);
+                const post = yield post_1.default.findById(postId).populate('likes.user');
                 if (!post) {
                     console.error('Post not found');
                     return null;
                 }
-                console.log(post.likes);
                 return post.likes;
             }
             catch (error) {
@@ -107,9 +104,19 @@ class PostRepositoryImpl {
             try {
                 const users = yield followers_1.default.find({ followed_id: userId });
                 const userIds = users.map(user => user.follower_id);
-                console.log('2222', userIds);
-                const posts = yield post_1.default.find({ userId: { $in: userIds } }).populate('userId');
-                console.log('POSTS', posts);
+                const posts = yield post_1.default.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] }).populate('userId').populate('likes.user');
+                const savedPosts = yield save_1.default.find({ user: userId }).select('post');
+                const savedPostsData = savedPosts.map(savedPost => savedPost.post);
+                if (posts && savedPostsData) {
+                    const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
+                    posts.forEach(post => {
+                        console.log('post', post._id);
+                        post.isSaved = savedPostIds.includes(post._id.toString());
+                        if (post.isSaved) {
+                            console.log('set');
+                        }
+                    });
+                }
                 return posts.length > 0 ? posts : null;
             }
             catch (error) {
@@ -148,6 +155,57 @@ class PostRepositoryImpl {
             }
             catch (error) {
                 console.error('Error retrieving posts:', error);
+                return false;
+            }
+        });
+    }
+    unsavePost(postId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const ispostUnsaved = yield save_1.default.findOneAndDelete({ user: userId, post: postId });
+                if (ispostUnsaved) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error unsaving post:', error);
+                return false;
+            }
+        });
+    }
+    ReportPost(reportData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isPostReported = yield report_1.default.create(reportData);
+                if (isPostReported) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error reporting post:', error);
+                return false;
+            }
+        });
+    }
+    UpdatePost(postId, description, images, taggedPeople) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const post = yield post_1.default.findById(postId);
+                console.log('Post :', postId, description, images, taggedPeople);
+                const isPostUpdated = yield post_1.default.updateOne({ _id: postId }, { $set: { caption: description, images: images, tags: taggedPeople } });
+                if (isPostUpdated) {
+                    console.log('Updated post:', isPostUpdated);
+                }
+                return isPostUpdated ? true : false;
+            }
+            catch (error) {
+                console.error('Error reporting post:', error);
                 return false;
             }
         });

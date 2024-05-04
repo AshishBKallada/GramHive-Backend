@@ -4,6 +4,7 @@ import userModel from '../../data/data-sources/mongodb/models/user';
 import { SignupData } from '../entities/SignupData';
 import otpModel from '../../data/data-sources/mongodb/models/otp';
 import followModel from '../../data/data-sources/mongodb/models/followers';
+import { generateAccessToken } from '../../functions/accessToken-generator';
 const jwt = require('jsonwebtoken');
 
 
@@ -32,7 +33,7 @@ export class UserRepositoryImpl implements UserRepository {
                 console.log('Invalid password');
                 message = 'Invalid password';
             } else {
-                token = this.generateToken(user);
+                token = await generateAccessToken(user);
                 console.log('Token', token);
             }
         }
@@ -55,14 +56,11 @@ export class UserRepositoryImpl implements UserRepository {
         const newUser = new userModel({ name, email, username, password, image });
         await newUser.save();
 
-        let token = this.generateToken(user)
+        let token = await generateAccessToken(user)
         console.log('Token', token);
         return { user: newUser ? newUser.toObject() as User : null, token };
     }
 
-    generateToken(user: any): string {
-        return jwt.sign({ userId: user.email }, 'thadavil__aanu', { expiresIn: '7h' });
-    }
    
 
 

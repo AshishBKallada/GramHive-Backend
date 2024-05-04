@@ -72,6 +72,23 @@ class postInteractorImpl {
             }
         });
     }
+    unsavePost(postId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isSavePost = yield this.Repository.unsavePost(postId, userId);
+                if (isSavePost) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error unsaving post:', error);
+                return false;
+            }
+        });
+    }
     addLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -105,6 +122,42 @@ class postInteractorImpl {
             catch (error) {
                 console.error('Error getting likes:', error);
                 return null;
+            }
+        });
+    }
+    reportPost(postId, author, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reportData = {
+                    post: postId,
+                    author: author,
+                    userId: userId
+                };
+                console.log(reportData);
+                const isPostReported = yield this.Repository.ReportPost(reportData);
+                if (isPostReported) {
+                    console.log('true');
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error getting likes:', error);
+                return false;
+            }
+        });
+    }
+    updatePost(postId, description, images, taggedPeople) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isPostUpdated = yield this.Repository.UpdatePost(postId, description, images, taggedPeople);
+                return isPostUpdated ? true : false;
+            }
+            catch (error) {
+                console.error('Error getting likes:', error);
+                return false;
             }
         });
     }

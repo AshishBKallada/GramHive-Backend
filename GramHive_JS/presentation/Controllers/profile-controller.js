@@ -74,16 +74,15 @@ class profileController {
     unfollowUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('UNFOLLOW USER 1');
                 const { follower_id, followed_id } = req.body;
                 console.log(follower_id, followed_id);
                 const success = yield this.interactor.unfollowUser({ follower_id, followed_id });
                 if (success) {
                     console.log('aahd mwone avne unfollow akktnd');
-                    return res.status(200).json({ success: true, message: 'User was followed successfully' });
+                    return res.status(200).json({ success: true, message: 'User was unfollowed successfully' });
                 }
                 else {
-                    return res.status(404).json({ success: false, message: 'Failed to follow the user' });
+                    return res.status(404).json({ success: false, message: 'Failed to unfollow the user' });
                 }
             }
             catch (error) {
@@ -122,6 +121,41 @@ class profileController {
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to retreive following' });
+                }
+            }
+            catch (error) {
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        });
+    }
+    onRemoveFollower(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { follower_id, followed_id } = req.body;
+                console.log(follower_id, followed_id);
+                const isFollowerRemoved = yield this.interactor.RemoveFollower({ follower_id, followed_id });
+                if (isFollowerRemoved) {
+                    return res.status(200).json({ success: true, message: 'Removed user successfully', });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to remove user' });
+                }
+            }
+            catch (error) {
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        });
+    }
+    onGetSaved(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.params.userId;
+                const posts = yield this.interactor.getSaved(userId);
+                if (posts) {
+                    return res.status(200).json({ success: true, message: 'retreived saved posts successfully', posts });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to retreive saved posts' });
                 }
             }
             catch (error) {

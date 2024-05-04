@@ -8,11 +8,15 @@ const admin_router_1 = __importDefault(require("../presentation/Routers/admin-ro
 const post_router_1 = __importDefault(require("../presentation/Routers/post-router"));
 const comment_router_1 = __importDefault(require("../presentation/Routers/comment-router"));
 const profile_router_1 = __importDefault(require("../presentation/Routers/profile-router"));
+const auth_router_1 = __importDefault(require("../presentation/Routers/auth-router"));
+const story_router_1 = __importDefault(require("../presentation/Routers/story-router"));
 const routes = (app) => {
     app.use('/admin', admin_router_1.default);
     app.use('/', user_router_1.default);
     app.use('/posts', post_router_1.default);
     app.use('/comment', comment_router_1.default);
     app.use('/profile', profile_router_1.default);
+    app.use('/auth', auth_router_1.default);
+    app.use('/story', story_router_1.default);
 };
 exports.default = routes;

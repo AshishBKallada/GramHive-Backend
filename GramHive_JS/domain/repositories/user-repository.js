@@ -16,6 +16,7 @@ exports.UserRepositoryImpl = void 0;
 const user_1 = __importDefault(require("../../data/data-sources/mongodb/models/user"));
 const otp_1 = __importDefault(require("../../data/data-sources/mongodb/models/otp"));
 const followers_1 = __importDefault(require("../../data/data-sources/mongodb/models/followers"));
+const accessToken_generator_1 = require("../../functions/accessToken-generator");
 const jwt = require('jsonwebtoken');
 class UserRepositoryImpl {
     findByCredentials(username, password) {
@@ -40,7 +41,7 @@ class UserRepositoryImpl {
                     message = 'Invalid password';
                 }
                 else {
-                    token = this.generateToken(user);
+                    token = yield (0, accessToken_generator_1.generateAccessToken)(user);
                     console.log('Token', token);
                 }
             }
@@ -60,13 +61,10 @@ class UserRepositoryImpl {
             const { name, email, username, password, image = 'https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png' } = user;
             const newUser = new user_1.default({ name, email, username, password, image });
             yield newUser.save();
-            let token = this.generateToken(user);
+            let token = yield (0, accessToken_generator_1.generateAccessToken)(user);
             console.log('Token', token);
             return { user: newUser ? newUser.toObject() : null, token };
         });
-    }
-    generateToken(user) {
-        return jwt.sign({ userId: user.email }, 'thadavil__aanu', { expiresIn: '7h' });
     }
     userExists(email) {
         return __awaiter(this, void 0, void 0, function* () {

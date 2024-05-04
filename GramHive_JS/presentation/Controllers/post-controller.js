@@ -17,12 +17,10 @@ class PostController {
     getHomePosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('1');
                 const userId = req.params.userId;
-                console.log('userId', userId);
                 const posts = yield this.interactor.getHomePosts(userId);
                 if (posts) {
-                    console.log('OUTER POSTS', posts);
+                    console.log('POSTS HOME ', posts);
                     res.status(200).json({ success: true, message: 'Retreived posts  successfully.', posts });
                 }
                 else {
@@ -79,10 +77,8 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const postId = req.params.postId;
-                console.log('1', postId);
                 const likes = yield this.interactor.getLikes(postId);
                 if (likes) {
-                    console.log('LIKES', likes);
                     return res.status(200).json({ success: true, likes });
                 }
                 else {
@@ -98,7 +94,6 @@ class PostController {
     deletePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('111111111111111111');
                 const postId = req.params.postId;
                 const isPostDelete = yield this.interactor.deletePost(postId);
                 if (isPostDelete) {
@@ -117,7 +112,6 @@ class PostController {
     savePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('111111111111111111');
                 const postId = req.params.postId;
                 const userId = req.params.author;
                 const isSavePost = yield this.interactor.savePost(postId, userId);
@@ -134,9 +128,27 @@ class PostController {
             }
         });
     }
+    onUnsavePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const postId = req.params.postId;
+                const userId = req.params.author;
+                const isUnSavePost = yield this.interactor.unsavePost(postId, userId);
+                if (isUnSavePost) {
+                    return res.status(200).json({ success: true, message: 'Saved the post Successfully' });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to save the post' });
+                }
+            }
+            catch (error) {
+                console.error('Internal server error:', error);
+                return res.status(500).json({ success: false, message: 'Internal server error' });
+            }
+        });
+    }
     addPost(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('1');
             const { caption, cloudinaryUrls, tags, isChecked } = req.body;
             const userId = req.params.userId;
             const images = cloudinaryUrls;
@@ -152,6 +164,45 @@ class PostController {
             catch (error) {
                 console.error('Error uploading images:', error);
                 res.status(500).json({ message: 'An error occurred while uploading images', success: false });
+            }
+        });
+    }
+    onReportPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const postId = req.params.postId;
+            const { author, userId } = req.body;
+            try {
+                const isPostReported = yield this.interactor.reportPost(postId, author, userId);
+                if (isPostReported) {
+                    return res.status(200).json({ message: 'Post was successfulyy reported', success: true });
+                }
+                else {
+                    return res.status(404).json({ message: 'Failed to report post', success: false });
+                }
+            }
+            catch (error) {
+                console.error('Error reporting post:', error);
+                res.status(500).json({ message: 'An error occurred while reporting post', success: false });
+            }
+        });
+    }
+    onPostUpdate(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const postId = req.params.postId;
+                const { description, images, taggedPeople } = req.body;
+                console.log('Controller', description);
+                const ispostUpdated = yield this.interactor.updatePost(postId, description, images, taggedPeople);
+                if (ispostUpdated) {
+                    console.log('POST UPDATED');
+                    return res.status(200).json({ message: 'Post updated successfully', success: true });
+                }
+                else {
+                    return res.status(404).json({ message: 'Failed to update post', success: false });
+                }
+            }
+            catch (error) {
+                res.status(404).json({ message: 'An error occurred while reporting post', success: false });
             }
         });
     }

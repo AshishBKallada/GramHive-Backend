@@ -4,8 +4,9 @@ const Like = require('./likes');
 
 const postSchema = new mongoose.Schema({
     userId: {
-        type: String,
-        // required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
+        required: true
     },
     caption: { 
         type: String,
@@ -19,7 +20,8 @@ const postSchema = new mongoose.Schema({
     ],
     tags: [
         {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
         }
     ],
@@ -28,6 +30,10 @@ const postSchema = new mongoose.Schema({
     isChecked: {
         type: Boolean,
         required: true,
+    },
+    isSaved:{
+        type: Boolean,
+        default: false,
     }
 })
 
