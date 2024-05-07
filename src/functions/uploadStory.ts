@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 
-import serviceAccount from '../uploads/firebase-service-key.json';
+import serviceAccount from '../firebaseKey/firebase-service-key.json';
 
 
 admin.initializeApp({

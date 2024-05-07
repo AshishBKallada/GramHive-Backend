@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadFileToFirebase = void 0;
 const admin = require('firebase-admin');
-const firebase_service_key_json_1 = __importDefault(require("../uploads/firebase-service-key.json"));
+const firebase_service_key_json_1 = __importDefault(require("../firebaseKey/firebase-service-key.json"));
 admin.initializeApp({
     credential: admin.credential.cert(firebase_service_key_json_1.default),
     storageBucket: 'gramhive.appspot.com'

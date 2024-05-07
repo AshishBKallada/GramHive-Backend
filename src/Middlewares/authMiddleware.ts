@@ -41,6 +41,7 @@ const userAuth = async (req: Request, res: Response, next: NextFunction): Promis
 
         return res.status(403).json({ message: 'User is blocked' });
       }
+      req.user = user;
       next();
     } else {
       console.log('55555555555');

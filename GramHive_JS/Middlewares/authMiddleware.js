@@ -63,6 +63,7 @@ const userAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
                 console.log('44444444444444');
                 return res.status(403).json({ message: 'User is blocked' });
             }
+            req.user = user;
             next();
         }
         else {

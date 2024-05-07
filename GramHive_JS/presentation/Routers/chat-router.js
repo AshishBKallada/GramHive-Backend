@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const chat_controller_1 = require("../Controllers/chat-controller");
+const chat_repository_1 = require("../../domain/repositories/chat-repository");
+const chatInteractor_1 = require("../../domain/usecases/chatInteractor");
+const authMiddleware_1 = __importDefault(require("../../Middlewares/authMiddleware"));
+const repository = new chat_repository_1.ChatRepositoryImpl();
+const interactor = new chatInteractor_1.chatInteractorImpl(repository);
+const controller = new chat_controller_1.chatController(interactor);
+const chatRouter = express_1.default.Router();
+chatRouter.route('/:userId').get(authMiddleware_1.default, controller.accessChat.bind(controller));
+chatRouter.route('/').post(authMiddleware_1.default, controller.fetchChat.bind(controller));
+chatRouter.route('/group').post(authMiddleware_1.default, controller.createGroup.bind(controller));
+chatRouter.route('/grouprename').post(authMiddleware_1.default, controller.renameGroup.bind(controller));
+chatRouter.route('/group/add').put(authMiddleware_1.default, controller.addToGroup.bind(controller));
+chatRouter.route('/group/remove').put(authMiddleware_1.default, controller.removeFromGroup.bind(controller));
+exports.default = chatRouter;
