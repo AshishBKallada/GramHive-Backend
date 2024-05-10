@@ -13,8 +13,10 @@ const chatRouter = express.Router();
 chatRouter.route('/:userId').get(userAuth, controller.accessChat.bind(controller));
 chatRouter.route('/').post(userAuth, controller.fetchChat.bind(controller));
 chatRouter.route('/group').post(userAuth, controller.createGroup.bind(controller));
-chatRouter.route('/grouprename').post(userAuth, controller.renameGroup.bind(controller));
-chatRouter.route('/group/add').put(userAuth, controller.addToGroup.bind(controller));
-chatRouter.route('/group/remove').put(userAuth, controller.removeFromGroup.bind(controller));
+chatRouter.route('/grouprename/:groupId').put(userAuth, controller.renameGroup.bind(controller));
+chatRouter.route('/groupadd/:groupId').put(userAuth, controller.addToGroup.bind(controller));
+chatRouter.route('/groupremove/:groupId').put(userAuth, controller.removeFromGroup.bind(controller));
+chatRouter.route('/deletegroup/:groupId').delete(userAuth, controller.deleteGroup.bind(controller));
+
 
 export default chatRouter;

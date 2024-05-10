@@ -17,6 +17,7 @@ class chatController {
     accessChat(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('1');
                 const userId = req.params.userId;
                 const currUser = req.user._id;
                 console.log(currUser, 'current user');
@@ -62,24 +63,50 @@ class chatController {
     renameGroup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const { groupId, newName } = req.body;
+                const isGroupNameUpdated = yield this.interactor.renameGroup(groupId, newName);
+                return res.status(200).json(isGroupNameUpdated);
             }
             catch (error) {
+                return res.status(500).json({ message: 'Failed to rename group' });
             }
         });
     }
     addToGroup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const { users } = req.body;
+                const groupId = req.params.groupId;
+                const UpdatedGroup = yield this.interactor.addToGroup(groupId, users);
+                return res.status(200).json(UpdatedGroup);
             }
             catch (error) {
+                return res.status(500).json({ message: 'Failed to add to group' });
             }
         });
     }
     removeFromGroup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const { users } = req.body;
+                const groupId = req.params.groupId;
+                const UpdatedGroup = yield this.interactor.removeFromGroup(groupId, users);
+                return res.status(200).json(UpdatedGroup);
             }
             catch (error) {
+                return res.status(500).json({ message: 'Failed to add to group' });
+            }
+        });
+    }
+    deleteGroup(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const groupId = req.params.groupId;
+                const isGroupDeleted = yield this.interactor.deleteGroup(groupId);
+                return res.status(200).json({ success: true });
+            }
+            catch (error) {
+                return res.status(500).json({ message: 'Failed to delete group' });
             }
         });
     }

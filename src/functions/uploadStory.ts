@@ -1,7 +1,5 @@
 const admin = require('firebase-admin');
-
 import serviceAccount from '../firebaseKey/firebase-service-key.json';
-
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -10,7 +8,6 @@ admin.initializeApp({
 });
 
 export async function uploadFileToFirebase(filePath: string, fileBuffer: Buffer, contentType: string): Promise<string> {
-console.log('FN called');
 
     const bucket = admin.storage().bucket();
     try {

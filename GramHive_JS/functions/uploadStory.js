@@ -21,7 +21,6 @@ admin.initializeApp({
 });
 function uploadFileToFirebase(filePath, fileBuffer, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('FN called');
         const bucket = admin.storage().bucket();
         try {
             yield bucket.file(filePath).save(fileBuffer, {

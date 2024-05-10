@@ -20,6 +20,7 @@ class chatInteractorImpl {
     }
     accessChat(userId, currUserId) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('2');
             if (!userId) {
                 console.log('UserId not present');
                 return null;
@@ -38,7 +39,6 @@ class chatInteractorImpl {
             console.log('222');
             try {
                 const getChats = yield this.Repository.getChats(userId);
-                console.log('getCHAts', getChats);
                 return getChats;
             }
             catch (error) {
@@ -72,6 +72,81 @@ class chatInteractorImpl {
             }
             catch (error) {
                 console.error('Error creating group:', error);
+                throw error;
+            }
+        });
+    }
+    renameGroup(groupId, newName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!groupId) {
+                    throw new Error('groupId must be provided');
+                }
+                if (!newName) {
+                    throw new Error('group name must be provided');
+                }
+                const isGroupNameUpdated = yield this.Repository.updateGroupName(groupId, newName);
+                return isGroupNameUpdated;
+            }
+            catch (error) {
+                console.error('Error renaming group:', error);
+                throw error;
+            }
+        });
+    }
+    addToGroup(groupId, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!groupId) {
+                    throw new Error('groupId must be provided');
+                }
+                if (users.length < 1) {
+                    throw new Error('Atleast one user must be provided');
+                }
+                const userIdsString = JSON.parse(users);
+                const userIds = userIdsString.map((userId) => new mongoose_1.default.Types.ObjectId(userId));
+                console.log('users: ', userIds);
+                const isAddedToGroup = yield this.Repository.addTogroup(groupId, userIds);
+                return isAddedToGroup;
+            }
+            catch (error) {
+                console.error('Error renaming group:', error);
+                throw error;
+            }
+        });
+    }
+    removeFromGroup(groupId, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!groupId) {
+                    throw new Error('groupId must be provided');
+                }
+                if (users.length < 1) {
+                    throw new Error('Atleast one user must be provided');
+                }
+                const userIdsString = JSON.parse(users);
+                const userIds = userIdsString.map((userId) => new mongoose_1.default.Types.ObjectId(userId));
+                console.log('users: ', userIds);
+                const isRemovedFromGroup = yield this.Repository.removeFromGroup(groupId, userIds);
+                return isRemovedFromGroup;
+            }
+            catch (error) {
+                console.error('Error renaming group:', error);
+                throw error;
+            }
+        });
+    }
+    deleteGroup(groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!groupId) {
+                    throw new Error('groupId must be provided');
+                }
+                const isgroupDeleted = yield this.Repository.deleteGroup(groupId);
+                return isgroupDeleted;
+            }
+            catch (error) {
+                console.error('Error deleting group:', error);
                 throw error;
             }
         });

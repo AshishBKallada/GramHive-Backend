@@ -18,6 +18,7 @@ const user_1 = __importDefault(require("../../data/data-sources/mongodb/models/u
 class ChatRepositoryImpl {
     checkIfChatExists(userId, currentUserId) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('3', userId, currentUserId);
             var isChat = yield chat_1.default.find({
                 isGroupChat: false,
                 $and: [
@@ -36,6 +37,7 @@ class ChatRepositoryImpl {
     }
     createChat(userId, currentUserId) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('4');
             const chatData = {
                 chatName: "sender",
                 isGroupChat: false,
@@ -59,13 +61,16 @@ class ChatRepositoryImpl {
                 const results = yield chat_1.default.find({ users: { $elemMatch: { $eq: userId } } })
                     .populate('users', '-password')
                     .populate('groupAdmin', '-password')
+                    .populate({
+                    path: 'latestMessage',
+                    populate: { path: 'sender', select: 'username name image' }
+                })
                     .sort({ updatedAt: -1 });
-                const populatedResults = yield user_1.default.populate(results, {
-                    path: 'latestMessage.sender',
-                    select: 'name image email',
-                });
-                console.log('results', populatedResults);
-                return populatedResults;
+                //   const populatedResults = await userModel.populate(results, {
+                //     path: 'latestMessage.sender', 
+                //   });
+                console.log('results', results[0].latestMessage);
+                return results;
             }
             catch (error) {
                 console.error('Failed to get chats:', error);
@@ -85,6 +90,52 @@ class ChatRepositoryImpl {
             }
             catch (error) {
                 throw new Error('Failed to create group in db');
+            }
+        });
+    }
+    updateGroupName(groupId, groupName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isGroupRenamed = yield chat_1.default.findByIdAndUpdate(groupId, { $set: { chatName: groupName } });
+                return isGroupRenamed;
+            }
+            catch (error) {
+                throw new Error('Failed to rename group');
+            }
+        });
+    }
+    addTogroup(groupId, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isAddedToGroup = yield chat_1.default.findByIdAndUpdate(groupId, { $push: { users: users } });
+                console.log('isAddedToGroup', isAddedToGroup);
+                return isAddedToGroup;
+            }
+            catch (error) {
+                throw new Error('Failed to add to group');
+            }
+        });
+    }
+    removeFromGroup(groupId, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isRemovedFromGroup = yield chat_1.default.findByIdAndUpdate(groupId, { $pull: { users: { $in: users } } });
+                console.log('isRemovedFromGroup', isRemovedFromGroup);
+                return isRemovedFromGroup;
+            }
+            catch (error) {
+                throw new Error('Failed to add to group');
+            }
+        });
+    }
+    deleteGroup(groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isGroupDeleted = yield chat_1.default.findByIdAndDelete(groupId);
+                return isGroupDeleted ? true : false;
+            }
+            catch (error) {
+                throw new Error('Failed to add to group');
             }
         });
     }
