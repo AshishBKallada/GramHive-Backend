@@ -37,7 +37,9 @@ class profileController {
     onGetProfileData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('CONTROLLER REACHED');
                 const userId = req.params.userId;
+                console.log('userId:', userId);
                 const { posts, followers, following } = yield this.interactor.getProfileData(userId);
                 if (posts && followers && following) {
                     res.status(200).json({ success: true, message: 'Retreived profileData  successfully.', posts, followers, following });

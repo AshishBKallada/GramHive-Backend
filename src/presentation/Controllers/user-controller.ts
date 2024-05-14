@@ -17,13 +17,13 @@ export class userController {
             const { user, message, token, refreshToken } = await this.interactor.login({ username: username, password });
 
             if (user) {
-                console.log('userController:', user, 'Token', token,'refreshToken', refreshToken);
+                console.log('userController:', user, 'Token', token, 'refreshToken', refreshToken);
 
-                res.status(200).json({ message: 'Login successful', user, token: token,refreshToken });
+                res.status(200).json({ message: 'Login successful', user, token: token, refreshToken, status: true });
             } else {
-                console.log('1111');
+                console.log('1111', message);
 
-                res.status(401).json({ message: message });
+                res.status(302).json({ message: message, status: false });
             }
         } catch (e) {
             console.error('Error during login:', e);
@@ -71,11 +71,11 @@ export class userController {
             console.log('1');
 
             const { otp } = req.body;
-            const { success, token } = await this.interactor.verifyotp(otp);
+            const { user, success, token } = await this.interactor.verifyotp(otp);
             if (success) {
                 console.log('7', token);
 
-                res.status(200).json({ success: true, message: 'OTP verified successfully.', token });
+                res.status(200).json({ success: true, message: 'OTP verified successfully.', user, token });
             } else {
                 res.status(400).json({ success: false, message: 'Invalid OTP.' });
             }

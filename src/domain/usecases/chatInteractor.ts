@@ -4,7 +4,7 @@ import { IChatRepository } from "../interfaces/repositories/chat-repository";
 import { IChatInteractor } from "../interfaces/usecases/chatInteractor";
 
 export class chatInteractorImpl implements IChatInteractor {
-    constructor(private readonly Repository: IChatRepository) { }
+    constructor(private readonly Repository: IChatRepository) {}
 
     async accessChat(userId: string, currUserId: string): Promise<any> {
         console.log('2');

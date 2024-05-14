@@ -1,7 +1,7 @@
 import { PostData } from "../../entities/PostData";
 
 export interface postInteractor {
-    getHomePosts(userId: string): Promise<PostData[] | null>
+    getHomePosts(userId: string,page:number,pageSize:number): Promise<PostData[] | null>
     savePost(postId: string, userId: string): Promise<boolean>
     deletePost(postId: string): Promise<boolean>
     addPost(data: PostData): Promise<boolean>;

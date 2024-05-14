@@ -14,11 +14,11 @@ class postInteractorImpl {
     constructor(Repository) {
         this.Repository = Repository;
     }
-    getHomePosts(userId) {
+    getHomePosts(userId, page, pageSize) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('2');
             try {
-                const HomePosts = yield this.Repository.getHomePosts(userId);
+                const HomePosts = yield this.Repository.getHomePosts(userId, page, pageSize);
                 return HomePosts;
             }
             catch (error) {

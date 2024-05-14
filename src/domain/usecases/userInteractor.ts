@@ -7,21 +7,13 @@ import { UserInteractor } from '../interfaces/usecases/userInteractor';
 
 export class UserInteractorImpl implements UserInteractor {
 
-    constructor(private readonly Repository: UserRepository,private readonly mailer :IMailer ) { }
+    constructor(private readonly Repository: UserRepository, private readonly mailer: IMailer) { }
 
-    async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null ,refreshToken: string | null}> {
+    async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null, refreshToken: string | null }> {
         try {
-            console.log('UserService: login');
-            console.log('Username:', credentials.username);
-            console.log('Password:', credentials.password);
-
             const { user, message, token } = await this.Repository.findByCredentials(credentials.username, credentials.password);
-            console.log('Usecase', user, token, message);
-           
-            const refreshToken = await generateRefreshToken(user)
-            return { user, message, token ,refreshToken };
-
-
+            const refreshToken = user ? await generateRefreshToken(user) : ''
+            return { user, message, token, refreshToken };
         } catch (error) {
             console.error('Error during login:', error);
             throw error;
@@ -73,25 +65,27 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-    async verifyotp(otp: string): Promise<{ success: boolean, token: string | null }> {
+    async verifyotp(otp: string): Promise<{ success: boolean, user?: User, token?: string }> {
         try {
-            console.log('2');
 
             const isUser = await this.Repository.verifyOtp(otp);
+
             if (isUser) {
                 console.log('4', isUser);
                 const { user, token } = await this.Repository.save(isUser);
-                if (user) {
-                    return { success: true, token };
-                }
 
+                if (user && token) {
+                    return { success: true, user, token };
+                }
             }
+
             return { success: false };
         } catch (error) {
             console.error('Error verifying OTP:', error);
-            return false;
+            return { success: false };
         }
     }
+
 
     async getSearchData(filter: string): Promise<User[] | null> {
         try {

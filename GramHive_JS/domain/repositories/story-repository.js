@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StoryRepositoryimpl = void 0;
 const followers_1 = __importDefault(require("../../data/data-sources/mongodb/models/followers"));
 const story_1 = __importDefault(require("../../data/data-sources/mongodb/models/story"));
+const mongoose_1 = __importDefault(require("mongoose"));
 class StoryRepositoryimpl {
     addStory(userId, imageUrl) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -32,10 +33,48 @@ class StoryRepositoryimpl {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const following = yield followers_1.default.find({ followed_id: userId });
-                const users = following.map((user) => user.follower_id);
-                const stories = yield story_1.default.find({ $or: [{ user: { $in: users } }, { user: userId }] }).populate('user').populate('seenBy.user');
+                const followedUserIds = following.map((user) => user.follower_id);
+                const stories = yield story_1.default.aggregate([
+                    {
+                        $match: {
+                            $or: [
+                                { user: { $in: followedUserIds } },
+                                { user: new mongoose_1.default.Types.ObjectId(userId) },
+                            ],
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$user',
+                            stories: { $push: '$story' },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'user',
+                        },
+                    },
+                    {
+                        $unwind: '$user',
+                    },
+                    {
+                        $project: {
+                            user: {
+                                _id: 1,
+                                username: 1,
+                                name: 1,
+                                email: 1,
+                                image: 1,
+                            },
+                            stories: 1,
+                        },
+                    },
+                ]);
                 console.log('STORIES', stories);
-                return stories ? stories : null;
+                return stories;
             }
             catch (error) {
                 console.error(error);

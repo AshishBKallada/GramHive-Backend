@@ -6,10 +6,10 @@ export class postInteractorImpl implements postInteractor {
 
     constructor(private readonly Repository: PostRepository) { }
 
-    async getHomePosts(userId: string): Promise<PostData[] | null> {
+    async getHomePosts(userId: string,page:number,pageSize:number): Promise<PostData[] | null> {
         console.log('2');
         try {
-            const HomePosts = await this.Repository.getHomePosts(userId);
+            const HomePosts = await this.Repository.getHomePosts(userId,page,pageSize);
             return HomePosts;
         } catch (error) {
             console.error('Error fetching profile posts:', error);

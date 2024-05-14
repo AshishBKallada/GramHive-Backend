@@ -19,12 +19,8 @@ class UserInteractorImpl {
     login(credentials) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('UserService: login');
-                console.log('Username:', credentials.username);
-                console.log('Password:', credentials.password);
                 const { user, message, token } = yield this.Repository.findByCredentials(credentials.username, credentials.password);
-                console.log('Usecase', user, token, message);
-                const refreshToken = yield (0, refreshToken_generator_1.generateRefreshToken)(user);
+                const refreshToken = user ? yield (0, refreshToken_generator_1.generateRefreshToken)(user) : '';
                 return { user, message, token, refreshToken };
             }
             catch (error) {
@@ -83,20 +79,19 @@ class UserInteractorImpl {
     verifyotp(otp) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('2');
                 const isUser = yield this.Repository.verifyOtp(otp);
                 if (isUser) {
                     console.log('4', isUser);
                     const { user, token } = yield this.Repository.save(isUser);
-                    if (user) {
-                        return { success: true, token };
+                    if (user && token) {
+                        return { success: true, user, token };
                     }
                 }
                 return { success: false };
             }
             catch (error) {
                 console.error('Error verifying OTP:', error);
-                return false;
+                return { success: false };
             }
         });
     }

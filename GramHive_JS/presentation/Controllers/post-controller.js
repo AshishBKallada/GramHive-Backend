@@ -17,10 +17,11 @@ class PostController {
     getHomePosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const page = parseInt(req.query.page) || 1;
+                const pageSize = parseInt(req.query.pageSize) || 10;
                 const userId = req.params.userId;
-                const posts = yield this.interactor.getHomePosts(userId);
+                const posts = yield this.interactor.getHomePosts(userId, page, pageSize);
                 if (posts) {
-                    console.log('POSTS HOME ', posts);
                     res.status(200).json({ success: true, message: 'Retreived posts  successfully.', posts });
                 }
                 else {

@@ -67,7 +67,7 @@ class profileRepositoryImpl {
                     });
                 }
                 console.log('PROFILE REPO GET POSTS', posts);
-                return posts.length > 0 ? posts : null;
+                return posts;
             }
             catch (error) {
                 console.error('Error retrieving posts:', error);

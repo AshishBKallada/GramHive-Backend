@@ -99,25 +99,31 @@ class PostRepositoryImpl {
             }
         });
     }
-    getHomePosts(userId) {
+    getHomePosts(userId, page, pageSize) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const users = yield followers_1.default.find({ followed_id: userId });
                 const userIds = users.map(user => user.follower_id);
-                const posts = yield post_1.default.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] }).populate('userId').populate('likes.user');
+                console.log('BIG LOG--------------', page, pageSize);
+                const posts = yield post_1.default.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] })
+                    .populate('userId')
+                    .populate('likes.user')
+                    .sort({ createdAt: -1 })
+                    .skip((page - 1) * 2)
+                    .limit(2);
+                console.log('Post count', page, posts.length);
                 const savedPosts = yield save_1.default.find({ user: userId }).select('post');
                 const savedPostsData = savedPosts.map(savedPost => savedPost.post);
                 if (posts && savedPostsData) {
                     const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
                     posts.forEach(post => {
-                        console.log('post', post._id);
                         post.isSaved = savedPostIds.includes(post._id.toString());
                         if (post.isSaved) {
                             console.log('set');
                         }
                     });
                 }
-                return posts.length > 0 ? posts : null;
+                return posts;
             }
             catch (error) {
                 console.error('Error retrieving posts:', error);

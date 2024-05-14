@@ -88,12 +88,21 @@ export class PostRepositoryImpl implements PostRepository {
             return null;
         }
     }
-    async getHomePosts(userId: string): Promise<PostData[] | null> {
+    async getHomePosts(userId: string, page: number, pageSize: number): Promise<PostData[] | null> {
         try {
             const users = await followModel.find({ followed_id: userId });
             const userIds = users.map(user => user.follower_id);
+            console.log('BIG LOG--------------',page,pageSize);
+            
 
-            const posts = await postModel.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] }).populate('userId').populate('likes.user');
+            const posts = await postModel.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] })
+                .populate('userId')
+                .populate('likes.user')
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * 2)
+                .limit(2);
+                console.log('Post count',page,posts.length);
+                
 
             const savedPosts = await saveModel.find({ user: userId }).select('post');
             const savedPostsData = savedPosts.map(savedPost => savedPost.post);
@@ -101,7 +110,6 @@ export class PostRepositoryImpl implements PostRepository {
             if (posts && savedPostsData) {
                 const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
                 posts.forEach(post => {
-                    console.log('post', post._id);
 
                     post.isSaved = savedPostIds.includes(post._id.toString());
                     if (post.isSaved) {
@@ -109,7 +117,7 @@ export class PostRepositoryImpl implements PostRepository {
                     }
                 });
             }
-            return posts.length > 0 ? posts : null;
+            return posts ;
         } catch (error) {
             console.error('Error retrieving posts:', error);
             return null;

@@ -22,12 +22,19 @@ admin.initializeApp({
 function uploadFileToFirebase(filePath, fileBuffer, contentType) {
     return __awaiter(this, void 0, void 0, function* () {
         const bucket = admin.storage().bucket();
+        console.log('');
         try {
             yield bucket.file(filePath).save(fileBuffer, {
                 metadata: { contentType }
             });
+            const file = bucket.file(filePath);
+            const signedUrl = yield file.getSignedUrl({
+                action: 'read',
+                expires: Date.now() + 15 * 60 * 1000,
+            });
             console.log('File uploaded successfully');
-            return `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+            console.log('Signed URL:', signedUrl);
+            return signedUrl[0];
         }
         catch (error) {
             console.error('Error uploading file to Firebase Storage:', error);

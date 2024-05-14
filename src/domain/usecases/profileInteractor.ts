@@ -35,11 +35,13 @@ export class profileInteractorImpl implements profileInteractor {
 
     async getProfileData(userId: string): Promise<{ posts: PostData[] | null, followers: followers[] | null, following: followers[] | null }> {
         try {
+        
             const savedPostsData = await this.Repository.getSavedPostsData(userId);
             const posts = await this.Repository.getProfilePosts(userId,savedPostsData);
             const followers = await this.Repository.getFollowers(userId);
             const following = await this.Repository.getFollowing(userId);
-
+             console.log('INTERACTOR REACHED', posts,followers,following);
+             
             return { posts, followers, following };
         } catch (error) {
             console.error('Error fetching profile posts:', error);

@@ -5,10 +5,10 @@ const Like = require('./likes');
 const postSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
+        ref: 'User',
         required: true
     },
-    caption: { 
+    caption: {
         type: String,
         required: true,
     },
@@ -31,10 +31,12 @@ const postSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
-    isSaved:{
+    isSaved: {
         type: Boolean,
         default: false,
     }
+}, {
+    timestamps: true 
 })
 
 const postModel = mongoose.model('posts', postSchema);

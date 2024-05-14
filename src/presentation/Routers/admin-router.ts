@@ -7,7 +7,7 @@ const repository = new AdminRepositoryImpl()
 const interactor = new AdminInteractorImpl(repository)
 const controller = new AdminController(interactor)
 
-const adminRouter = express.Router();
+const  adminRouter = express.Router();
 
 adminRouter.post('/login',controller.onLogin.bind(controller))
 adminRouter.get('/users',controller.onGetUsers.bind(controller));

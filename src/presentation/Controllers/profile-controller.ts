@@ -25,8 +25,11 @@ export class profileController {
 
     async onGetProfileData(req: Request, res: Response) {
         try {
+console.log('CONTROLLER REACHED');
 
             const userId = req.params.userId;
+            console.log('userId:', userId);
+            
 
             const { posts, followers, following } = await this.interactor.getProfileData(userId);
 

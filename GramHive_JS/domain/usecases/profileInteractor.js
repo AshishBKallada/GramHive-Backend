@@ -43,6 +43,7 @@ class profileInteractorImpl {
                 const posts = yield this.Repository.getProfilePosts(userId, savedPostsData);
                 const followers = yield this.Repository.getFollowers(userId);
                 const following = yield this.Repository.getFollowing(userId);
+                console.log('INTERACTOR REACHED', posts, followers, following);
                 return { posts, followers, following };
             }
             catch (error) {

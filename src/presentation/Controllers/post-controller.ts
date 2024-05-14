@@ -6,13 +6,13 @@ export class PostController {
 
     async getHomePosts(req: Request, res: Response) {
         try {
-
+            const page = parseInt(req.query.page as string) || 1;
+            const pageSize = parseInt(req.query.pageSize as string) || 10;
             const userId = req.params.userId;
 
-            const posts = await this.interactor.getHomePosts(userId);
+            const posts = await this.interactor.getHomePosts(userId,page,pageSize);
 
             if (posts) {
-  console.log('POSTS HOME ', posts);
   
                 res.status(200).json({ success: true, message: 'Retreived posts  successfully.', posts });
             } else {
