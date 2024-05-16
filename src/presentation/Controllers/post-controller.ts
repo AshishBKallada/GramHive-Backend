@@ -28,13 +28,15 @@ export class PostController {
     async addLike(req: Request, res: Response) {
         try {
             const postId: string = req.params.postId;
-            const author = req.body.author;
-            const userId = author
-            const isLikeAdded = await this.interactor.addLike(postId, userId);
+            const userId = req.body.userId;
+            console.log('CONTROLLER',postId, userId);
+            
+            const post = await this.interactor.addLike(postId, userId);
 
-            if (isLikeAdded) {
-
-                return res.status(200).json({ success: true, message: 'Liked the post Successfully' });
+            if (post) {
+               console.log('CONTROLLER post returned',post );
+               
+               return res.status(200).json({ success: true, post });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to get comments' });
             }
@@ -46,14 +48,16 @@ export class PostController {
 
     async removeLike(req: Request, res: Response) {
         try {
+
             const postId: string = req.params.postId;
-            const author = req.body.author;
-            const userId = author
-            const isLikeRemoved = await this.interactor.removeLike(postId, userId);
+            const userId = req.body.userId;
+            console.log('CONTROLLER',postId, userId);
 
-            if (isLikeRemoved) {
+            const post = await this.interactor.removeLike(postId, userId);
 
-                return res.status(200).json({ success: true, message: 'Unliked the post Successfully' });
+            if (post) {
+
+                return res.status(200).json({ success: true, post });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to unlike the post' });
             }

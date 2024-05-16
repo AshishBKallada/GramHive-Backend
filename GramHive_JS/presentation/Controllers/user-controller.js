@@ -74,6 +74,25 @@ class userController {
             }
         });
     }
+    resendMail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const emailId = req.params.emailId;
+                const success = yield this.interactor.resendMail(emailId);
+                if (success) {
+                    console.log('SECCESS');
+                    res.status(200).json({ success: true, message: 'Email sent successfully.' });
+                }
+                else {
+                    res.status(302).json({ success: false, message: 'Failed to send email.' });
+                }
+            }
+            catch (error) {
+                console.error('Error sending email:', error);
+                res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
     verifyOTP(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

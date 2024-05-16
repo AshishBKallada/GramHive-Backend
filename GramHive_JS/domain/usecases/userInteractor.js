@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserInteractorImpl = void 0;
 const refreshToken_generator_1 = require("../../functions/refreshToken-generator");
+const crypto_1 = __importDefault(require("crypto"));
 class UserInteractorImpl {
     constructor(Repository, mailer) {
         this.Repository = Repository;
@@ -34,10 +38,12 @@ class UserInteractorImpl {
             try {
                 console.log('UserService: signup');
                 console.log('New user data:', userData);
+                const hashedPassword = crypto_1.default.createHash('sha256').update(userData.password).digest('hex').slice(0, 16);
+                console.log('Hashed Password:', hashedPassword);
                 const newUser = {
                     username: userData.username,
                     name: userData.name,
-                    password: userData.password,
+                    password: hashedPassword,
                     email: userData.email,
                     image: userData.image
                 };
@@ -73,6 +79,24 @@ class UserInteractorImpl {
             catch (error) {
                 console.error('Error sending email:', error);
                 return { userExists: false, isMailSent: false };
+            }
+        });
+    }
+    resendMail(emailId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { otp, success } = yield this.mailer.sendMail(emailId);
+                if (success) {
+                    const updateOTP = yield this.Repository.updateOTP(emailId, otp);
+                    return updateOTP;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error sending email:', error);
+                throw new Error(error);
             }
         });
     }

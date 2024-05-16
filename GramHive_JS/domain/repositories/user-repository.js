@@ -54,6 +54,18 @@ class UserRepositoryImpl {
             }
         });
     }
+    updateOTP(emailId, newOtp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isUpdateOTP = yield otp_1.default.findOneAndUpdate({ email: emailId }, { $set: { otp: newOtp } });
+                return isUpdateOTP != null;
+            }
+            catch (error) {
+                console.log(error);
+                throw new Error();
+            }
+        });
+    }
     save(user) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Repository');

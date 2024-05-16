@@ -66,6 +66,24 @@ export class userController {
         }
     }
 
+    async resendMail(req: Request, res: Response){
+        try {
+            const emailId = req.params.emailId;
+            const success = await this.interactor.resendMail(emailId);
+            if(success)
+                {
+                    console.log('SECCESS');
+                    
+                    res.status(200).json({ success: true, message: 'Email sent successfully.' });
+                }else{
+                    res.status(302).json({ success: false, message: 'Failed to send email.' });
+                }
+        } catch (error) {
+            console.error('Error sending email:', error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+        } 
+    }
+
     async verifyOTP(req: Request, res: Response) {
         try {
             console.log('1');

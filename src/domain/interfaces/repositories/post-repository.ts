@@ -4,8 +4,8 @@ export interface PostRepository {
     savePost(postId: string, userId: string): Promise<boolean>
     getHomePosts(userId: string, page:number, pageSize: number): Promise<PostData[] | null>
     deletePost(postId: string): Promise<boolean>
-    addLike(postId: string, userId: string): Promise<boolean>
-    removeLike(postId: string, userId: string): Promise<boolean>
+    addLike(postId: string, userId: string): Promise<any>
+    removeLike(postId: string, userId: string): Promise<any>
     getLikes(postId: string): Promise<Like[] | null>
     addPost(postData: PostData): Promise<boolean>;
     ReportPost(reportData:any): Promise<boolean>

@@ -60,5 +60,27 @@ class commentInteractorImpl {
             }
         });
     }
+    deleteComment(postId, commentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isCommentDeleted = yield this.Repository.deleteComment(postId, commentId);
+                return isCommentDeleted;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    deleteCommentReply(postId, commentId, replyId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isCommentReplyDeleted = yield this.Repository.deleteCommentReply(postId, commentId, replyId);
+                return isCommentReplyDeleted;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
 exports.commentInteractorImpl = commentInteractorImpl;

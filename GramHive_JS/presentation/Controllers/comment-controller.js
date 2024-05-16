@@ -72,5 +72,43 @@ class CommentController {
             }
         });
     }
+    deleteComment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const postId = req.params.postId;
+                const commentId = req.params.commentId;
+                const success = yield this.interactor.deleteComment(postId, commentId);
+                if (success) {
+                    return res.status(200).json({ success: true, message: 'Comment was deleted successfully' });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to delete comment' });
+                }
+            }
+            catch (error) {
+                return res.status(404).json({ success: false, message: error.message });
+            }
+        });
+    }
+    deleteCommentReply(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const postId = req.params.postId;
+                const commentId = req.params.commentId;
+                const replyId = req.params.replyId;
+                const success = yield this.interactor.deleteCommentReply(postId, commentId, replyId);
+                if (success) {
+                    console.log('COMMENT  REPlyDELETE CONTROLLER 2');
+                    return res.status(200).json({ success: true, message: 'Comment was deleted successfully' });
+                }
+                else {
+                    return res.status(404).json({ success: false, message: 'Failed to delete comment' });
+                }
+            }
+            catch (error) {
+                return res.status(404).json({ success: false, message: error.message });
+            }
+        });
+    }
 }
 exports.CommentController = CommentController;

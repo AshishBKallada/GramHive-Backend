@@ -92,8 +92,8 @@ class postInteractorImpl {
     addLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const isLikeAdded = yield this.Repository.addLike(postId, userId);
-                return isLikeAdded;
+                const post = yield this.Repository.addLike(postId, userId);
+                return post;
             }
             catch (error) {
                 console.error('Error getting comments:', error);
@@ -104,8 +104,9 @@ class postInteractorImpl {
     removeLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const isLikeRemoved = yield this.Repository.removeLike(postId, userId);
-                return isLikeRemoved;
+                console.log('RMEOVE LIKE interactor ', postId, userId);
+                const post = yield this.Repository.removeLike(postId, userId);
+                return post;
             }
             catch (error) {
                 console.error('Error getting comments:', error);

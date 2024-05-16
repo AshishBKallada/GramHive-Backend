@@ -18,9 +18,9 @@ export class PostRepositoryImpl implements PostRepository {
         }
     }
 
-    async addLike(postId: string, userId: string): Promise<boolean> {
+    async addLike(postId: string, userId: string): Promise<any> {
         try {
-            const post = await postModel.findById(postId);
+            const post = await postModel.findById(postId).populate('userId').populate('likes.user');
             if (!post) {
                 console.error('Post not found');
                 return false;
@@ -34,42 +34,33 @@ export class PostRepositoryImpl implements PostRepository {
             post.likes.push(newLike);
             const isLikeAdded = await post.save();
 
-            if (isLikeAdded) {
-                return true;
-            } else {
-                return false;
-            }
+            return post
         } catch (error) {
             console.error('Error adding like:', error);
-            return false;
 
         }
     }
 
-    async removeLike(postId: string, userId: string): Promise<boolean> {
+    async removeLike(postId: string, userId: string): Promise<any> {
         try {
-            const post = await postModel.findById(postId);
+            const post = await postModel.findById(postId).populate('userId').populate('likes.user');
             if (!post) {
-                console.error('Post not found');
+                return false;
+            }
+             console.log('POST REPO',post,postId,userId);
+             
+            const likeIndex = post.likes.findIndex((like: any) => like.user.toString() === userId);
+            if (likeIndex === -1) {
+                console.log('False');
                 return false;
             }
 
-            const likeIndex = post.likes.findIndex((like) => like.user.toString() === userId)
-            if (likeIndex !== 1) {
-                post.likes.splice(likeIndex)
-                const isLikeRemoved = await post.save();
-                if (isLikeRemoved) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-
+            post.likes.splice(likeIndex, 1);
+            await post.save();
+            return post;
         } catch (error) {
             console.error('Error removing like:', error);
             return false;
-
         }
     }
 
@@ -92,18 +83,14 @@ export class PostRepositoryImpl implements PostRepository {
         try {
             const users = await followModel.find({ followed_id: userId });
             const userIds = users.map(user => user.follower_id);
-            console.log('BIG LOG--------------',page,pageSize);
-            
-
+        
             const posts = await postModel.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] })
                 .populate('userId')
                 .populate('likes.user')
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * 2)
                 .limit(2);
-                console.log('Post count',page,posts.length);
                 
-
             const savedPosts = await saveModel.find({ user: userId }).select('post');
             const savedPostsData = savedPosts.map(savedPost => savedPost.post);
 
@@ -117,6 +104,7 @@ export class PostRepositoryImpl implements PostRepository {
                     }
                 });
             }
+            
             return posts ;
         } catch (error) {
             console.error('Error retrieving posts:', error);

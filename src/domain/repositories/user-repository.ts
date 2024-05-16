@@ -47,6 +47,21 @@ export class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    async updateOTP(emailId: string, newOtp: string): Promise<boolean> {
+        try {
+            const isUpdateOTP = await otpModel.findOneAndUpdate(
+                { email: emailId },
+                { $set: { otp: newOtp } }
+            );
+            return isUpdateOTP != null;
+        } catch (error) {
+            console.log(error);
+            throw new Error();
+        }
+    }
+
+
+
 
     async save(user: User): Promise<{ user: User | null, token: string | null }> {
         console.log('Repository');
@@ -61,10 +76,10 @@ export class UserRepositoryImpl implements UserRepository {
         return { user: newUser ? newUser.toObject() as User : null, token };
     }
 
-   
 
 
-  
+
+
 
     async userExists(email: string): Promise<boolean> {
         console.log('3', email);
@@ -73,7 +88,7 @@ export class UserRepositoryImpl implements UserRepository {
         return !!userExists;
     }
 
-  
+
     async saveToDB(signupData: SignupData, otp: string): Promise<boolean> {
         try {
             const { name, email, username, password } = signupData;
@@ -119,7 +134,7 @@ export class UserRepositoryImpl implements UserRepository {
     //     }
     // }
 
-  
+
 
     async getFilteredUsers(filter: string): Promise<User[] | null> {
         try {
@@ -168,8 +183,8 @@ export class UserRepositoryImpl implements UserRepository {
 
 
 
- 
 
-   
+
+
 
 }

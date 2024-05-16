@@ -38,11 +38,12 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const postId = req.params.postId;
-                const author = req.body.author;
-                const userId = author;
-                const isLikeAdded = yield this.interactor.addLike(postId, userId);
-                if (isLikeAdded) {
-                    return res.status(200).json({ success: true, message: 'Liked the post Successfully' });
+                const userId = req.body.userId;
+                console.log('CONTROLLER', postId, userId);
+                const post = yield this.interactor.addLike(postId, userId);
+                if (post) {
+                    console.log('CONTROLLER post returned', post);
+                    return res.status(200).json({ success: true, post });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to get comments' });
@@ -58,11 +59,11 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const postId = req.params.postId;
-                const author = req.body.author;
-                const userId = author;
-                const isLikeRemoved = yield this.interactor.removeLike(postId, userId);
-                if (isLikeRemoved) {
-                    return res.status(200).json({ success: true, message: 'Unliked the post Successfully' });
+                const userId = req.body.userId;
+                console.log('CONTROLLER', postId, userId);
+                const post = yield this.interactor.removeLike(postId, userId);
+                if (post) {
+                    return res.status(200).json({ success: true, post });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to unlike the post' });

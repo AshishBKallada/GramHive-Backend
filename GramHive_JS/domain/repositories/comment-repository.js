@@ -113,5 +113,33 @@ class CommentRepositoryImpl {
             }
         });
     }
+    deleteComment(postId, commentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(postId + commentId + ' deleted');
+                const updatedPost = yield post_1.default.findByIdAndUpdate(postId, { $pull: { comments: { _id: commentId } } }, { new: true });
+                if (updatedPost) {
+                    console.log('Comment deleted successfully');
+                }
+                return updatedPost !== null;
+            }
+            catch (error) {
+                console.error("Error deleting comment:", error);
+                return false;
+            }
+        });
+    }
+    deleteCommentReply(postId, commentId, replyId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isCommentReplyDeleted = yield post_1.default.findByIdAndUpdate(postId, { $pull: { 'comments.$[comment].replies': { _id: replyId } } }, { arrayFilters: [{ 'comment._id': commentId }] });
+                return isCommentReplyDeleted !== null;
+            }
+            catch (error) {
+                console.error("Error deleting comment:", error);
+                return false;
+            }
+        });
+    }
 }
 exports.CommentRepositoryImpl = CommentRepositoryImpl;

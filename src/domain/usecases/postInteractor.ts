@@ -65,21 +65,23 @@ export class postInteractorImpl implements postInteractor {
     }
 
 
-    async addLike(postId: string, userId: string): Promise<boolean> {
+    async addLike(postId: string, userId: string): Promise<any> {
         try {
-            const isLikeAdded = await this.Repository.addLike(postId, userId);
+            const post = await this.Repository.addLike(postId, userId);
 
-            return isLikeAdded;
+            return post;
         } catch (error) {
             console.error('Error getting comments:', error);
             return false;
         }
     }
-    async removeLike(postId: string, userId: string): Promise<boolean> {
+    async removeLike(postId: string, userId: string): Promise<any> {
         try {
-            const isLikeRemoved = await this.Repository.removeLike(postId, userId);
+            console.log('RMEOVE LIKE interactor ',postId,userId);
 
-            return isLikeRemoved;
+            const post = await this.Repository.removeLike(postId, userId);
+
+            return post;
         } catch (error) {
             console.error('Error getting comments:', error);
             return false;

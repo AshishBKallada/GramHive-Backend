@@ -2,7 +2,7 @@ import { CommentRepository } from "../interfaces/repositories/comment-repository
 import ReplyModel from "../../data/data-sources/mongodb/models/reply";
 import postModel from "../../data/data-sources/mongodb/models/post";
 
-export class CommentRepositoryImpl implements CommentRepository{
+export class CommentRepositoryImpl implements CommentRepository {
     async addComment(postId: string, comment: string, author: string): Promise<boolean> {
         try {
             console.log('1');
@@ -65,7 +65,7 @@ export class CommentRepositoryImpl implements CommentRepository{
         }
     }
 
-    
+
 
     async addCommentReply(postId: string, commentId: string, reply: string, author: string) {
         try {
@@ -104,4 +104,43 @@ export class CommentRepositoryImpl implements CommentRepository{
             return false;
         }
     }
+
+    async deleteComment(postId: string, commentId: string): Promise<boolean> {
+        try {
+            console.log(postId + commentId + ' deleted');
+
+            const updatedPost = await postModel.findByIdAndUpdate(
+                postId,
+                { $pull: { comments: { _id: commentId } } },
+                { new: true }
+            );
+            if (updatedPost) {
+                console.log('Comment deleted successfully');
+
+            }
+
+            return updatedPost !== null;
+
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            return false;
+        }
+    }
+
+    async deleteCommentReply(postId: string, commentId: string, replyId: string): Promise<boolean> {
+        try {
+            const isCommentReplyDeleted = await postModel.findByIdAndUpdate(
+                postId,
+                { $pull: { 'comments.$[comment].replies': { _id: replyId } } },
+                { arrayFilters: [{ 'comment._id': commentId }] }
+            );
+            return isCommentReplyDeleted !== null;
+
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            return false;
+        }
+    }
+
+
 }

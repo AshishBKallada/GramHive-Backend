@@ -14,4 +14,6 @@ const commentRouter = express_1.default.Router();
 commentRouter.post('/:postId/addcomments', controller.addComments.bind(controller));
 commentRouter.get('/:postId/comments', controller.getComments.bind(controller));
 commentRouter.post('/:postId/replies/:commentId', controller.addCommentReply.bind(controller));
+commentRouter.delete('/:postId/:commentId', controller.deleteComment.bind(controller));
+commentRouter.delete('/:postId/:commentId/replies/:replyId', controller.deleteCommentReply.bind(controller));
 exports.default = commentRouter;

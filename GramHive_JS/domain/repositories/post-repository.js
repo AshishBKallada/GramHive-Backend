@@ -33,7 +33,7 @@ class PostRepositoryImpl {
     addLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const post = yield post_1.default.findById(postId);
+                const post = yield post_1.default.findById(postId).populate('userId').populate('likes.user');
                 if (!post) {
                     console.error('Post not found');
                     return false;
@@ -44,38 +44,29 @@ class PostRepositoryImpl {
                 };
                 post.likes.push(newLike);
                 const isLikeAdded = yield post.save();
-                if (isLikeAdded) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return post;
             }
             catch (error) {
                 console.error('Error adding like:', error);
-                return false;
             }
         });
     }
     removeLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const post = yield post_1.default.findById(postId);
+                const post = yield post_1.default.findById(postId).populate('userId').populate('likes.user');
                 if (!post) {
-                    console.error('Post not found');
                     return false;
                 }
+                console.log('POST REPO', post, postId, userId);
                 const likeIndex = post.likes.findIndex((like) => like.user.toString() === userId);
-                if (likeIndex !== 1) {
-                    post.likes.splice(likeIndex);
-                    const isLikeRemoved = yield post.save();
-                    if (isLikeRemoved) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                if (likeIndex === -1) {
+                    console.log('False');
+                    return false;
                 }
+                post.likes.splice(likeIndex, 1);
+                yield post.save();
+                return post;
             }
             catch (error) {
                 console.error('Error removing like:', error);
@@ -104,14 +95,12 @@ class PostRepositoryImpl {
             try {
                 const users = yield followers_1.default.find({ followed_id: userId });
                 const userIds = users.map(user => user.follower_id);
-                console.log('BIG LOG--------------', page, pageSize);
                 const posts = yield post_1.default.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] })
                     .populate('userId')
                     .populate('likes.user')
                     .sort({ createdAt: -1 })
                     .skip((page - 1) * 2)
                     .limit(2);
-                console.log('Post count', page, posts.length);
                 const savedPosts = yield save_1.default.find({ user: userId }).select('post');
                 const savedPostsData = savedPosts.map(savedPost => savedPost.post);
                 if (posts && savedPostsData) {

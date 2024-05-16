@@ -4,6 +4,7 @@ import { User } from '../entities/user';
 import { IMailer } from '../interfaces/external-lib/IMailer';
 import { UserRepository } from '../interfaces/repositories/user-repository';
 import { UserInteractor } from '../interfaces/usecases/userInteractor';
+import crypto from 'crypto';
 
 export class UserInteractorImpl implements UserInteractor {
 
@@ -11,6 +12,7 @@ export class UserInteractorImpl implements UserInteractor {
 
     async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null, refreshToken: string | null }> {
         try {
+
             const { user, message, token } = await this.Repository.findByCredentials(credentials.username, credentials.password);
             const refreshToken = user ? await generateRefreshToken(user) : ''
             return { user, message, token, refreshToken };
@@ -25,10 +27,13 @@ export class UserInteractorImpl implements UserInteractor {
             console.log('UserService: signup');
             console.log('New user data:', userData);
 
+            const hashedPassword = crypto.createHash('sha256').update(userData.password).digest('hex').slice(0, 16);
+            console.log('Hashed Password:', hashedPassword);
+
             const newUser: User = {
                 username: userData.username,
                 name: userData.name,
-                password: userData.password,
+                password: hashedPassword,
                 email: userData.email,
                 image: userData.image
             };
@@ -64,6 +69,23 @@ export class UserInteractorImpl implements UserInteractor {
             return { userExists: false, isMailSent: false };
         }
     }
+
+    async resendMail(emailId: string): Promise<boolean> {
+        try {
+            const { otp, success } = await this.mailer.sendMail(emailId);
+            if (success) {
+                const updateOTP = await this.Repository.updateOTP(emailId,otp);
+                return updateOTP;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+            throw new Error(error);
+        }
+
+    }
+
 
     async verifyotp(otp: string): Promise<{ success: boolean, user?: User, token?: string }> {
         try {
