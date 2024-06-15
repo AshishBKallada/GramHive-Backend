@@ -16,6 +16,19 @@ const messageSchema = new mongoose_1.default.Schema({
     chat: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: 'Chat'
+    },
+    sharedPost: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'posts'
+    },
+    files: [
+        {
+            url: String,
+            fileType: String
+        }
+    ],
+    audio: {
+        type: String,
     }
 }, {
     timestamps: true,

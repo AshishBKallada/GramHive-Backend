@@ -2,11 +2,16 @@ import express from 'express';
 import { commentInteractorImpl } from '../../domain/usecases/commentInteractor';
 import { CommentRepositoryImpl } from '../../domain/repositories/comment-repository';
 import { CommentController } from '../Controllers/comment-controller';
+import { NotificationRepositoryImpl } from '../../domain/repositories/notification-repository';
+import { Server } from 'socket.io';
+import { server } from '../../server';
 
 const repository = new CommentRepositoryImpl()
-const interactor = new commentInteractorImpl(repository)
-const controller = new CommentController(interactor)
+const Notifirepository = new NotificationRepositoryImpl();
+const io = new Server(server);
 
+const interactor = new commentInteractorImpl(repository,Notifirepository,io)
+const controller = new CommentController(interactor)
 const commentRouter = express.Router();
 
 commentRouter.post('/:postId/addcomments', controller.addComments.bind(controller))

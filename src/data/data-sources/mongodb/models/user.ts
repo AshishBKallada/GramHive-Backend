@@ -1,28 +1,44 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+interface ILocation {
+    latitude: number;
+    longitude: number;
+}
+
+interface IUser extends Document {
+    username: string;
+    name: string;
+    password?: string;
+    email?: string;
+    image?: string;
+    isBan: boolean;
+    website?: string;
+    bio?: string;
+    gender?: 'male' | 'female' | 'other';
+    location: ILocation;
+}
+
+const userSchema: Schema = new mongoose.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
-        // required: true
     },
     email: {
         type: String,
-        // required: true
     },
     image: {
         type: String,
     },
     isBan: {
         type: Boolean,
-        default: false
+        default: false,
     },
     website: {
         type: String,
@@ -32,10 +48,18 @@ const userSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'other'] 
-    }
+        enum: ['male', 'female', 'other'],
+    },
+    location: {
+        latitude: {
+            type: Number,
+        },
+        longitude: {
+            type: Number,
+        },
+    },
 });
 
-const userModel = mongoose.model('User', userSchema);
+const userModel = mongoose.model<IUser>('User', userSchema);
 
 export default userModel;

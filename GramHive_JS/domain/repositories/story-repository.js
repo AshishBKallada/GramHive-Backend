@@ -73,7 +73,6 @@ class StoryRepositoryimpl {
                         },
                     },
                 ]);
-                console.log('STORIES', stories);
                 return stories;
             }
             catch (error) {

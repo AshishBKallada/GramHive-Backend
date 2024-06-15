@@ -41,10 +41,9 @@ class userController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, name, username, password, image } = req.body;
-                console.log('1', req.body);
                 const { user, token } = yield this.interactor.signup({ username, name, password, email, image: image ? image : 'https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png' });
                 console.log('returned ' + user, token);
-                res.status(200).json({ message: 'Signup successful', user, token });
+                res.status(200).json({ message: 'Signup successful', user, token, status: true });
             }
             catch (e) {
                 console.error('Error during signup:', e);
@@ -101,10 +100,10 @@ class userController {
                 const { user, success, token } = yield this.interactor.verifyotp(otp);
                 if (success) {
                     console.log('7', token);
-                    res.status(200).json({ success: true, message: 'OTP verified successfully.', user, token });
+                    res.status(200).json({ success: true, message: 'OTP verified successfully.', user, token, status: true });
                 }
                 else {
-                    res.status(400).json({ success: false, message: 'Invalid OTP.' });
+                    res.status(201).json({ success: false, message: 'Invalid OTP.' });
                 }
             }
             catch (error) {
@@ -120,7 +119,6 @@ class userController {
                 const filter = req.params.query;
                 const searchResults = yield this.interactor.getSearchData(filter);
                 if (searchResults) {
-                    console.log('outer', searchResults);
                     return res.status(200).json(searchResults);
                 }
                 else {
@@ -140,7 +138,6 @@ class userController {
                 console.log('1', userId);
                 const { user, followers, following } = yield this.interactor.getSearchUser(userId);
                 if (user) {
-                    console.log('--------------------------------', user, followers, following);
                     return res.status(200).json({ success: true, message: 'User data fetched successfully.', user, followers, following });
                 }
                 else {
@@ -149,6 +146,68 @@ class userController {
             }
             catch (error) {
                 console.error('Error retrieving user data:', error);
+                res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
+    onUpdatelocation(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { latitude, longitude } = req.body;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+                const success = yield this.interactor.updateLocation(userId, latitude, longitude);
+                if (success) {
+                    return res.status(200).json({ success: true, message: 'User location updated successfully.' });
+                }
+                else {
+                    return res.status(500).json({ success: false, message: 'Failed to update user location' });
+                }
+            }
+            catch (error) {
+                console.error('Error retrieving user data:', error);
+                res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
+    onGetLocations(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+                const users = yield this.interactor.getLocations(userId);
+                return res.status(200).json({ success: true, message: 'User location updated successfully.', users });
+            }
+            catch (error) {
+                console.error('Error retrieving user data:', error);
+                res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
+    onGetSuggestions(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+                const users = yield this.interactor.getSuggestions(userId);
+                return res.status(200).json({ success: true, message: 'Suggested users data fetched successfully.', users });
+            }
+            catch (error) {
+                console.error('Error retrieving suggested users:', error);
+                res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
+    onCheckEmail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const email = req.body.email;
+                const success = yield this.interactor.checkEmail(email);
+                console.log('user exists', success);
+                return res.status(200).json({ success });
+            }
+            catch (error) {
+                console.error('Error retrieving suggested users:', error);
                 res.status(500).json({ success: false, message: 'Internal server error.' });
             }
         });

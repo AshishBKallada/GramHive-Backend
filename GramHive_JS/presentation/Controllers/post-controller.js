@@ -39,11 +39,11 @@ class PostController {
             try {
                 const postId = req.params.postId;
                 const userId = req.body.userId;
-                console.log('CONTROLLER', postId, userId);
-                const post = yield this.interactor.addLike(postId, userId);
+                const { post, notification } = yield this.interactor.addLike(postId, userId);
                 if (post) {
-                    console.log('CONTROLLER post returned', post);
-                    return res.status(200).json({ success: true, post });
+                    const likes = post.likes;
+                    console.log('CONTROLLER,', notification);
+                    return res.status(200).json({ success: true, likes, notification });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to get comments' });
@@ -60,7 +60,6 @@ class PostController {
             try {
                 const postId = req.params.postId;
                 const userId = req.body.userId;
-                console.log('CONTROLLER', postId, userId);
                 const post = yield this.interactor.removeLike(postId, userId);
                 if (post) {
                     return res.status(200).json({ success: true, post });
@@ -205,6 +204,26 @@ class PostController {
             }
             catch (error) {
                 res.status(404).json({ message: 'An error occurred while reporting post', success: false });
+            }
+        });
+    }
+    onSharePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const senderId = req.user._id;
+                const postId = req.params.postId;
+                const users = req.body.users;
+                console.log('Controller', senderId, postId, users);
+                const success = yield this.interactor.sharePost(senderId, postId, users);
+                if (success) {
+                    res.status(200).json({ message: "Post shared successfully", success });
+                }
+                else {
+                    res.status(500).json({ message: "Failed to share post", success });
+                }
+            }
+            catch (error) {
+                res.status(500).json({ message: "An error occurred", error: error.message });
             }
         });
     }

@@ -74,7 +74,7 @@ export class UserInteractorImpl implements UserInteractor {
         try {
             const { otp, success } = await this.mailer.sendMail(emailId);
             if (success) {
-                const updateOTP = await this.Repository.updateOTP(emailId,otp);
+                const updateOTP = await this.Repository.updateOTP(emailId, otp);
                 return updateOTP;
             } else {
                 return false;
@@ -141,6 +141,49 @@ export class UserInteractorImpl implements UserInteractor {
             return null;
         }
     }
+
+    async updateLocation(userId: string, latitude: number, longitude: number): Promise<boolean> {
+        console.log('caleeeeeeeeee2 ');
+        
+        try {
+            const success = await this.Repository.updateLocation(userId, latitude, longitude);
+            return success;
+        } catch (error) {
+            console.error('Error fetching searched user data:', error);
+            return false;
+        }
+
+    }
+    async getLocations(userId:string): Promise<User[] | null>{
+        try {
+            const users = await this.Repository.getLocations(userId);
+            return users;
+        } catch (error) {
+            console.error('Error fetching searched user data:', error);
+            return null;
+        }
+    }
+
+    async getSuggestions(userId: string): Promise<User[] | null>{
+        try {
+            const users = await this.Repository.getSuggestedUsers(userId);
+            return users;
+        } catch (error) {
+            console.error('Error fetching suggested users data:', error);
+            return null;
+        }
+    }
+
+async checkEmail(email:string): Promise<boolean>{
+    try {
+        const success = await this.Repository.checkEmail(email);
+        return success;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 
 
 }

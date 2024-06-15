@@ -1,15 +1,26 @@
 import { postInteractor } from "../interfaces/usecases/postInteractor";
 import { PostRepository } from "../interfaces/repositories/post-repository";
 import { PostData } from "../entities/PostData";
+import { INotification } from "../entities/notifications";
+import { INotificationRepository } from "../interfaces/repositories/notification-repository";
+import { getUserName } from "../../functions/getUserName";
+import { User } from "../entities/user";
+import { IChatRepository } from "../interfaces/repositories/chat-repository";
+import { IMessageRepository } from "../interfaces/repositories/message-repository";
 
 export class postInteractorImpl implements postInteractor {
 
-    constructor(private readonly Repository: PostRepository) { }
+    constructor(
+        private readonly Repository: PostRepository,
+        private readonly NotiRepository: INotificationRepository,
+        private readonly chatRepository: IChatRepository,
+        private readonly messageRepository: IMessageRepository
+    ) { }
 
-    async getHomePosts(userId: string,page:number,pageSize:number): Promise<PostData[] | null> {
+    async getHomePosts(userId: string, page: number, pageSize: number): Promise<PostData[] | null> {
         console.log('2');
         try {
-            const HomePosts = await this.Repository.getHomePosts(userId,page,pageSize);
+            const HomePosts = await this.Repository.getHomePosts(userId, page, pageSize);
             return HomePosts;
         } catch (error) {
             console.error('Error fetching profile posts:', error);
@@ -69,7 +80,20 @@ export class postInteractorImpl implements postInteractor {
         try {
             const post = await this.Repository.addLike(postId, userId);
 
-            return post;
+            const username = await getUserName(userId);
+
+            const notification: INotification = {
+                userId: post.userId,
+                type: 'like',
+                postId: postId,
+                message: `${username} liked your post`,
+                createdAt: new Date(),
+                read: false
+            };
+            await this.NotiRepository.addNotification(notification);
+
+
+            return { post, notification };
         } catch (error) {
             console.error('Error getting comments:', error);
             return false;
@@ -77,7 +101,7 @@ export class postInteractorImpl implements postInteractor {
     }
     async removeLike(postId: string, userId: string): Promise<any> {
         try {
-            console.log('RMEOVE LIKE interactor ',postId,userId);
+            console.log('RMEOVE LIKE interactor ', postId, userId);
 
             const post = await this.Repository.removeLike(postId, userId);
 
@@ -119,14 +143,47 @@ export class postInteractorImpl implements postInteractor {
             return false;
         }
     }
-    async updatePost(postId: string,description:string, images: any, taggedPeople: any): Promise<boolean> {
+    async updatePost(postId: string, description: string, images: any, taggedPeople: any): Promise<boolean> {
         try {
-            const isPostUpdated = await this.Repository.UpdatePost(postId,description, images, taggedPeople)
+            const isPostUpdated = await this.Repository.UpdatePost(postId, description, images, taggedPeople)
             return isPostUpdated ? true : false
         } catch (error) {
             console.error('Error getting likes:', error);
             return false;
         }
     }
+
+    async sharePost(senderId: string, postId: string, users: User[]): Promise<boolean> {
+        try {
+            const post = await this.Repository.findById(postId);
+            const userIds = users.map(user => user._id)
+
+
+            for (const recipientId of userIds) {
+                let chat = await this.chatRepository.findChatBetweenUsers(senderId, recipientId);
+
+                if (!chat) {
+                    chat = await this.chatRepository.createShareChat({
+                        chatName: "sender",
+                        isGroupChat: false,
+                        users: [senderId, recipientId],
+                    });
+                }
+
+                const newMessage = await this.messageRepository.createMessage({
+                    sender: senderId,
+                    chat: chat._id,
+                    content: `Shared a post: ${post.caption}`,
+                    sharedPost: postId,
+                });
+
+                await this.chatRepository.updateChatLatestMessage(chat._id, newMessage._id);
+            }
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 }

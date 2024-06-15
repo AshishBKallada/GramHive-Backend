@@ -47,5 +47,52 @@ class MessageInteractorImpl {
             }
         });
     }
+    fileUpload(sender, chatId, files) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.Repository.saveFiles(sender, chatId, files);
+            }
+            catch (error) {
+            }
+        });
+    }
+    deleteMessage(messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('3');
+            if (!messageId) {
+                throw new Error('Message ID is required');
+            }
+            const success = yield this.Repository.deleteMessage(messageId);
+            return success;
+        });
+    }
+    shareFiles(senderId, chatId, files) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const message = {
+                sender: senderId,
+                content: 'shared some files',
+                chat: chatId,
+                files: files,
+            };
+            console.log('MEssage', message);
+            const createdMessage = yield this.Repository.createMessage(message);
+            yield this.Repository.updateChat(chatId, createdMessage);
+            return createdMessage;
+        });
+    }
+    shareAudio(senderId, chatId, file) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const message = {
+                sender: senderId,
+                content: 'send a voice message',
+                chat: chatId,
+                audio: file,
+            };
+            console.log('MEssage', message);
+            const createdMessage = yield this.Repository.createMessage(message);
+            yield this.Repository.updateChat(chatId, createdMessage);
+            return createdMessage;
+        });
+    }
 }
 exports.MessageInteractorImpl = MessageInteractorImpl;

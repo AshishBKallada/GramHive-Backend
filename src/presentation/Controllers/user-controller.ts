@@ -5,7 +5,6 @@ export class userController {
 
     constructor(private readonly interactor: UserInteractor) { }
 
-
     async login(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('Login Controller');
@@ -34,12 +33,11 @@ export class userController {
     async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, name, username, password, image } = req.body;
-            console.log('1', req.body);
 
             const { user, token } = await this.interactor.signup({ username, name, password, email, image: image ? image : 'https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png' });
             console.log('returned ' + user, token);
 
-            res.status(200).json({ message: 'Signup successful', user, token });
+            res.status(200).json({ message: 'Signup successful', user, token, status: true });
         } catch (e) {
             console.error('Error during signup:', e);
             res.status(500).send('Internal server error');
@@ -66,22 +64,21 @@ export class userController {
         }
     }
 
-    async resendMail(req: Request, res: Response){
+    async resendMail(req: Request, res: Response) {
         try {
             const emailId = req.params.emailId;
             const success = await this.interactor.resendMail(emailId);
-            if(success)
-                {
-                    console.log('SECCESS');
-                    
-                    res.status(200).json({ success: true, message: 'Email sent successfully.' });
-                }else{
-                    res.status(302).json({ success: false, message: 'Failed to send email.' });
-                }
+            if (success) {
+                console.log('SECCESS');
+
+                res.status(200).json({ success: true, message: 'Email sent successfully.' });
+            } else {
+                res.status(302).json({ success: false, message: 'Failed to send email.' });
+            }
         } catch (error) {
             console.error('Error sending email:', error);
-        res.status(500).json({ success: false, message: 'Internal server error.' });
-        } 
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
     }
 
     async verifyOTP(req: Request, res: Response) {
@@ -93,9 +90,9 @@ export class userController {
             if (success) {
                 console.log('7', token);
 
-                res.status(200).json({ success: true, message: 'OTP verified successfully.', user, token });
+                res.status(200).json({ success: true, message: 'OTP verified successfully.', user, token, status: true });
             } else {
-                res.status(400).json({ success: false, message: 'Invalid OTP.' });
+                res.status(201).json({ success: false, message: 'Invalid OTP.' });
             }
         } catch (error) {
             console.error('Error verifying OTP:', error);
@@ -110,7 +107,6 @@ export class userController {
             const filter = req.params.query;
             const searchResults = await this.interactor.getSearchData(filter);
             if (searchResults) {
-                console.log('outer', searchResults);
 
                 return res.status(200).json(searchResults)
             } else {
@@ -129,13 +125,63 @@ export class userController {
             console.log('1', userId);
             const { user, followers, following } = await this.interactor.getSearchUser(userId);
             if (user) {
-                console.log('--------------------------------', user, followers, following);
                 return res.status(200).json({ success: true, message: 'User data fetched successfully.', user, followers, following });
             } else {
                 return res.status(500).json({ success: false, message: 'Failed to retrieve searched user data' });
             }
         } catch (error) {
             console.error('Error retrieving user data:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    }
+
+    async onUpdatelocation(req: Request, res: Response) {
+        try {
+            const { latitude, longitude } = req.body;
+            const userId = req.user?._id;
+            const success = await this.interactor.updateLocation(userId, latitude, longitude);
+            if (success) {
+                return res.status(200).json({ success: true, message: 'User location updated successfully.' });
+            } else {
+                return res.status(500).json({ success: false, message: 'Failed to update user location' });
+            }
+        } catch (error) {
+            console.error('Error retrieving user data:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    }
+
+    async onGetLocations(req: Request, res: Response) {
+        try {
+            const userId = req.user?._id;
+            const users = await this.interactor.getLocations(userId);
+            return res.status(200).json({ success: true, message: 'User location updated successfully.', users });
+        } catch (error) {
+            console.error('Error retrieving user data:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    }
+
+    async onGetSuggestions(req: Request, res: Response) {
+        try {
+            const userId = req.user?._id;
+            const users = await this.interactor.getSuggestions(userId);
+            return res.status(200).json({ success: true, message: 'Suggested users data fetched successfully.', users });
+
+        } catch (error) {
+            console.error('Error retrieving suggested users:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    }
+    async onCheckEmail(req: Request, res: Response) {
+        try {
+            const email = req.body.email;
+            const success = await this.interactor.checkEmail(email);
+            console.log('user exists', success);
+            
+            return res.status(200).json({ success });
+        } catch (error) {
+            console.error('Error retrieving suggested users:', error);
             res.status(500).json({ success: false, message: 'Internal server error.' });
         }
     }

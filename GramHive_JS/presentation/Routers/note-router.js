@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const note_repository_1 = require("../../domain/repositories/note-repository");
+const noteIntercator_1 = require("../../domain/usecases/noteIntercator");
+const note_controller_1 = require("../Controllers/note-controller");
+const authMiddleware_1 = __importDefault(require("../../Middlewares/authMiddleware"));
+const repository = new note_repository_1.NoteRepositoryImpl();
+const interactor = new noteIntercator_1.NoteInteractorImpl(repository);
+const controller = new note_controller_1.NoteController(interactor);
+const noteRouter = (0, express_1.Router)();
+noteRouter.post('/addnote', authMiddleware_1.default, controller.onAddNote.bind(controller));
+noteRouter.get('/getnote', authMiddleware_1.default, controller.onGetNote.bind(controller));
+noteRouter.delete('/deletenote', authMiddleware_1.default, controller.onRemoveNote.bind(controller));
+noteRouter.get('/', authMiddleware_1.default, controller.onGetNotes.bind(controller));
+noteRouter.post('/reply', authMiddleware_1.default, controller.onAddReply.bind(controller));
+exports.default = noteRouter;

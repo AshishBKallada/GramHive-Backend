@@ -54,5 +54,73 @@ class AdminInteractorImpl {
             }
         });
     }
+    getReviews(filter) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield this.Repository.getReviews(filter);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Failed to fetch reviews: ${error.message}`);
+                }
+            }
+        });
+    }
+    getPostReports() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield this.Repository.getPostReports();
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Failed to fetch reviews: ${error.message}`);
+                }
+            }
+        });
+    }
+    PostBan(postId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('2');
+                const message = yield this.Repository.postBan(postId);
+                return { success: true, message };
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Failed to ban/unban post: ${error.message}`);
+                }
+                throw new Error('Failed to ban/unban post due to an unknown error');
+            }
+        });
+    }
+    userReports() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reports = yield this.Repository.userReports();
+                return reports;
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(`Failed to ban/unban post: ${error.message}`);
+                }
+                throw new Error('Failed to ban/unban post due to an unknown error');
+            }
+        });
+    }
+    getTransactions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const transactions = yield this.Repository.getTransactions();
+                if (!transactions || transactions.length === 0) {
+                    throw new Error('No transactions found');
+                }
+                return transactions;
+            }
+            catch (error) {
+                console.error('Error in TransactionsInteractor:', error);
+                throw error;
+            }
+        });
+    }
 }
 exports.AdminInteractorImpl = AdminInteractorImpl;

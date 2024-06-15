@@ -11,18 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentInteractorImpl = void 0;
 class commentInteractorImpl {
-    constructor(Repository) {
+    constructor(Repository, NotiRepository, io) {
         this.Repository = Repository;
+        this.NotiRepository = NotiRepository;
+        this.io = io;
     }
     addComment(postId, comment, author) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const isCommentAdded = yield this.Repository.addComment(postId, comment, author);
-                if (isCommentAdded) {
-                    return true;
+                const { data } = yield this.Repository.addComment(postId, comment, author);
+                if (data) {
+                    const notification = {
+                        userId: data.userId,
+                        type: 'comment',
+                        postId: postId,
+                        message: `${data.author} commented on your post`,
+                        createdAt: new Date(),
+                        read: false
+                    };
+                    yield this.NotiRepository.addNotification(notification);
+                    return notification;
                 }
                 else {
-                    false;
+                    return false;
                 }
             }
             catch (error) {

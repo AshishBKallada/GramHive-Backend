@@ -55,12 +55,14 @@ const userAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         const user = yield user_1.default.findOne({ _id: userIdString });
         if (user) {
             if (user.isBan) {
+                console.log('USER IS BANNED ............................');
                 return res.status(403).json({ message: 'User is blocked' });
             }
             req.user = user;
             next();
         }
         else {
+            console.log('Invalid user');
             return res.status(401).json({ message: 'Invalid user' });
         }
     }

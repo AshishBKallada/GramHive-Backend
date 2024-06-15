@@ -20,7 +20,7 @@ export async function uploadFileToFirebase(filePath: string, fileBuffer: Buffer,
         const file = bucket.file(filePath);
         const signedUrl = await file.getSignedUrl({
             action: 'read',
-            expires: Date.now() + 15 * 60 * 1000,
+             expires : Date.now() + 30 * 24 * 60 * 60 * 1000,
         });
 
         console.log('File uploaded successfully');

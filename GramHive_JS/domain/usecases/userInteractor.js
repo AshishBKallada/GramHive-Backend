@@ -156,5 +156,53 @@ class UserInteractorImpl {
             }
         });
     }
+    updateLocation(userId, latitude, longitude) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('caleeeeeeeeee2 ');
+            try {
+                const success = yield this.Repository.updateLocation(userId, latitude, longitude);
+                return success;
+            }
+            catch (error) {
+                console.error('Error fetching searched user data:', error);
+                return false;
+            }
+        });
+    }
+    getLocations(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const users = yield this.Repository.getLocations(userId);
+                return users;
+            }
+            catch (error) {
+                console.error('Error fetching searched user data:', error);
+                return null;
+            }
+        });
+    }
+    getSuggestions(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const users = yield this.Repository.getSuggestedUsers(userId);
+                return users;
+            }
+            catch (error) {
+                console.error('Error fetching suggested users data:', error);
+                return null;
+            }
+        });
+    }
+    checkEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const success = yield this.Repository.checkEmail(email);
+                return success;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
 exports.UserInteractorImpl = UserInteractorImpl;

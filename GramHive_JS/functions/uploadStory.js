@@ -30,7 +30,7 @@ function uploadFileToFirebase(filePath, fileBuffer, contentType) {
             const file = bucket.file(filePath);
             const signedUrl = yield file.getSignedUrl({
                 action: 'read',
-                expires: Date.now() + 15 * 60 * 1000,
+                expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
             });
             console.log('File uploaded successfully');
             console.log('Signed URL:', signedUrl);

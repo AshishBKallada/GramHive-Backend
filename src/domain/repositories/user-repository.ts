@@ -59,9 +59,19 @@ export class UserRepositoryImpl implements UserRepository {
             throw new Error();
         }
     }
-
-
-
+    async updateLocation(userId: string, latitude: number, longitude: number): Promise<boolean> {
+        try {
+            const isLocationUpdated = await userModel.findByIdAndUpdate(
+                userId,
+                { $set: { 'location.latitude': latitude, 'location.longitude': longitude } },
+                { new: true }
+            );
+            return !!isLocationUpdated;
+        } catch (error) {
+            console.log(error);
+            throw new Error();
+        }
+    }
 
     async save(user: User): Promise<{ user: User | null, token: string | null }> {
         console.log('Repository');
@@ -76,18 +86,12 @@ export class UserRepositoryImpl implements UserRepository {
         return { user: newUser ? newUser.toObject() as User : null, token };
     }
 
-
-
-
-
-
     async userExists(email: string): Promise<boolean> {
         console.log('3', email);
 
         const userExists = await userModel.findOne({ email: email });
         return !!userExists;
     }
-
 
     async saveToDB(signupData: SignupData, otp: string): Promise<boolean> {
         try {
@@ -138,10 +142,8 @@ export class UserRepositoryImpl implements UserRepository {
 
     async getFilteredUsers(filter: string): Promise<User[] | null> {
         try {
-            console.log('3', filter);
             const userData = await userModel.find({ $or: [{ username: { $regex: new RegExp(filter, 'i') } }, { name: { $regex: new RegExp(filter, 'i') } }] });
             const users = userData.map(({ _id, username, name, image }) => ({ _id, username, name, image }));
-            console.log('Users found', users);
 
             return users ? users : null;
 
@@ -182,9 +184,58 @@ export class UserRepositoryImpl implements UserRepository {
     }
 
 
+    async getLocations(userId: string): Promise<User[] | null> {
+        try {
 
+            const followingUsers = await followModel.find({ followed_id: userId });
 
+            const followeduserIds = followingUsers.map(follow => follow.follower_id);
+            console.log('Following users:', followeduserIds);
 
+            const users = await userModel.find({ _id: { $in: followeduserIds } });
+            console.log('users0000000000000000000000: ', users);
+
+            return users;
+        } catch (error) {
+            console.error('Error retrieving searched user data:', error);
+            return null;
+        }
+    }
+
+    async getSuggestedUsers(userId: string): Promise<User[] | null> {
+        try {
+            const followedUsers = await followModel.find({ followed_id: userId });
+            const followedIds = await followedUsers.map((user: any) => user.followed_id);
+
+            if (!followedIds.length) return null;
+
+            const suggestedFollowerIds = await followModel.aggregate([
+                { $match: { followed_id: { $in: followedIds.map(f => f._id) } } },
+                { $match: { follower_id: { $ne: userId } } },
+                { $group: { _id: null, suggestedFollowerIds: { $addToSet: '$follower_id' } } },
+                { $project: { suggestedFollowerIds: 1 } },
+            ]);
+
+            const suggestedIds = suggestedFollowerIds[0]?.suggestedFollowerIds || [];
+            const projection = { username: 1, name: 1, image: 1 };
+            const mutualUsers = await userModel.find({ _id: { $in: suggestedIds } }, projection)
+            return mutualUsers;
+
+        } catch (error) {
+            console.error('Error fetching note:', error);
+            throw error;
+        }
+    }
+
+    async checkEmail(email: string): Promise<boolean> {
+        try {
+            const user = await userModel.findOne({ email: email });
+            return !!user;
+        } catch (error) {
+            console.error('Error checking if user exists :', error);
+            throw error;
+        }
+    }
 
 
 }

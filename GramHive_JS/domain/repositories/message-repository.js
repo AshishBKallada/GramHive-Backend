@@ -51,15 +51,45 @@ class MessageRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('34', chatId);
             try {
-                const messages = yield message_1.default.find({ chat: chatId })
-                    .populate("sender", " name image email ")
+                const hasSharedPost = yield message_1.default.exists({ chat: chatId, sharedPost: { $exists: true } });
+                let query = message_1.default.find({ chat: chatId })
+                    .populate("sender", "name image email")
                     .populate('chat');
+                if (hasSharedPost) {
+                    query = query.populate('sharedPost');
+                }
+                const messages = yield query.exec();
                 return messages;
             }
             catch (error) {
                 console.error('Error retrieving messages:', error);
                 throw new Error('Error retrieving messages');
             }
+        });
+    }
+    deleteMessage(messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('4');
+                yield message_1.default.findByIdAndDelete(messageId);
+                return true;
+            }
+            catch (error) {
+                throw new Error('Error deleting message');
+            }
+        });
+    }
+    createMessage(newMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('REPO', newMessage);
+            let message = yield message_1.default.create(newMessage);
+            message = yield message.populate('sender', 'name image');
+            message = yield message.populate('chat');
+            message = yield user_1.default.populate(message, {
+                path: 'chat.users',
+                select: 'name image email',
+            });
+            return message.toObject();
         });
     }
 }

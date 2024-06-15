@@ -9,15 +9,26 @@ const messageSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    chat:{
+    chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Chat'
+    },
+    sharedPost: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'posts'
+    },
+    files: [
+        {
+            url: String,
+            fileType: String
+        }
+    ],
+    audio: {
+        type: String,
     }
-},
-    {
-        timestamps: true,
-
-    });
+}, {
+    timestamps: true,
+});
 
 const messageModel = mongoose.model('Message', messageSchema);
 export default messageModel;

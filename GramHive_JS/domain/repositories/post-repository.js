@@ -33,21 +33,27 @@ class PostRepositoryImpl {
     addLike(postId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const post = yield post_1.default.findById(postId).populate('userId').populate('likes.user');
+                const post = yield post_1.default.findById(postId);
                 if (!post) {
                     console.error('Post not found');
-                    return false;
+                    return { success: false, message: 'Post not found' };
+                }
+                const alreadyLiked = post.likes.some(like => like.user.toString() === userId);
+                if (alreadyLiked) {
+                    return { success: false, message: 'User has already liked this post' };
                 }
                 const newLike = {
                     user: userId,
                     post: postId,
                 };
                 post.likes.push(newLike);
-                const isLikeAdded = yield post.save();
+                yield post.save();
+                yield post.populate('likes.user');
                 return post;
             }
             catch (error) {
                 console.error('Error adding like:', error);
+                return { success: false, message: 'Error adding like', error };
             }
         });
     }
@@ -58,8 +64,7 @@ class PostRepositoryImpl {
                 if (!post) {
                     return false;
                 }
-                console.log('POST REPO', post, postId, userId);
-                const likeIndex = post.likes.findIndex((like) => like.user.toString() === userId);
+                const likeIndex = post.likes.findIndex((like) => like.user._id.toString() === userId);
                 if (likeIndex === -1) {
                     console.log('False');
                     return false;
@@ -95,9 +100,15 @@ class PostRepositoryImpl {
             try {
                 const users = yield followers_1.default.find({ followed_id: userId });
                 const userIds = users.map(user => user.follower_id);
-                const posts = yield post_1.default.find({ $or: [{ userId: { $in: userIds } }, { userId: userId }] })
+                const posts = yield post_1.default.find({
+                    $and: [
+                        { $or: [{ userId: { $in: userIds } }, { userId: userId }] },
+                        { $or: [{ isBan: { $exists: false } }, { isBan: false }] }
+                    ]
+                })
                     .populate('userId')
                     .populate('likes.user')
+                    .populate('tags')
                     .sort({ createdAt: -1 })
                     .skip((page - 1) * 2)
                     .limit(2);
@@ -203,6 +214,11 @@ class PostRepositoryImpl {
                 console.error('Error reporting post:', error);
                 return false;
             }
+        });
+    }
+    findById(postId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield post_1.default.findById(postId);
         });
     }
 }

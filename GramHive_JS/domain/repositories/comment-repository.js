@@ -15,16 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentRepositoryImpl = void 0;
 const reply_1 = __importDefault(require("../../data/data-sources/mongodb/models/reply"));
 const post_1 = __importDefault(require("../../data/data-sources/mongodb/models/post"));
+const user_1 = __importDefault(require("../../data/data-sources/mongodb/models/user"));
 class CommentRepositoryImpl {
     addComment(postId, comment, author) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('1');
-                console.log(postId, comment, author);
                 const post = yield post_1.default.findById(postId);
                 if (!post) {
                     console.error('Post not found');
-                    return false;
+                    return { success: false, message: 'Post not found' };
                 }
                 else {
                     console.log('post kitteetto');
@@ -37,24 +36,28 @@ class CommentRepositoryImpl {
                 post.comments.push(newComment);
                 const isCommentAdded = yield post.save();
                 if (isCommentAdded) {
-                    console.log('2');
-                    return true;
+                    const authorUser = yield user_1.default.findById(author);
+                    const authorUsername = (authorUser === null || authorUser === void 0 ? void 0 : authorUser.username) || 'Unknown';
+                    const data = {
+                        postId: postId,
+                        userId: post.userId,
+                        author: authorUsername
+                    };
+                    return { success: true, message: 'Comment added successfully', data };
                 }
                 else {
-                    console.log('vayya');
-                    return false;
+                    return { success: false, message: 'Failed to add comment' };
                 }
             }
             catch (error) {
                 console.error('Error', error);
-                return false;
+                return { success: false, message: 'Internal server error' };
             }
         });
     }
     getComments(postId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('2222', postId);
                 const post = yield post_1.default
                     .findById(postId)
                     .populate({
@@ -79,7 +82,6 @@ class CommentRepositoryImpl {
     addCommentReply(postId, commentId, reply, author) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('444444444444444444', postId, commentId, reply, author);
                 const post = yield post_1.default.findById(postId);
                 if (!post) {
                     console.log('No post found');
@@ -90,7 +92,6 @@ class CommentRepositoryImpl {
                     console.log('No comment found');
                     return false;
                 }
-                console.log('COMMENT', comment.comment);
                 const newReply = new reply_1.default({
                     reply: reply,
                     author: author,
@@ -116,7 +117,6 @@ class CommentRepositoryImpl {
     deleteComment(postId, commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(postId + commentId + ' deleted');
                 const updatedPost = yield post_1.default.findByIdAndUpdate(postId, { $pull: { comments: { _id: commentId } } }, { new: true });
                 if (updatedPost) {
                     console.log('Comment deleted successfully');

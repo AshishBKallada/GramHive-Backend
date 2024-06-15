@@ -16,7 +16,6 @@ class profileController {
     }
     updateProfile(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('1234567890------------------------------------------', req.body);
             const { userId, username, name, website, bio, cloudinaryUrl, gender } = req.body;
             const image = cloudinaryUrl[0];
             try {
@@ -37,9 +36,7 @@ class profileController {
     onGetProfileData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('CONTROLLER REACHED');
                 const userId = req.params.userId;
-                console.log('userId:', userId);
                 const { posts, followers, following } = yield this.interactor.getProfileData(userId);
                 if (posts && followers && following) {
                     res.status(200).json({ success: true, message: 'Retreived profileData  successfully.', posts, followers, following });
@@ -58,11 +55,9 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { follower_id, followed_id } = req.body;
-                console.log(follower_id, followed_id);
-                const success = yield this.interactor.followUser({ follower_id, followed_id });
-                if (success) {
-                    console.log('aahd mwone true aaytnd');
-                    return res.status(200).json({ success: true, message: 'User was followed successfully' });
+                const notification = yield this.interactor.followUser({ follower_id, followed_id });
+                if (notification) {
+                    return res.status(200).json({ success: true, message: 'User was followed successfully', notification });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to follow the user' });
@@ -77,7 +72,6 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { follower_id, followed_id } = req.body;
-                console.log(follower_id, followed_id);
                 const success = yield this.interactor.unfollowUser({ follower_id, followed_id });
                 if (success) {
                     console.log('aahd mwone avne unfollow akktnd');
@@ -96,7 +90,6 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userId = req.params.userId;
-                console.log('CONTROLLER', userId);
                 const followers = yield this.interactor.getFollowers(userId);
                 if (followers) {
                     console.log('Followers:', followers);
@@ -115,10 +108,8 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userId = req.params.userId;
-                console.log('CONTROLLER', userId);
                 const following = yield this.interactor.getFollowing(userId);
                 if (following) {
-                    console.log('Following:', following);
                     return res.status(200).json({ success: true, message: 'Retreieved following successfully', following: following });
                 }
                 else {
@@ -134,7 +125,6 @@ class profileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { follower_id, followed_id } = req.body;
-                console.log(follower_id, followed_id);
                 const isFollowerRemoved = yield this.interactor.RemoveFollower({ follower_id, followed_id });
                 if (isFollowerRemoved) {
                     return res.status(200).json({ success: true, message: 'Removed user successfully', });

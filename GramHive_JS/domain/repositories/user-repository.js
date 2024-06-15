@@ -66,6 +66,18 @@ class UserRepositoryImpl {
             }
         });
     }
+    updateLocation(userId, latitude, longitude) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const isLocationUpdated = yield user_1.default.findByIdAndUpdate(userId, { $set: { 'location.latitude': latitude, 'location.longitude': longitude } }, { new: true });
+                return !!isLocationUpdated;
+            }
+            catch (error) {
+                console.log(error);
+                throw new Error();
+            }
+        });
+    }
     save(user) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Repository');
@@ -132,10 +144,8 @@ class UserRepositoryImpl {
     getFilteredUsers(filter) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('3', filter);
                 const userData = yield user_1.default.find({ $or: [{ username: { $regex: new RegExp(filter, 'i') } }, { name: { $regex: new RegExp(filter, 'i') } }] });
                 const users = userData.map(({ _id, username, name, image }) => ({ _id, username, name, image }));
-                console.log('Users found', users);
                 return users ? users : null;
             }
             catch (error) {
@@ -169,6 +179,59 @@ class UserRepositoryImpl {
             catch (error) {
                 console.error('Error retrieving searched user data:', error);
                 return { user: null, followers: [], following: [] };
+            }
+        });
+    }
+    getLocations(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const followingUsers = yield followers_1.default.find({ followed_id: userId });
+                const followeduserIds = followingUsers.map(follow => follow.follower_id);
+                console.log('Following users:', followeduserIds);
+                const users = yield user_1.default.find({ _id: { $in: followeduserIds } });
+                console.log('users0000000000000000000000: ', users);
+                return users;
+            }
+            catch (error) {
+                console.error('Error retrieving searched user data:', error);
+                return null;
+            }
+        });
+    }
+    getSuggestedUsers(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const followedUsers = yield followers_1.default.find({ followed_id: userId });
+                const followedIds = yield followedUsers.map((user) => user.followed_id);
+                if (!followedIds.length)
+                    return null;
+                const suggestedFollowerIds = yield followers_1.default.aggregate([
+                    { $match: { followed_id: { $in: followedIds.map(f => f._id) } } },
+                    { $match: { follower_id: { $ne: userId } } },
+                    { $group: { _id: null, suggestedFollowerIds: { $addToSet: '$follower_id' } } },
+                    { $project: { suggestedFollowerIds: 1 } },
+                ]);
+                const suggestedIds = ((_a = suggestedFollowerIds[0]) === null || _a === void 0 ? void 0 : _a.suggestedFollowerIds) || [];
+                const projection = { username: 1, name: 1, image: 1 };
+                const mutualUsers = yield user_1.default.find({ _id: { $in: suggestedIds } }, projection);
+                return mutualUsers;
+            }
+            catch (error) {
+                console.error('Error fetching note:', error);
+                throw error;
+            }
+        });
+    }
+    checkEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield user_1.default.findOne({ email: email });
+                return !!user;
+            }
+            catch (error) {
+                console.error('Error checking if user exists :', error);
+                throw error;
             }
         });
     }

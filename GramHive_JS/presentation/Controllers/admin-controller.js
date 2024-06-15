@@ -65,5 +65,78 @@ class AdminController {
             }
         });
     }
+    onGetReviews(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const filter = req.params.filter;
+            try {
+                const reviews = yield this.interactor.getReviews(filter);
+                return res.status(200).json(reviews);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(500).json({ error: error.message });
+                }
+                return res.status(500).json({ error: 'An unknown error occurred' });
+            }
+        });
+    }
+    onPostReports(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reports = yield this.interactor.getPostReports();
+                return res.status(200).json(reports);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(500).json({ error: error.message });
+                }
+                return res.status(500).json({ error: 'An unknown error occurred' });
+            }
+        });
+    }
+    onPostBan(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('1');
+                const postId = req.params.postId;
+                const { success, message } = yield this.interactor.PostBan(postId);
+                return res.status(200).json({ success, message });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(500).json({ error: error.message });
+                }
+                return res.status(500).json({ error: 'An unknown error occurred' });
+            }
+        });
+    }
+    onUserReports(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userReports = yield this.interactor.userReports();
+                console.log('user', userReports);
+                return res.status(200).json(userReports);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(500).json({ error: error.message });
+                }
+                return res.status(500).json({ error: 'An unknown error occurred' });
+            }
+        });
+    }
+    onGetTransactions(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const transactions = yield this.interactor.getTransactions();
+                console.log('transactions', transactions);
+                return res.status(200).json(transactions);
+            }
+            catch (error) {
+                console.error('Error fetching transactions:', error);
+                return res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+    }
 }
 exports.AdminController = AdminController;

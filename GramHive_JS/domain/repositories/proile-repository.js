@@ -55,18 +55,15 @@ class profileRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const posts = yield post_1.default.find({ userId: userId }).populate('tags');
-                console.log('SAVED POSTSDATA', savedPostsData);
                 if (posts && savedPostsData) {
                     const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
                     posts.forEach(post => {
-                        console.log('post', post._id);
                         post.isSaved = savedPostIds.includes(post._id.toString());
                         if (post.isSaved) {
                             console.log('set');
                         }
                     });
                 }
-                console.log('PROFILE REPO GET POSTS', posts);
                 return posts;
             }
             catch (error) {
@@ -78,10 +75,12 @@ class profileRepositoryImpl {
     followUser(userRelationship) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(userRelationship);
                 const adduserRelationship = yield followers_1.default.create(userRelationship);
-                if (adduserRelationship) {
-                    return true;
+                const authorId = adduserRelationship.followed_id;
+                const author = yield user_1.default.findById(authorId);
+                console.log(author);
+                if (author) {
+                    return author.username;
                 }
                 else {
                     return false;

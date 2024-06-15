@@ -18,5 +18,4 @@ chatRouter.route('/groupadd/:groupId').put(userAuth, controller.addToGroup.bind(
 chatRouter.route('/groupremove/:groupId').put(userAuth, controller.removeFromGroup.bind(controller));
 chatRouter.route('/deletegroup/:groupId').delete(userAuth, controller.deleteGroup.bind(controller));
 
-
 export default chatRouter;

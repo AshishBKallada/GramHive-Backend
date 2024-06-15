@@ -1,3 +1,4 @@
+import { User } from "../../domain/entities/user";
 import { postInteractor } from "../../domain/interfaces/usecases/postInteractor";
 import { Request, Response, NextFunction } from "express";
 export class PostController {
@@ -10,10 +11,10 @@ export class PostController {
             const pageSize = parseInt(req.query.pageSize as string) || 10;
             const userId = req.params.userId;
 
-            const posts = await this.interactor.getHomePosts(userId,page,pageSize);
+            const posts = await this.interactor.getHomePosts(userId, page, pageSize);
 
             if (posts) {
-  
+
                 res.status(200).json({ success: true, message: 'Retreived posts  successfully.', posts });
             } else {
                 res.status(400).json({ success: false, message: 'Failed to retreive posts .' });
@@ -29,14 +30,15 @@ export class PostController {
         try {
             const postId: string = req.params.postId;
             const userId = req.body.userId;
-            console.log('CONTROLLER',postId, userId);
-            
-            const post = await this.interactor.addLike(postId, userId);
+
+            const { post, notification } = await this.interactor.addLike(postId, userId);
 
             if (post) {
-               console.log('CONTROLLER post returned',post );
-               
-               return res.status(200).json({ success: true, post });
+                const likes = post.likes;
+                console.log('CONTROLLER,',notification);
+                
+
+                return res.status(200).json({ success: true, likes, notification });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to get comments' });
             }
@@ -51,8 +53,6 @@ export class PostController {
 
             const postId: string = req.params.postId;
             const userId = req.body.userId;
-            console.log('CONTROLLER',postId, userId);
-
             const post = await this.interactor.removeLike(postId, userId);
 
             if (post) {
@@ -128,7 +128,7 @@ export class PostController {
             const userId: string = req.params.author;
             const isUnSavePost = await this.interactor.unsavePost(postId, userId);
 
-            if (isUnSavePost) {                
+            if (isUnSavePost) {
                 return res.status(200).json({ success: true, message: 'Saved the post Successfully' });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to save the post' });
@@ -180,20 +180,40 @@ export class PostController {
     async onPostUpdate(req: Request, res: Response) {
         try {
             const postId = req.params.postId;
-            
+
             const { description, images, taggedPeople } = req.body;
-            console.log('Controller',description);
+            console.log('Controller', description);
 
             const ispostUpdated = await this.interactor.updatePost(postId, description, images, taggedPeople);
             if (ispostUpdated) {
                 console.log('POST UPDATED');
-                
+
                 return res.status(200).json({ message: 'Post updated successfully', success: true })
             } else {
                 return res.status(404).json({ message: 'Failed to update post', success: false });
             }
         } catch (error) {
             res.status(404).json({ message: 'An error occurred while reporting post', success: false });
+        }
+    }
+
+    async onSharePost(req: Request, res: Response) {
+        try {
+            const senderId: string = req.user._id;
+            const postId: string = req.params.postId;
+            const users: User[] = req.body.users;
+
+            console.log('Controller', senderId, postId, users);
+
+            const success = await this.interactor.sharePost(senderId, postId, users);
+            if (success) {
+                res.status(200).json({ message: "Post shared successfully",success });
+            } else {
+                res.status(500).json({ message: "Failed to share post",success });
+            }
+        } catch (error) {
+            res.status(500).json({ message: "An error occurred", error: error.message });
+
         }
     }
 }

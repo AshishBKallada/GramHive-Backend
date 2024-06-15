@@ -10,9 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postInteractorImpl = void 0;
+const getUserName_1 = require("../../functions/getUserName");
 class postInteractorImpl {
-    constructor(Repository) {
+    constructor(Repository, NotiRepository, chatRepository, messageRepository) {
         this.Repository = Repository;
+        this.NotiRepository = NotiRepository;
+        this.chatRepository = chatRepository;
+        this.messageRepository = messageRepository;
     }
     getHomePosts(userId, page, pageSize) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -93,7 +97,17 @@ class postInteractorImpl {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const post = yield this.Repository.addLike(postId, userId);
-                return post;
+                const username = yield (0, getUserName_1.getUserName)(userId);
+                const notification = {
+                    userId: post.userId,
+                    type: 'like',
+                    postId: postId,
+                    message: `${username} liked your post`,
+                    createdAt: new Date(),
+                    read: false
+                };
+                yield this.NotiRepository.addNotification(notification);
+                return { post, notification };
             }
             catch (error) {
                 console.error('Error getting comments:', error);
@@ -159,6 +173,35 @@ class postInteractorImpl {
             catch (error) {
                 console.error('Error getting likes:', error);
                 return false;
+            }
+        });
+    }
+    sharePost(senderId, postId, users) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const post = yield this.Repository.findById(postId);
+                const userIds = users.map(user => user._id);
+                for (const recipientId of userIds) {
+                    let chat = yield this.chatRepository.findChatBetweenUsers(senderId, recipientId);
+                    if (!chat) {
+                        chat = yield this.chatRepository.createShareChat({
+                            chatName: "sender",
+                            isGroupChat: false,
+                            users: [senderId, recipientId],
+                        });
+                    }
+                    const newMessage = yield this.messageRepository.createMessage({
+                        sender: senderId,
+                        chat: chat._id,
+                        content: `Shared a post: ${post.caption}`,
+                        sharedPost: postId,
+                    });
+                    yield this.chatRepository.updateChatLatestMessage(chat._id, newMessage._id);
+                }
+                return true;
+            }
+            catch (error) {
+                throw error;
             }
         });
     }

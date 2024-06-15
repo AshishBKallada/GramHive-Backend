@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const ad_repository_1 = require("../../domain/repositories/ad-repository");
+const adInteractor_1 = require("../../domain/usecases/adInteractor");
+const ad_controller_1 = require("../Controllers/ad-controller");
+const authMiddleware_1 = __importDefault(require("../../Middlewares/authMiddleware"));
+const multeradUploadMiddleware_1 = __importDefault(require("../../Middlewares/multeradUploadMiddleware"));
+const adUploadMiddleware_1 = require("../../Middlewares/adUploadMiddleware");
+const razorpayOrderCreator_1 = require("../../domain/external-libraries/razorpayOrderCreator");
+const adRouter = (0, express_1.Router)();
+const repository = new ad_repository_1.AdReporsitoryImpl();
+const Razorpay = new razorpayOrderCreator_1.RazorpayOrderImpl();
+const interactor = new adInteractor_1.AdInteractorImpl(repository, Razorpay);
+const controller = new ad_controller_1.AdController(interactor);
+adRouter.post('/addAd', authMiddleware_1.default, multeradUploadMiddleware_1.default, adUploadMiddleware_1.adUploadMiddleware, controller.onNewAdd.bind(controller));
+adRouter.put('/confirmpay/:Id', authMiddleware_1.default, controller.onConfirmPay.bind(controller));
+adRouter.get('/getads', authMiddleware_1.default, controller.onGetAds.bind(controller));
+adRouter.get('/gethomeads', authMiddleware_1.default, controller.onGetHomeAds.bind(controller));
+exports.default = adRouter;

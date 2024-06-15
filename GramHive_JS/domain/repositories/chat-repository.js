@@ -66,9 +66,6 @@ class ChatRepositoryImpl {
                     populate: { path: 'sender', select: 'username name image' }
                 })
                     .sort({ updatedAt: -1 });
-                //   const populatedResults = await userModel.populate(results, {
-                //     path: 'latestMessage.sender', 
-                //   });
                 console.log('results', results[0].latestMessage);
                 return results;
             }
@@ -137,6 +134,24 @@ class ChatRepositoryImpl {
             catch (error) {
                 throw new Error('Failed to add to group');
             }
+        });
+    }
+    findChatBetweenUsers(user1Id, user2Id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield chat_1.default.findOne({
+                isGroupChat: false,
+                users: { $all: [user1Id, user2Id] }
+            });
+        });
+    }
+    createShareChat(chatData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield chat_1.default.create(chatData);
+        });
+    }
+    updateChatLatestMessage(chatId, messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield chat_1.default.findByIdAndUpdate(chatId, { latestMessage: messageId });
         });
     }
 }

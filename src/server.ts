@@ -4,7 +4,7 @@ import routes from './frameworks/routes';
 import config from './config/server';
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import { Socket } from 'socket.io';
+import { createSocketIoServer } from './config/socketConfig';
 require('colors');
 
 const app = express();
@@ -17,57 +17,12 @@ app.use(express.urlencoded({ extended: true }));
 
 connectToMongoDB();
 
-const server = app.listen(port, () => {
+export const server = app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-const io = require('socket.io')(server,{
-    pingTimeout: 60000,
-    cors:{
-        origin: 'http://localhost:5173',
-    }
-})
+const io = createSocketIoServer(server);
 
-io.on('connection',(socket:Socket)=>{
-
-    console.log('Connection established to socket.io'.cyan,socket);
-
-    socket.on('setup',(userId)=>{
-        socket.join(userId);
-        console.log('User connected'.blue,userId);
-        socket.emit('connected');
-    })
-
-    socket.on('join chat',(room)=>{
-        socket.join(room);
-        console.log('User joined rooom'.red,room);
-    })
-
-    socket.on('typing',(room)=>{
-        socket.in(room).emit('typing');
-    })
-
-    socket.on('stop typing',(room)=>{
-        socket.in(room).emit('stop typing');
-    })
-    
-    socket.on('new message',(newMessageReceived)=>{
-
-        var chat = newMessageReceived.chat;
-        if(!chat.users) return console.log('chat users undefined');
-
-        chat.users.forEach((user)=>{
-            if(user._id === newMessageReceived.sender._id) return;
-            socket.in(user._id).emit('message received',newMessageReceived);
-
-            socket.in(user._id).emit('notification received',{
-                senderId: newMessageReceived.sender._id,
-                isRead:false,
-                date:new Date(),
-            })
-        });
-    })
-});
 
 
 routes(app)

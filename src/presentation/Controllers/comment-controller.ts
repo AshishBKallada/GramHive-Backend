@@ -11,10 +11,9 @@ export class CommentController {
             const { comment, author } = req.body;
             console.log(comment, '4');
 
-            const isCommentAdded = await this.interactor.addComment(postId, comment, author);
-            if (isCommentAdded) {
-
-                return res.status(200).json({ success: true, message: 'User was followed successfully' });
+            const notification = await this.interactor.addComment(postId, comment, author);
+            if (notification) {
+                return res.status(200).json({ success: true, message: 'User was followed successfully', notification });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to follow the user' });
             }
@@ -31,7 +30,6 @@ export class CommentController {
             const comments = await this.interactor.getComments(postId);
 
             if (comments) {
-                console.log('COMMENTS', comments);
 
                 return res.status(200).json({ success: true, comments });
             } else {

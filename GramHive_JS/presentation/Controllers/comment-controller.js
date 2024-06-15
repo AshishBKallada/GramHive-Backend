@@ -20,9 +20,9 @@ class CommentController {
                 const postId = req.params.postId;
                 const { comment, author } = req.body;
                 console.log(comment, '4');
-                const isCommentAdded = yield this.interactor.addComment(postId, comment, author);
-                if (isCommentAdded) {
-                    return res.status(200).json({ success: true, message: 'User was followed successfully' });
+                const notification = yield this.interactor.addComment(postId, comment, author);
+                if (notification) {
+                    return res.status(200).json({ success: true, message: 'User was followed successfully', notification });
                 }
                 else {
                     return res.status(404).json({ success: false, message: 'Failed to follow the user' });
@@ -40,7 +40,6 @@ class CommentController {
                 console.log('1', postId);
                 const comments = yield this.interactor.getComments(postId);
                 if (comments) {
-                    console.log('COMMENTS', comments);
                     return res.status(200).json({ success: true, comments });
                 }
                 else {

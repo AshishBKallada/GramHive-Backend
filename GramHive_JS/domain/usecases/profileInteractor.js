@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.profileInteractorImpl = void 0;
 class profileInteractorImpl {
-    constructor(Repository) {
+    constructor(Repository, NotiRepository) {
         this.Repository = Repository;
+        this.NotiRepository = NotiRepository;
     }
     updateProfile(Data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,7 +27,6 @@ class profileInteractorImpl {
                     bio: Data.bio,
                     gender: Data.gender
                 };
-                console.log('NewDataXXXXXXXXXXXX', newData);
                 const updatedUser = yield this.Repository.updateProfile(newData);
                 return updatedUser ? updatedUser : null;
             }
@@ -43,7 +43,6 @@ class profileInteractorImpl {
                 const posts = yield this.Repository.getProfilePosts(userId, savedPostsData);
                 const followers = yield this.Repository.getFollowers(userId);
                 const following = yield this.Repository.getFollowing(userId);
-                console.log('INTERACTOR REACHED', posts, followers, following);
                 return { posts, followers, following };
             }
             catch (error) {
@@ -55,9 +54,18 @@ class profileInteractorImpl {
     followUser(userRelationship) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const success = yield this.Repository.followUser(userRelationship);
-                if (success) {
-                    return true;
+                const author = yield this.Repository.followUser(userRelationship);
+                if (author) {
+                    const notification = {
+                        userId: userRelationship.follower_id,
+                        type: 'follow',
+                        message: `${author} started following you`,
+                        createdAt: new Date(),
+                        read: false
+                    };
+                    console.log(notification);
+                    yield this.NotiRepository.addNotification(notification);
+                    return notification;
                 }
                 else {
                     return false;

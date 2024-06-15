@@ -60,7 +60,6 @@ export class StoryRepositoryimpl implements StoryRepository {
               
           ]);
       
-          console.log('STORIES', stories);
       
           return stories;
         } catch (error) {

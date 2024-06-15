@@ -27,11 +27,14 @@ const userAuth = async (req: Request, res: Response, next: NextFunction): Promis
 
     if (user) {
       if (user.isBan) {
+        console.log('USER IS BANNED ............................');
         return res.status(403).json({ message: 'User is blocked' });
       }
       req.user = user;
       next();
     } else {
+      console.log('Invalid user');
+      
       return res.status(401).json({ message: 'Invalid user' });
     }
   } catch (error) {

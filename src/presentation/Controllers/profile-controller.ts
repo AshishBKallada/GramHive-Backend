@@ -6,7 +6,6 @@ export class profileController {
     constructor(private readonly interactor: profileInteractor) { }
 
     async updateProfile(req: Request, res: Response, next: NextFunction) {
-        console.log('1234567890------------------------------------------', req.body);
         const { userId, username, name, website, bio, cloudinaryUrl, gender } = req.body;
         const image = cloudinaryUrl[0];
 
@@ -25,16 +24,14 @@ export class profileController {
 
     async onGetProfileData(req: Request, res: Response) {
         try {
-console.log('CONTROLLER REACHED');
 
             const userId = req.params.userId;
-            console.log('userId:', userId);
-            
+
 
             const { posts, followers, following } = await this.interactor.getProfileData(userId);
 
             if (posts && followers && following) {
-                
+
                 res.status(200).json({ success: true, message: 'Retreived profileData  successfully.', posts, followers, following });
             } else {
                 res.status(400).json({ success: false, message: 'Failed to retreive profileData .' });
@@ -48,14 +45,11 @@ console.log('CONTROLLER REACHED');
 
     async followUser(req: Request, res: Response) {
         try {
-
             const { follower_id, followed_id } = req.body;
-            console.log(follower_id, followed_id);
-            const success = await this.interactor.followUser({ follower_id, followed_id })
-            if (success) {
-                console.log('aahd mwone true aaytnd');
+            const notification = await this.interactor.followUser({ follower_id, followed_id })
+            if (notification) {
 
-                return res.status(200).json({ success: true, message: 'User was followed successfully' });
+                return res.status(200).json({ success: true, message: 'User was followed successfully', notification });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to follow the user' });
             }
@@ -68,9 +62,7 @@ console.log('CONTROLLER REACHED');
 
     async unfollowUser(req: Request, res: Response) {
         try {
-
             const { follower_id, followed_id } = req.body;
-            console.log(follower_id, followed_id);
             const success = await this.interactor.unfollowUser({ follower_id, followed_id })
             if (success) {
                 console.log('aahd mwone avne unfollow akktnd');
@@ -79,16 +71,13 @@ console.log('CONTROLLER REACHED');
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to unfollow the user' });
             }
-
         } catch (error) {
             return res.status(500).json({ success: false, message: 'Internal server error' });
-
         }
     }
     async onGetFollowers(req: Request, res: Response) {
         try {
             const userId = req.params.userId;
-            console.log('CONTROLLER', userId);
 
             const followers = await this.interactor.getFollowers(userId)
             if (followers) {
@@ -106,11 +95,9 @@ console.log('CONTROLLER REACHED');
     async onGetFollowing(req: Request, res: Response) {
         try {
             const userId = req.params.userId;
-            console.log('CONTROLLER', userId);
 
             const following = await this.interactor.getFollowing(userId)
             if (following) {
-                console.log('Following:', following);
                 return res.status(200).json({ success: true, message: 'Retreieved following successfully', following: following });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to retreive following' });
@@ -124,8 +111,7 @@ console.log('CONTROLLER REACHED');
     async onRemoveFollower(req: Request, res: Response) {
         try {
             const { follower_id, followed_id } = req.body;
-            console.log(follower_id, followed_id);
-            const isFollowerRemoved = await this.interactor.RemoveFollower({follower_id, followed_id})
+            const isFollowerRemoved = await this.interactor.RemoveFollower({ follower_id, followed_id })
             if (isFollowerRemoved) {
                 return res.status(200).json({ success: true, message: 'Removed user successfully', });
             } else {
@@ -136,17 +122,17 @@ console.log('CONTROLLER REACHED');
 
         }
     }
-    async onGetSaved(req: Request, res: Response){
+    async onGetSaved(req: Request, res: Response) {
         try {
-            
+
             const userId = req.params.userId;
             const posts = await this.interactor.getSaved(userId)
-            
+
             if (posts) {
-                return res.status(200).json({ success: true, message: 'retreived saved posts successfully',posts });
+                return res.status(200).json({ success: true, message: 'retreived saved posts successfully', posts });
             } else {
                 return res.status(404).json({ success: false, message: 'Failed to retreive saved posts' });
-            }            
+            }
         } catch (error) {
             return res.status(500).json({ success: false, message: 'Internal server error' });
         }

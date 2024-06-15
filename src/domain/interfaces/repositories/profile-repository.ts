@@ -5,7 +5,7 @@ import { PostData } from '../../entities/PostData';
 
 export interface profileRepository {
     updateProfile(newData: Partial<User>): Promise<User | null>
-    followUser(userRelationship: UserRelationship): Promise<boolean>;
+    followUser(userRelationship: UserRelationship): Promise<any>;
     unfollowUser(userRelationship: UserRelationship): Promise<boolean>;
     getProfilePosts(userId: string,savedPostsData:any): Promise<PostData[] | null>;
     getFollowers(userId: string): Promise<followers[] | null>;

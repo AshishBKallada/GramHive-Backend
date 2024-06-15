@@ -3,9 +3,11 @@ import { profileInteractor } from "../interfaces/usecases/profileInteractor";
 import { UserRelationship } from "../entities/userRelationship";
 import { PostData } from "../entities/PostData";
 import { followers } from "../entities/follower";
+import { INotification } from "../entities/notifications";
+import { INotificationRepository } from "../interfaces/repositories/notification-repository";
 
 export class profileInteractorImpl implements profileInteractor {
-    constructor(private readonly Repository: profileRepository) { }
+    constructor(private readonly Repository: profileRepository, private readonly NotiRepository: INotificationRepository) { }
     async updateProfile(Data: { userId: string, username: string, name: string, website: string, bio: string, gender: string, image: string }): Promise<User | null> {
 
         try {
@@ -18,8 +20,6 @@ export class profileInteractorImpl implements profileInteractor {
                 bio: Data.bio,
                 gender: Data.gender
             };
-
-            console.log('NewDataXXXXXXXXXXXX', newData);
 
             const updatedUser = await this.Repository.updateProfile(newData);
 
@@ -35,24 +35,35 @@ export class profileInteractorImpl implements profileInteractor {
 
     async getProfileData(userId: string): Promise<{ posts: PostData[] | null, followers: followers[] | null, following: followers[] | null }> {
         try {
-        
+
             const savedPostsData = await this.Repository.getSavedPostsData(userId);
-            const posts = await this.Repository.getProfilePosts(userId,savedPostsData);
+            const posts = await this.Repository.getProfilePosts(userId, savedPostsData);
             const followers = await this.Repository.getFollowers(userId);
             const following = await this.Repository.getFollowing(userId);
-             console.log('INTERACTOR REACHED', posts,followers,following);
-             
+
             return { posts, followers, following };
         } catch (error) {
             console.error('Error fetching profile posts:', error);
             return null;
         }
     }
-    async followUser(userRelationship: UserRelationship): Promise<boolean> {
+    async followUser(userRelationship: UserRelationship): Promise<INotification | boolean> {
         try {
-            const success = await this.Repository.followUser(userRelationship);
-            if (success) {
-                return true;
+            const author = await this.Repository.followUser(userRelationship);
+
+            if (author) {
+                const notification: INotification = {
+                    userId: userRelationship.follower_id,
+                    type: 'follow',
+                    message: `${author} started following you`,
+                    createdAt: new Date(),
+                    read: false
+                };
+                console.log(notification);
+
+                await this.NotiRepository.addNotification(notification);
+
+                return notification;
             } else {
                 return false;
             }
@@ -106,12 +117,12 @@ export class profileInteractorImpl implements profileInteractor {
 
     async getSaved(userId: string): Promise<PostData[]> {
         try {
-            
+
             const savedPostIds = await this.Repository.getSavedPostIds(userId)
-            console.log(savedPostIds); 
-            
+            console.log(savedPostIds);
+
             if (savedPostIds) {
-                
+
                 const savedPosts = await this.Repository.fetchSavedPosts(savedPostIds)
                 return savedPosts
 

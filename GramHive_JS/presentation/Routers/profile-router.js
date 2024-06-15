@@ -9,8 +9,10 @@ const cloudinaryConfig_1 = __importDefault(require("../../Middlewares/cloudinary
 const profile_controller_1 = require("../Controllers/profile-controller");
 const proile_repository_1 = require("../../domain/repositories/proile-repository");
 const profileInteractor_1 = require("../../domain/usecases/profileInteractor");
+const notification_repository_1 = require("../../domain/repositories/notification-repository");
 const repository = new proile_repository_1.profileRepositoryImpl();
-const interactor = new profileInteractor_1.profileInteractorImpl(repository);
+const NotiRepository = new notification_repository_1.NotificationRepositoryImpl();
+const interactor = new profileInteractor_1.profileInteractorImpl(repository, NotiRepository);
 const controller = new profile_controller_1.profileController(interactor);
 const profileRouter = express_1.default.Router();
 profileRouter.post('/update', multerProfile_1.default, cloudinaryConfig_1.default, controller.updateProfile.bind(controller));

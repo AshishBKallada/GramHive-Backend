@@ -38,6 +38,10 @@ const postSchema = new mongoose_1.default.Schema({
     isSaved: {
         type: Boolean,
         default: false,
+    },
+    isBan: {
+        type: Boolean,
+        default: false,
     }
 }, {
     timestamps: true

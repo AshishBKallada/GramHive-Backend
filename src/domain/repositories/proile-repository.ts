@@ -38,37 +38,35 @@ export class profileRepositoryImpl implements profileRepository {
     async getProfilePosts(userId: string, savedPostsData: any): Promise<PostData[] | null> {
         try {
             const posts = await postModel.find({ userId: userId }).populate('tags');
-            console.log('SAVED POSTSDATA', savedPostsData);
-    
+
             if (posts && savedPostsData) {
                 const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
                 posts.forEach(post => {
-                    console.log('post', post._id);
-    
+
                     post.isSaved = savedPostIds.includes(post._id.toString());
                     if (post.isSaved) {
                         console.log('set');
                     }
                 });
             }
-            console.log('PROFILE REPO GET POSTS', posts);
-    
+
             return posts;
         } catch (error) {
             console.error('Error retrieving posts:', error);
             return null;
         }
     }
-    
 
-    async followUser(userRelationship: UserRelationship): Promise<boolean> {
+
+    async followUser(userRelationship: UserRelationship): Promise<any> {
         try {
-            console.log(userRelationship);
-
-
             const adduserRelationship = await followModel.create(userRelationship);
-            if (adduserRelationship) {
-                return true;
+            const authorId = adduserRelationship.followed_id;
+            const author = await userModel.findById(authorId)
+            console.log(author);
+
+            if (author) {
+                return author.username;
             } else {
                 return false;
             }
@@ -79,8 +77,6 @@ export class profileRepositoryImpl implements profileRepository {
     }
     async unfollowUser(userRelationship: UserRelationship): Promise<boolean> {
         try {
-
-
             const deleteuserRelationship = await followModel.findOneAndDelete(userRelationship);
             if (deleteuserRelationship) {
 

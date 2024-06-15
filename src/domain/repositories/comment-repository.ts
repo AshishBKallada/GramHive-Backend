@@ -1,21 +1,20 @@
 import { CommentRepository } from "../interfaces/repositories/comment-repository";
 import ReplyModel from "../../data/data-sources/mongodb/models/reply";
 import postModel from "../../data/data-sources/mongodb/models/post";
+import userModel from "../../data/data-sources/mongodb/models/user";
 
 export class CommentRepositoryImpl implements CommentRepository {
-    async addComment(postId: string, comment: string, author: string): Promise<boolean> {
+    async addComment(postId: string, comment: string, author: string): Promise<any> {
         try {
-            console.log('1');
-            console.log(postId, comment, author);
 
             const post = await postModel.findById(postId);
             if (!post) {
                 console.error('Post not found');
-                return false;
+                return { success: false, message: 'Post not found' };
             } else {
                 console.log('post kitteetto');
-
             }
+
             const newComment = {
                 comment: comment,
                 author: author,
@@ -26,23 +25,26 @@ export class CommentRepositoryImpl implements CommentRepository {
             const isCommentAdded = await post.save();
 
             if (isCommentAdded) {
-                console.log('2');
-
-                return true;
+                const authorUser = await userModel.findById(author);
+                const authorUsername = authorUser?.username || 'Unknown';
+                const data = {
+                    postId: postId,
+                    userId: post.userId,
+                    author: authorUsername
+                }
+                return { success: true, message: 'Comment added successfully', data };
             } else {
-                console.log('vayya');
-
-                return false;
+                return { success: false, message: 'Failed to add comment' };
             }
         } catch (error) {
             console.error('Error', error)
-            return false;
+            return { success: false, message: 'Internal server error' };
         }
     }
 
+
     async getComments(postId: string): Promise<Comment[] | null> {
         try {
-            console.log('2222', postId);
 
             const post = await postModel
                 .findById(postId)
@@ -69,7 +71,6 @@ export class CommentRepositoryImpl implements CommentRepository {
 
     async addCommentReply(postId: string, commentId: string, reply: string, author: string) {
         try {
-            console.log('444444444444444444', postId, commentId, reply, author);
             const post = await postModel.findById(postId);
             if (!post) {
                 console.log('No post found');
@@ -80,7 +81,6 @@ export class CommentRepositoryImpl implements CommentRepository {
                 console.log('No comment found');
                 return false;
             }
-            console.log('COMMENT', comment.comment);
 
             const newReply = new ReplyModel({
                 reply: reply,
@@ -107,7 +107,6 @@ export class CommentRepositoryImpl implements CommentRepository {
 
     async deleteComment(postId: string, commentId: string): Promise<boolean> {
         try {
-            console.log(postId + commentId + ' deleted');
 
             const updatedPost = await postModel.findByIdAndUpdate(
                 postId,

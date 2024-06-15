@@ -1,4 +1,5 @@
 import { PostData } from "../../entities/PostData";
+import { User } from "../../entities/user";
 
 export interface postInteractor {
     getHomePosts(userId: string,page:number,pageSize:number): Promise<PostData[] | null>
@@ -11,5 +12,6 @@ export interface postInteractor {
     reportPost(postId:string, author:string,userId:string): Promise<boolean>
     updatePost(postId: string,description:string, images: any,taggedPeople:any): Promise<boolean>
     unsavePost(postId: string, userId: string): Promise<boolean>
+    sharePost(senderId:string,postId:string,users:User[]): Promise<boolean>
  
 }

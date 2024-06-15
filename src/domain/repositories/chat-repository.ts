@@ -55,10 +55,7 @@ export class ChatRepositoryImpl implements IChatRepository {
               populate: { path: 'sender', select: 'username name image' }
             })
             .sort({ updatedAt: -1 });
-      
-        //   const populatedResults = await userModel.populate(results, {
-        //     path: 'latestMessage.sender', 
-        //   });
+
       
           console.log('results', results[0].latestMessage);
       
@@ -126,7 +123,20 @@ export class ChatRepositoryImpl implements IChatRepository {
         }
     }
 
+    async findChatBetweenUsers(user1Id:string, user2Id:string):Promise<any> {
+        return await chatModel.findOne({
+            isGroupChat: false,
+            users: { $all: [user1Id, user2Id] }
+        });
+    }
 
+    async createShareChat(chatData:any):Promise<any> {
+        return await chatModel.create(chatData);
+    }
+
+    async updateChatLatestMessage(chatId:string, messageId:string) :Promise<any>{
+        return await chatModel.findByIdAndUpdate(chatId, { latestMessage: messageId });
+    }
 
 
 

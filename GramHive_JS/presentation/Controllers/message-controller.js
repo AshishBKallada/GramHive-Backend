@@ -17,7 +17,7 @@ class messageController {
     onSendMessage(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('1');
+                console.log('1233');
                 const chatId = req.params.chatId;
                 const { content } = req.body;
                 const sender = req.user._id;
@@ -40,6 +40,52 @@ class messageController {
             catch (error) {
                 console.error('Error accessing messages:', error);
                 res.status(500).json({ message: 'Error accessing messages' });
+            }
+        });
+    }
+    onDeleteMessage(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('2');
+                const messagId = req.params.Id;
+                const success = yield this.interactor.deleteMessage(messagId);
+                return res.status(200).json({ success });
+            }
+            catch (error) {
+                console.error('Error deleting messages:', error);
+                res.status(500).json({ message: 'Error deleting messages' });
+            }
+        });
+    }
+    onShareFiles(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('hey chvdqjwfbjh vhkvj bwjd fd', req.uploadedFiles);
+            const senderId = req.user._id;
+            const chatId = req.params.chatId;
+            const files = req.uploadedFiles;
+            try {
+                const message = yield this.interactor.shareFiles(senderId, chatId, files);
+                res.status(201).json({ message: 'Files shared successfully', data: message });
+            }
+            catch (error) {
+                console.error('Error sharing files:', error);
+                res.status(500).json({ message: 'Error sharing files' });
+            }
+        });
+    }
+    onShareAudio(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const chatId = req.params.chatId;
+            const senderId = req.user._id;
+            const file = req.audio;
+            console.log('File received:', req.audio);
+            try {
+                const message = yield this.interactor.shareAudio(senderId, chatId, file);
+                res.status(201).json({ message: 'Files shared successfully', data: message });
+            }
+            catch (error) {
+                console.error('Error sharing files:', error);
+                res.status(500).json({ message: 'Error sharing audio' });
             }
         });
     }

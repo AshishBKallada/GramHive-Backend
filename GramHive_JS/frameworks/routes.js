@@ -12,6 +12,11 @@ const auth_router_1 = __importDefault(require("../presentation/Routers/auth-rout
 const story_router_1 = __importDefault(require("../presentation/Routers/story-router"));
 const chat_router_1 = __importDefault(require("../presentation/Routers/chat-router"));
 const message_router_1 = __importDefault(require("../presentation/Routers/message-router"));
+const report_router_1 = __importDefault(require("../presentation/Routers/report-router"));
+const ad_router_1 = __importDefault(require("../presentation/Routers/ad-router"));
+const live_router_1 = require("../presentation/Routers/live-router");
+const notification_router_1 = __importDefault(require("../presentation/Routers/notification-router"));
+const note_router_1 = __importDefault(require("../presentation/Routers/note-router"));
 const routes = (app) => {
     app.use('/admin', admin_router_1.default);
     app.use('/', user_router_1.default);
@@ -22,5 +27,10 @@ const routes = (app) => {
     app.use('/story', story_router_1.default);
     app.use('/chats', chat_router_1.default);
     app.use('/messages', message_router_1.default);
+    app.use('/reports', report_router_1.default);
+    app.use('/ads', ad_router_1.default);
+    app.use('/live', live_router_1.liveRouter);
+    app.use('/notifications', notification_router_1.default);
+    app.use('/notes', note_router_1.default);
 };
 exports.default = routes;

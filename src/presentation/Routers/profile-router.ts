@@ -6,9 +6,11 @@ import uploadToCloudinary from "../../Middlewares/cloudinaryConfig";
 import { profileController } from "../Controllers/profile-controller";
 import { profileRepositoryImpl } from '../../domain/repositories/proile-repository';
 import { profileInteractorImpl } from '../../domain/usecases/profileInteractor';
+import { NotificationRepositoryImpl } from '../../domain/repositories/notification-repository';
 
 const repository = new profileRepositoryImpl()
-const interactor = new profileInteractorImpl(repository)
+const NotiRepository = new NotificationRepositoryImpl();
+const interactor = new profileInteractorImpl(repository,NotiRepository)
 const controller = new profileController(interactor)
 
 const profileRouter = express.Router();

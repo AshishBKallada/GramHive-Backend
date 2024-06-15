@@ -7,26 +7,24 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const userSchema = new mongoose_1.default.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
-        // required: true
     },
     email: {
         type: String,
-        // required: true
     },
     image: {
         type: String,
     },
     isBan: {
         type: Boolean,
-        default: false
+        default: false,
     },
     website: {
         type: String,
@@ -36,8 +34,16 @@ const userSchema = new mongoose_1.default.Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'other']
-    }
+        enum: ['male', 'female', 'other'],
+    },
+    location: {
+        latitude: {
+            type: Number,
+        },
+        longitude: {
+            type: Number,
+        },
+    },
 });
 const userModel = mongoose_1.default.model('User', userSchema);
 exports.default = userModel;
