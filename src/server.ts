@@ -1,6 +1,6 @@
 import express from 'express';
-import { connectToMongoDB } from './data/interfaces/data-sources/db-config';
-import routes from './frameworks/routes';
+import { connectToMongoDB } from './config/db-config';
+import routes from './Routes/routes';
 import config from './config/server';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';

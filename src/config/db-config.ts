@@ -1,6 +1,6 @@
 
 import mongoose from "mongoose";
-import config from "../../../config/server";
+import config from "./server";
 
 export async function connectToMongoDB(): Promise<void> {
   const MONGODB_URI = config.MONGODB;

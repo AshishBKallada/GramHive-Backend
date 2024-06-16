@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.server = void 0;
 const express_1 = __importDefault(require("express"));
-const db_config_1 = require("./data/interfaces/data-sources/db-config");
-const routes_1 = __importDefault(require("./frameworks/routes"));
+const db_config_1 = require("./config/db-config");
+const routes_1 = __importDefault(require("./Routes/routes"));
 const server_1 = __importDefault(require("./config/server"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
