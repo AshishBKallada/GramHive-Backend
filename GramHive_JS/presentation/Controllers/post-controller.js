@@ -227,5 +227,17 @@ class PostController {
             }
         });
     }
+    onAllPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.user._id;
+                const posts = yield this.interactor.getAllPosts(userId);
+                res.status(200).json(posts);
+            }
+            catch (error) {
+                res.status(500).json({ message: "An error occurred", error: error.message });
+            }
+        });
+    }
 }
 exports.PostController = PostController;

@@ -199,13 +199,36 @@ export class PostRepositoryImpl implements PostRepository {
             return false;
         }
     }
-    async findById(postId:string): Promise<PostData | null> {
+    async findById(postId: string): Promise<PostData | null> {
         return await postModel.findById(postId);
     }
+    async getAllPosts(userId: string): Promise<PostData[]> {
+        try {
+            console.log({ userId });
 
+            const posts = await postModel.find({})
+                .populate('userId', 'username name image')
+                .populate('likes.user')
+                .populate('tags')
+                .sort({ createdAt: -1 });
 
+            const savedPosts = await saveModel.find({ user: userId }).select('post');
+            const savedPostsData = savedPosts.map(savedPost => savedPost.post);
 
-
-
+            if (posts && savedPostsData) {
+                const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
+                posts.forEach(post => { 
+                    post.isSaved = savedPostIds.includes(post._id.toString());
+                    if (post.isSaved) {
+                        console.log('set');
+                    }
+                });
+            }
+            return posts;
+        } catch (error) {
+            console.error('Error retrieving posts:', error);
+            return null;
+        }
+    }
 
 }

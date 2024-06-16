@@ -5,10 +5,13 @@ import config from './config/server';
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import { createSocketIoServer } from './config/socketConfig';
+import helmet from 'helmet';
 require('colors');
 
 const app = express();
 const port = config.PORT;
+
+app.use(helmet());
 
 app.use(cookieParser());
 app.use(cors({ origin: config.ORIGIN, credentials: true }));

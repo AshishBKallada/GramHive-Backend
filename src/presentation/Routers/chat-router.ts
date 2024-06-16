@@ -2,7 +2,7 @@ import express from 'express'
 import { chatController } from '../Controllers/chat-controller';
 import { ChatRepositoryImpl } from '../../domain/repositories/chat-repository';
 import { chatInteractorImpl } from '../../domain/usecases/chatInteractor';
-import userAuth from '../../Middlewares/authMiddleware';
+import userAuth from '../../middlewares/authMiddleware';
 
 const repository = new ChatRepositoryImpl();
 const interactor = new chatInteractorImpl(repository);

@@ -2,9 +2,9 @@ import { Router } from "express";
 import { AdReporsitoryImpl } from "../../domain/repositories/ad-repository";
 import { AdInteractorImpl } from "../../domain/usecases/adInteractor";
 import { AdController } from "../Controllers/ad-controller";
-import userAuth from "../../Middlewares/authMiddleware";
-import multeradUploadMiddleware from "../../Middlewares/multeradUploadMiddleware";
-import { adUploadMiddleware } from "../../Middlewares/adUploadMiddleware";
+import userAuth from "../../middlewares/authMiddleware";
+import multeradUploadMiddleware from "../../middlewares/multeradUploadMiddleware";
+import { adUploadMiddleware } from "../../middlewares/adUploadMiddleware";
 import { RazorpayOrderImpl } from "../../domain/external-libraries/razorpayOrderCreator";
 
 const adRouter: Router = Router();

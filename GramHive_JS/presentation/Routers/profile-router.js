@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const multerProfile_1 = __importDefault(require("../../Middlewares/multerProfile"));
-const cloudinaryConfig_1 = __importDefault(require("../../Middlewares/cloudinaryConfig"));
+const multerProfile_1 = __importDefault(require("../../middlewares/multerProfile"));
+const cloudinaryConfig_1 = __importDefault(require("../../middlewares/cloudinaryConfig"));
 const profile_controller_1 = require("../Controllers/profile-controller");
 const proile_repository_1 = require("../../domain/repositories/proile-repository");
 const profileInteractor_1 = require("../../domain/usecases/profileInteractor");

@@ -124,14 +124,12 @@ export class profileRepositoryImpl implements profileRepository {
         } catch (error) {
             console.log(error);
             return null;
-
         }
     }
 
     async removeFollower(userRelationship: UserRelationship): Promise<boolean> {
         try {
             const isFollowerRemoved = await followModel.findOneAndDelete(userRelationship)
-
             return isFollowerRemoved ? true : false;
         } catch (error) {
             console.log(error);
@@ -141,7 +139,6 @@ export class profileRepositoryImpl implements profileRepository {
 
     async getSavedPostIds(userId: string): Promise<any | null> {
         try {
-
             const posts = await saveModel.find({ user: userId });
             const postIds = posts.map(post => post.post);
             return postIds
@@ -157,7 +154,6 @@ export class profileRepositoryImpl implements profileRepository {
             const savedPosts = await postModel.find({ _id: { $in: postIds } })
                 .populate('userId', '+name +username +image')
                 .populate({ path: 'userId', select: '-password -gender -email -website -isBan -bio' });
-
 
             return savedPosts ? savedPosts : null
         } catch (error) {

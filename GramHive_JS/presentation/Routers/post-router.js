@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const authMiddleware_1 = __importDefault(require("../../Middlewares/authMiddleware"));
-const cloudinaryConfig_1 = __importDefault(require("../../Middlewares/cloudinaryConfig"));
-const multerConfig_1 = __importDefault(require("../../Middlewares/multerConfig"));
+const authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
+const cloudinaryConfig_1 = __importDefault(require("../../middlewares/cloudinaryConfig"));
+const multerConfig_1 = __importDefault(require("../../middlewares/multerConfig"));
 const post_controller_1 = require("../Controllers/post-controller");
 const post_repository_1 = require("../../domain/repositories/post-repository");
 const postInteractor_1 = require("../../domain/usecases/postInteractor");
@@ -31,4 +31,5 @@ postRouter.post('/:postId/unsave/:author', controller.onUnsavePost.bind(controll
 postRouter.post('/report/:postId', controller.onReportPost.bind(controller));
 postRouter.put('/update/:postId', controller.onPostUpdate.bind(controller));
 postRouter.post('/share/:postId', authMiddleware_1.default, controller.onSharePost.bind(controller));
+postRouter.get('/explore', authMiddleware_1.default, controller.onAllPost.bind(controller));
 exports.default = postRouter;

@@ -13,4 +13,5 @@ export interface PostRepository {
     UpdatePost(postId: string, description: string, images: any, taggedPeople: any): Promise<boolean>
     unsavePost(postId: string, userId: string): Promise<boolean>
     findById(postId:string): Promise<PostData | null>
+    getAllPosts(userId:string): Promise<PostData[]>
 }

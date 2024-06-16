@@ -1,7 +1,7 @@
 import express from 'express';
-import userAuth from "../../Middlewares/authMiddleware";
-import uploadToCloudinary from "../../Middlewares/cloudinaryConfig";
-import upload from "../../Middlewares/multerConfig";
+import userAuth from "../../middlewares/authMiddleware";
+import uploadToCloudinary from "../../middlewares/cloudinaryConfig";
+import upload from "../../middlewares/multerConfig";
 
 import { PostController } from '../Controllers/post-controller';
 import { PostRepositoryImpl } from '../../domain/repositories/post-repository';
@@ -31,5 +31,6 @@ postRouter.post('/:postId/unsave/:author', controller.onUnsavePost.bind(controll
 postRouter.post('/report/:postId', controller.onReportPost.bind(controller));
 postRouter.put('/update/:postId', controller.onPostUpdate.bind(controller));
 postRouter.post('/share/:postId', userAuth,controller.onSharePost.bind(controller));
+postRouter.get('/explore', userAuth,controller.onAllPost.bind(controller));
 
 export default postRouter;

@@ -46,7 +46,13 @@ class StoryRepositoryimpl {
                     {
                         $group: {
                             _id: '$user',
-                            stories: { $push: '$story' },
+                            stories: {
+                                $push: {
+                                    story: '$story',
+                                    createdAt: '$createdAt',
+                                    seenBy: '$seenBy',
+                                },
+                            },
                         },
                     },
                     {
@@ -73,6 +79,7 @@ class StoryRepositoryimpl {
                         },
                     },
                 ]);
+                console.log('stories', stories);
                 return stories;
             }
             catch (error) {

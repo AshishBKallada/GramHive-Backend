@@ -1,7 +1,7 @@
 import express from 'express';
-import userAuth from "../../Middlewares/authMiddleware";
-import processUpload from "../../Middlewares/multerProfile";
-import uploadToCloudinary from "../../Middlewares/cloudinaryConfig";
+import userAuth from "../../middlewares/authMiddleware";
+import processUpload from "../../middlewares/multerProfile";
+import uploadToCloudinary from "../../middlewares/cloudinaryConfig";
 
 import { profileController } from "../Controllers/profile-controller";
 import { profileRepositoryImpl } from '../../domain/repositories/proile-repository';

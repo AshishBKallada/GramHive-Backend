@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const authMiddleware_1 = __importDefault(require("../../Middlewares/authMiddleware"));
+const authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 const message_repository_1 = require("../../domain/repositories/message-repository");
 const messageInteractor_1 = require("../../domain/usecases/messageInteractor");
 const message_controller_1 = require("../Controllers/message-controller");
-const fileshare_multer_1 = __importDefault(require("../../Middlewares/fileshare-multer"));
-const FileUploadMiddleware_1 = require("../../Middlewares/FileUploadMiddleware");
-const audioUploadMiddleware_1 = require("../../Middlewares/audioUploadMiddleware");
+const fileshare_multer_1 = __importDefault(require("../../middlewares/fileshare-multer"));
+const FileUploadMiddleware_1 = require("../../middlewares/FileUploadMiddleware");
+const audioUploadMiddleware_1 = require("../../middlewares/audioUploadMiddleware");
 const repository = new message_repository_1.MessageRepositoryImpl();
 const interactor = new messageInteractor_1.MessageInteractorImpl(repository);
 const controller = new message_controller_1.messageController(interactor);

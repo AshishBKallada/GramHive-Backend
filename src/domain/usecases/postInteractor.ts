@@ -185,5 +185,16 @@ export class postInteractorImpl implements postInteractor {
         }
     }
 
+    async getAllPosts(userId:string): Promise<PostData[]> {
+        try {
+            const posts: PostData[] = await this.Repository.getAllPosts(userId);
+            return posts;
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
+            throw new Error('Failed to fetch posts');
+        }
+    }
+
+
 
 }

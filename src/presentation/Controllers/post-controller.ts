@@ -35,8 +35,8 @@ export class PostController {
 
             if (post) {
                 const likes = post.likes;
-                console.log('CONTROLLER,',notification);
-                
+                console.log('CONTROLLER,', notification);
+
 
                 return res.status(200).json({ success: true, likes, notification });
             } else {
@@ -207,13 +207,25 @@ export class PostController {
 
             const success = await this.interactor.sharePost(senderId, postId, users);
             if (success) {
-                res.status(200).json({ message: "Post shared successfully",success });
+                res.status(200).json({ message: "Post shared successfully", success });
             } else {
-                res.status(500).json({ message: "Failed to share post",success });
+                res.status(500).json({ message: "Failed to share post", success });
             }
         } catch (error) {
             res.status(500).json({ message: "An error occurred", error: error.message });
 
         }
+    }
+
+    async onAllPost(req: Request, res: Response) {
+        try {
+            const userId = req.user._id;
+            const posts = await this.interactor.getAllPosts(userId);            
+            res.status(200).json(posts);
+        } catch (error) {
+            res.status(500).json({ message: "An error occurred", error: error.message });
+
+        }
+
     }
 }

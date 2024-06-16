@@ -31,7 +31,13 @@ export class StoryRepositoryimpl implements StoryRepository {
             {
               $group: {
                 _id: '$user',
-                stories: { $push: '$story' }, 
+                stories: {
+                  $push: {
+                    story: '$story',
+                    createdAt: '$createdAt',
+                    seenBy: '$seenBy',
+                  },
+                },
               },
             },
             {
@@ -59,6 +65,8 @@ export class StoryRepositoryimpl implements StoryRepository {
               },
               
           ]);
+          console.log('stories',stories);
+          
       
       
           return stories;

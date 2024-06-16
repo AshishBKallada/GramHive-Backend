@@ -221,5 +221,33 @@ class PostRepositoryImpl {
             return yield post_1.default.findById(postId);
         });
     }
+    getAllPosts(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log({ userId });
+                const posts = yield post_1.default.find({})
+                    .populate('userId', 'username name image')
+                    .populate('likes.user')
+                    .populate('tags')
+                    .sort({ createdAt: -1 });
+                const savedPosts = yield save_1.default.find({ user: userId }).select('post');
+                const savedPostsData = savedPosts.map(savedPost => savedPost.post);
+                if (posts && savedPostsData) {
+                    const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
+                    posts.forEach(post => {
+                        post.isSaved = savedPostIds.includes(post._id.toString());
+                        if (post.isSaved) {
+                            console.log('set');
+                        }
+                    });
+                }
+                return posts;
+            }
+            catch (error) {
+                console.error('Error retrieving posts:', error);
+                return null;
+            }
+        });
+    }
 }
 exports.PostRepositoryImpl = PostRepositoryImpl;

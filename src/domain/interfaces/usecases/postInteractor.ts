@@ -13,5 +13,5 @@ export interface postInteractor {
     updatePost(postId: string,description:string, images: any,taggedPeople:any): Promise<boolean>
     unsavePost(postId: string, userId: string): Promise<boolean>
     sharePost(senderId:string,postId:string,users:User[]): Promise<boolean>
- 
+    getAllPosts(userId:string):Promise<PostData[]>
 }

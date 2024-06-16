@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import userAuth from '../../Middlewares/authMiddleware';
+import userAuth from '../../middlewares/authMiddleware';
 import { MessageRepositoryImpl } from '../../domain/repositories/message-repository';
 import { MessageInteractorImpl } from '../../domain/usecases/messageInteractor';
 import { messageController } from '../Controllers/message-controller';
-import upload from '../../Middlewares/fileshare-multer';
-import { FileUploadMiddleware } from '../../Middlewares/FileUploadMiddleware';
-import { audioUploadMiddleware } from '../../Middlewares/audioUploadMiddleware';
+import upload from '../../middlewares/fileshare-multer';
+import { FileUploadMiddleware } from '../../middlewares/FileUploadMiddleware';
+import { audioUploadMiddleware } from '../../middlewares/audioUploadMiddleware';
 
 const repository = new MessageRepositoryImpl();
 const interactor = new MessageInteractorImpl(repository)

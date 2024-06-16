@@ -205,5 +205,17 @@ class postInteractorImpl {
             }
         });
     }
+    getAllPosts(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const posts = yield this.Repository.getAllPosts(userId);
+                return posts;
+            }
+            catch (error) {
+                console.error('Failed to fetch posts:', error);
+                throw new Error('Failed to fetch posts');
+            }
+        });
+    }
 }
 exports.postInteractorImpl = postInteractorImpl;
