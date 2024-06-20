@@ -19,8 +19,6 @@ export class MessageInteractorImpl implements IMessageInteractor {
     }
     async sendMessage(sender: User, chatId: string, content: any): Promise<any> {
         try {
-            console.log('2');
-
             var newMessage = {
                 sender: sender,
                 content: content,
@@ -46,8 +44,6 @@ export class MessageInteractorImpl implements IMessageInteractor {
     }
 
     async deleteMessage(messageId: string): Promise<boolean> {
-        console.log('3');
-
         if (!messageId) {
             throw new Error('Message ID is required');
         }

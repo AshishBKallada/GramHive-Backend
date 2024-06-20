@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import userModel from '../data/data-sources/mongodb/models/user';
 import followModel from '../data/data-sources/mongodb/models/followers';
-import postModel from '../data/data-sources/mongodb/models/post';
 import { INotification } from '../domain/entities/notifications';
 require('colors');
 
@@ -79,7 +78,7 @@ console.log('new message received', newMessageReceived);
         });
 
         socket.on('sentNotification', (notification: INotification) => {            
-            console.log('Notification', notification);
+            console.log('Notification received', notification);
             const userId = notification?.userId;
             socket.in(userId).emit('abcd',{notification});
             console.log('UserID',userId);

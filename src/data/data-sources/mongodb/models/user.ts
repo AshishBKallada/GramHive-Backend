@@ -16,6 +16,8 @@ interface IUser extends Document {
     bio?: string;
     gender?: 'male' | 'female' | 'other';
     location: ILocation;
+    authSource: 'self' | 'google';
+
 }
 
 const userSchema: Schema = new mongoose.Schema({
@@ -57,6 +59,14 @@ const userSchema: Schema = new mongoose.Schema({
         longitude: {
             type: Number,
         },
+    },
+    googleId:{
+        type:String
+    },
+    authSource: {
+        type: String,
+        enum: ['self', 'google'],
+        default: 'self',
     },
 });
 

@@ -15,21 +15,20 @@ import notificationRouter from "../presentation/Routers/notification-router";
 import noteRouter from "../presentation/Routers/note-router";
 
 const routes: Function = (app: Application) => {
-    app.use('/admin',adminRouter)
+    app.use('/admin', adminRouter)
     app.use('/', userRouter)
-    app.use('/posts',postRouter)
-    app.use('/comment',commentRouter)
-    app.use('/profile',profileRouter)
-    app.use('/auth',authRouter)
-    app.use('/story',storyRouter)
-    app.use('/chats',chatRouter)
-    app.use('/messages',messageRouter)
-    app.use('/reports',reportRouter)
-    app.use('/ads',adRouter)
-    app.use('/live',liveRouter)
-    app.use('/notifications',notificationRouter)
-    app.use('/notes',noteRouter);
-
+    app.use('/posts', postRouter)
+    app.use('/comment', commentRouter)
+    app.use('/profile', profileRouter)
+    app.use('/auth', authRouter)
+    app.use('/story', storyRouter)
+    app.use('/chats', chatRouter)
+    app.use('/messages', messageRouter)
+    app.use('/reports', reportRouter)
+    app.use('/ads', adRouter)
+    app.use('/live', liveRouter)
+    app.use('/notifications', notificationRouter)
+    app.use('/notes', noteRouter);
 }
 
 export default routes;

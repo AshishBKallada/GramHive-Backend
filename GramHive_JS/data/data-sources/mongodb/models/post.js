@@ -14,7 +14,6 @@ const postSchema = new mongoose_1.default.Schema({
     },
     caption: {
         type: String,
-        required: true,
     },
     images: [
         {
@@ -26,7 +25,6 @@ const postSchema = new mongoose_1.default.Schema({
         {
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
         }
     ],
     comments: [comment_1.default.schema],

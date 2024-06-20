@@ -14,6 +14,30 @@ class userController {
     constructor(interactor) {
         this.interactor = interactor;
     }
+    onGoogleAuth(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { token, isSignup } = req.body;
+                console.log(token, isSignup);
+                const result = yield this.interactor.googleAuth(token, isSignup);
+                console.log('00000', result);
+                res.json(result);
+            }
+            catch (error) {
+                console.error(error);
+                if (error.message.includes('User already exists')) {
+                    console.log('33333333333333333');
+                    res.status(400).json({ message: error.message });
+                }
+                else if (error.message.includes('No account exists')) {
+                    res.status(404).json({ message: error.message });
+                }
+                else {
+                    res.status(401).json({ message: 'Invalid token' });
+                }
+            }
+        });
+    }
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -209,6 +233,18 @@ class userController {
             catch (error) {
                 console.error('Error retrieving suggested users:', error);
                 res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        });
+    }
+    onRefreshTokens(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { refreshToken } = req.body;
+                const tokens = yield this.interactor.getTokens(refreshToken);
+                res.json(tokens);
+            }
+            catch (error) {
+                res.status(401).json({ message: error.message });
             }
         });
     }

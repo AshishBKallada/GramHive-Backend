@@ -1,4 +1,3 @@
-import { Schema } from "mongoose";
 import { IReportRepository } from "../interfaces/repositories/report-repository";
 import { IReportInteractor } from "../interfaces/usecases/reportInteractor";
 
@@ -81,8 +80,5 @@ export class ReportInteractorImpl implements IReportInteractor {
             throw new Error('Internal server error');
         }
     }
-
-
-
 
 }

@@ -5,7 +5,23 @@ import { AdminInteractor } from "../../domain/interfaces/usecases/adminInteracto
 export class AdminController {
 
     constructor(private readonly interactor: AdminInteractor) { }
+async onGoogleLogin(req: Request, res: Response){
+    const { token, isSignup } = req.body;
 
+    try {
+      const result = await this.interactor.googleAuthenticate({ token, isSignup });
+      res.json(result);
+    } catch (error) { 
+      console.error(error);
+      if (error.message.includes('User already exists')) {
+        res.status(400).json({ message: error.message });
+      } else if (error.message.includes('No account exists')) {
+        res.status(404).json({ message: error.message });
+      } else {
+        res.status(401).json({ message: 'Invalid token' });
+      }
+    }
+}
     async onLogin(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('ADMIN ROUTER ', req.body);

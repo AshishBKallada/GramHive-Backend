@@ -19,7 +19,6 @@ class ReportController {
             var _a;
             const user = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
             const { content } = req.body;
-            console.log('USWER', user, content);
             if (!user) {
                 return res.status(400).json({ error: 'User not authenticated' });
             }
@@ -50,12 +49,7 @@ class ReportController {
             }
             try {
                 const success = yield this.interactor.reportUser(user, reportedUser, category, reason);
-                if (success) {
-                    return res.status(200).json({ success });
-                }
-                else {
-                    return res.status(201).json({ success });
-                }
+                return res.status(success ? 200 : 201).json({ success });
             }
             catch (error) {
                 console.error('Error in onReportUser:', error);
@@ -66,9 +60,9 @@ class ReportController {
     onReportPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
+            const user = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
             const postId = req.params.Id;
             const { category, reason } = req.body;
-            const user = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
             if (!user) {
                 return res.status(400).json({ error: 'User not authenticated' });
             }
@@ -77,13 +71,7 @@ class ReportController {
             }
             try {
                 const success = yield this.interactor.reportPost(user, postId, category, reason);
-                if (success) {
-                    return res.status(200).json({ success });
-                }
-                else {
-                    console.log('already reported 222');
-                    return res.status(201).json({ success });
-                }
+                return res.status(success ? 200 : 201).json({ success });
             }
             catch (error) {
                 console.error('Error in onReportPost:', error);
@@ -97,20 +85,16 @@ class ReportController {
             try {
                 const feedbackResult = yield this.interactor.reportFeedback(postId, reason);
                 if (typeof feedbackResult === 'boolean' && feedbackResult) {
-                    console.log('1');
                     return res.status(201).json({ success: true });
                 }
                 else if (typeof feedbackResult === 'object' && feedbackResult.message) {
-                    console.log('2');
                     return res.status(203).json({ message: feedbackResult.message });
                 }
                 else {
-                    console.log('3');
                     throw new Error('Unexpected response from reportFeedback');
                 }
             }
             catch (error) {
-                console.log('4');
                 console.error('Error in onReportFeedback:', error);
                 return res.status(500).json({ error: 'Internal server error' });
             }

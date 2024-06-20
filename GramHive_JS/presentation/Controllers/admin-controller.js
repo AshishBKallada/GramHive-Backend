@@ -14,6 +14,27 @@ class AdminController {
     constructor(interactor) {
         this.interactor = interactor;
     }
+    onGoogleLogin(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { token, isSignup } = req.body;
+            try {
+                const result = yield this.interactor.googleAuthenticate({ token, isSignup });
+                res.json(result);
+            }
+            catch (error) {
+                console.error(error);
+                if (error.message.includes('User already exists')) {
+                    res.status(400).json({ message: error.message });
+                }
+                else if (error.message.includes('No account exists')) {
+                    res.status(404).json({ message: error.message });
+                }
+                else {
+                    res.status(401).json({ message: 'Invalid token' });
+                }
+            }
+        });
+    }
     onLogin(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

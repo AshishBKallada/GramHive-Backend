@@ -19,9 +19,20 @@ const followers_1 = __importDefault(require("../../data/data-sources/mongodb/mod
 const accessToken_generator_1 = require("../../functions/accessToken-generator");
 const jwt = require('jsonwebtoken');
 class UserRepositoryImpl {
+    findByGoogleId(googleId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_1.default.findOne({ googleId });
+        });
+    }
+    create(userData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = new user_1.default(userData);
+            yield user.save();
+            return user;
+        });
+    }
     findByCredentials(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('USER REPOSITORY ------------------');
             console.log(username, password);
             const user = yield user_1.default.findOne({
                 $or: [
@@ -124,23 +135,6 @@ class UserRepositoryImpl {
             }
         });
     }
-    // async addSignupUser(otp: string): Promise<boolean> {
-    //     try {
-    //         console.log('5');
-    //         const user = await otpModel.findOne({ otp: otp });
-    //         if (user) {
-    //             const { name, email, username, password } = user;
-    //             const addSignupUser = await userModel.create({ name, email, username, password });
-    //             console.log('6',addSignupUser);
-    //             return addSignupUser ? true : false;
-    //         } else {
-    //             return false; 
-    //         }
-    //     } catch (error) {
-    //         console.error('Error adding user to database:', error);
-    //         return false;
-    //     }
-    // }
     getFilteredUsers(filter) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -233,6 +227,12 @@ class UserRepositoryImpl {
                 console.error('Error checking if user exists :', error);
                 throw error;
             }
+        });
+    }
+    findById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_1.default.findById(id);
+            return user ? user : null;
         });
     }
 }

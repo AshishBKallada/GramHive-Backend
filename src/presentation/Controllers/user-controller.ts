@@ -5,6 +5,28 @@ export class userController {
 
     constructor(private readonly interactor: UserInteractor) { }
 
+    async onGoogleAuth(req: Request, res: Response) {
+        try {
+            const { token, isSignup } = req.body;
+            console.log(token,isSignup);
+            const result = await this.interactor.googleAuth( token, isSignup );  
+            console.log('00000',result);
+                      
+            res.json(result);
+        } catch (error) {
+            console.error(error);
+            if (error.message.includes('User already exists')) {
+                console.log('33333333333333333');
+                
+                res.status(400).json({ message: error.message });
+            } else if (error.message.includes('No account exists')) {
+                res.status(404).json({ message: error.message });
+            } else {
+                res.status(401).json({ message: 'Invalid token' });
+            }
+        }
+    }
+
     async login(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('Login Controller');
@@ -178,11 +200,22 @@ export class userController {
             const email = req.body.email;
             const success = await this.interactor.checkEmail(email);
             console.log('user exists', success);
-            
+
             return res.status(200).json({ success });
         } catch (error) {
             console.error('Error retrieving suggested users:', error);
             res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    }
+
+    async onRefreshTokens(req: Request, res:Response): Promise<void>{
+        try {            
+            const {refreshToken} = req.body;
+
+            const tokens = await this.interactor.getTokens(refreshToken);
+            res.json(tokens);
+        } catch (error) {
+            res.status(401).json({message:error.message});
         }
     }
 

@@ -10,7 +10,6 @@ const postSchema = new mongoose.Schema({
     },
     caption: {
         type: String,
-        required: true,
     },
     images: [
         {
@@ -22,7 +21,6 @@ const postSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
-            required: true,
         }
     ],
     comments: [CommentModel.schema],

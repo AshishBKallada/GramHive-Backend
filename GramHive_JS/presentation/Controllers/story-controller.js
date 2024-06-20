@@ -24,7 +24,6 @@ class storyController {
             try {
                 const isStoryUploaded = yield this.interactor.uploadStory(userId, storyFile);
                 if (isStoryUploaded) {
-                    console.log('Story uploaded successfully');
                     return res.status(200).json({ success: true });
                 }
                 else {

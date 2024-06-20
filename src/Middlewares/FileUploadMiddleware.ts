@@ -8,9 +8,6 @@ interface UploadedFile {
 
 export const FileUploadMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const files = req.files as Express.Multer.File[];
-    console.log('FILES<<<<<<<', files);
-
-  
 
     try {
         const uploadedFiles: UploadedFile[] = await Promise.all(files.map(async (file, index) => {

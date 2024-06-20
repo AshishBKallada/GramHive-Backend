@@ -150,9 +150,9 @@ class PostController {
     }
     addPost(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { caption, cloudinaryUrls, tags, isChecked } = req.body;
-            const userId = req.params.userId;
-            const images = cloudinaryUrls;
+            const { caption, urls, tags, isChecked } = req.body;
+            const userId = req.user._id;
+            const images = urls;
             try {
                 const isPostAdded = yield this.interactor.addPost({ caption, images, tags, isChecked, userId });
                 if (isPostAdded) {

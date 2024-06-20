@@ -59,12 +59,12 @@ class messageController {
     }
     onShareFiles(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('hey chvdqjwfbjh vhkvj bwjd fd', req.uploadedFiles);
             const senderId = req.user._id;
             const chatId = req.params.chatId;
             const files = req.uploadedFiles;
             try {
                 const message = yield this.interactor.shareFiles(senderId, chatId, files);
+                console.log('Mesgga ereturned controller', message);
                 res.status(201).json({ message: 'Files shared successfully', data: message });
             }
             catch (error) {
@@ -81,6 +81,7 @@ class messageController {
             console.log('File received:', req.audio);
             try {
                 const message = yield this.interactor.shareAudio(senderId, chatId, file);
+                console.log('Mesgga ereturned controller', message);
                 res.status(201).json({ message: 'Files shared successfully', data: message });
             }
             catch (error) {

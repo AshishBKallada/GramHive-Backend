@@ -78,7 +78,7 @@ const createSocketIoServer = (httpServer) => {
             }
         }));
         socket.on('sentNotification', (notification) => {
-            console.log('Notification', notification);
+            console.log('Notification received', notification);
             const userId = notification === null || notification === void 0 ? void 0 : notification.userId;
             socket.in(userId).emit('abcd', { notification });
             console.log('UserID', userId);

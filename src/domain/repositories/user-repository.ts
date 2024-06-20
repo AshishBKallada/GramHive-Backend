@@ -10,8 +10,17 @@ const jwt = require('jsonwebtoken');
 
 export class UserRepositoryImpl implements UserRepository {
 
+    async findByGoogleId(googleId: string): Promise<User | null> {
+        return await userModel.findOne({ googleId });
+    }
+
+    async create(userData: any): Promise<User | null> {
+        const user = new userModel(userData);
+        await user.save();
+        return user;
+    }
+
     async findByCredentials(username: string, password: string): Promise<{ user: User | null, message: string, token: string | null }> {
-        console.log('USER REPOSITORY ------------------');
         console.log(username, password);
 
         const user = await userModel.findOne({
@@ -118,25 +127,7 @@ export class UserRepositoryImpl implements UserRepository {
         }
     }
 
-    // async addSignupUser(otp: string): Promise<boolean> {
-    //     try {
-    //         console.log('5');
 
-    //         const user = await otpModel.findOne({ otp: otp });
-    //         if (user) {
-    //             const { name, email, username, password } = user;
-    //             const addSignupUser = await userModel.create({ name, email, username, password });
-    //             console.log('6',addSignupUser);
-
-    //             return addSignupUser ? true : false;
-    //         } else {
-    //             return false; 
-    //         }
-    //     } catch (error) {
-    //         console.error('Error adding user to database:', error);
-    //         return false;
-    //     }
-    // }
 
 
 
@@ -235,6 +226,11 @@ export class UserRepositoryImpl implements UserRepository {
             console.error('Error checking if user exists :', error);
             throw error;
         }
+    }
+
+    async findById(id: string): Promise<User | null> {
+        const user = await userModel.findById(id);
+        return user ? user : null;
     }
 
 

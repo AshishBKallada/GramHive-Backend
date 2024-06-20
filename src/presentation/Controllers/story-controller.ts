@@ -14,7 +14,6 @@ export class storyController {
         try {
             const isStoryUploaded = await this.interactor.uploadStory(userId, storyFile)
             if (isStoryUploaded) {
-                console.log('Story uploaded successfully');
                 return res.status(200).json({ success: true });
             } else {
                 res.status(404).json({ success: false, error: 'Failed to upload story' })

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const authMiddleware_1 = __importDefault(require("../../middlewares/authMiddleware"));
 const multerProfile_1 = __importDefault(require("../../middlewares/multerProfile"));
 const cloudinaryConfig_1 = __importDefault(require("../../middlewares/cloudinaryConfig"));
 const profile_controller_1 = require("../Controllers/profile-controller");
@@ -16,7 +17,7 @@ const interactor = new profileInteractor_1.profileInteractorImpl(repository, Not
 const controller = new profile_controller_1.profileController(interactor);
 const profileRouter = express_1.default.Router();
 profileRouter.post('/update', multerProfile_1.default, cloudinaryConfig_1.default, controller.updateProfile.bind(controller));
-profileRouter.get('/:userId', controller.onGetProfileData.bind(controller));
+profileRouter.get('/:userId', authMiddleware_1.default, controller.onGetProfileData.bind(controller));
 profileRouter.post('/followuser', controller.followUser.bind(controller));
 profileRouter.post('/unfollowuser', controller.unfollowUser.bind(controller));
 profileRouter.get('/:userId/getFollowers', controller.onGetFollowers.bind(controller));

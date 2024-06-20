@@ -2,6 +2,8 @@ import { User } from '../../entities/user';
 import { SignupData } from '../../entities/SignupData';
 
 export interface UserRepository {
+    findByGoogleId(googleId:string):Promise<User | null>
+    create(userData:any):Promise<User | null>
     findByCredentials(username: string, password: string): Promise<{ user: User | null, message: string, token: string | null }>;
     save(user: User): Promise<{ user: User | null, token: string | null }>;
     userExists(email: string): Promise<boolean>;
@@ -14,4 +16,5 @@ export interface UserRepository {
     getLocations(userId: string): Promise<User[] | null>
     getSuggestedUsers(userId:string): Promise<User[] | null>
     checkEmail(email:string): Promise<boolean>
+    findById(id:string):Promise<User | null>
 };

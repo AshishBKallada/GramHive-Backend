@@ -13,12 +13,47 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserInteractorImpl = void 0;
+const accessToken_generator_1 = require("../../functions/accessToken-generator");
 const refreshToken_generator_1 = require("../../functions/refreshToken-generator");
+const username_generator_1 = require("../../functions/username-generator");
 const crypto_1 = __importDefault(require("crypto"));
+const google_auth_library_1 = require("google-auth-library");
+const client = new google_auth_library_1.OAuth2Client("502311807627-9l05a15r47opss1cehl23s5sdn976dmv.apps.googleusercontent.com");
 class UserInteractorImpl {
-    constructor(Repository, mailer) {
+    constructor(Repository, tokenRepository, mailer) {
         this.Repository = Repository;
+        this.tokenRepository = tokenRepository;
         this.mailer = mailer;
+    }
+    googleAuth(token, isSignup) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ticket = yield client.verifyIdToken({
+                idToken: token,
+                audience: "502311807627-9l05a15r47opss1cehl23s5sdn976dmv.apps.googleusercontent.com",
+            });
+            const payload = ticket.getPayload();
+            const { sub, email, name, picture } = payload;
+            let user = yield this.Repository.findByGoogleId(sub);
+            if (isSignup) {
+                if (user) {
+                    throw new Error('User already exists. Please log in instead.');
+                }
+                else {
+                    const username = yield (0, username_generator_1.generateRandomUsername)(name);
+                    user = yield this.Repository.create({ googleId: sub, username, email, name, image: picture, authSource: 'google' });
+                    console.log('user created', user);
+                }
+            }
+            else {
+                if (!user) {
+                    throw new Error('No account exists with this Google account. Please sign up first.');
+                }
+            }
+            const accessToken = yield (0, accessToken_generator_1.generateAccessToken)(user);
+            const refreshToken = yield (0, refreshToken_generator_1.generateRefreshToken)(user);
+            const tokens = { accessToken: accessToken, refreshToken: refreshToken };
+            return { user, tokens };
+        });
     }
     login(credentials) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -202,6 +237,16 @@ class UserInteractorImpl {
             catch (error) {
                 throw error;
             }
+        });
+    }
+    getTokens(refreshToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const decoded = yield this.tokenRepository.verifyRefreshToken(refreshToken);
+            const user = yield this.Repository.findById(decoded.userId);
+            if (!user) {
+                throw new Error('User not found');
+            }
+            return this.tokenRepository.generateTokens(user);
         });
     }
 }

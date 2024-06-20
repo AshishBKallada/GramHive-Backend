@@ -1,14 +1,54 @@
+import { generateAccessToken } from '../../functions/accessToken-generator';
 import { generateRefreshToken } from '../../functions/refreshToken-generator';
+import { generateRandomUsername } from '../../functions/username-generator';
 import { SignupData } from '../entities/SignupData';
+import { GoogleAuthResponse, GooglePayload } from '../entities/googleauth';
+import { Token } from '../entities/tokens';
 import { User } from '../entities/user';
 import { IMailer } from '../interfaces/external-lib/IMailer';
+import { ITokenRepository } from '../interfaces/repositories/token-repository';
 import { UserRepository } from '../interfaces/repositories/user-repository';
 import { UserInteractor } from '../interfaces/usecases/userInteractor';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client("502311807627-9l05a15r47opss1cehl23s5sdn976dmv.apps.googleusercontent.com");
 
 export class UserInteractorImpl implements UserInteractor {
 
-    constructor(private readonly Repository: UserRepository, private readonly mailer: IMailer) { }
+    constructor(private readonly Repository: UserRepository, private readonly tokenRepository: ITokenRepository, private readonly mailer: IMailer) { }
+
+    async googleAuth(token: string, isSignup: boolean): Promise<GoogleAuthResponse> {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: "502311807627-9l05a15r47opss1cehl23s5sdn976dmv.apps.googleusercontent.com",
+        });
+
+        const payload = ticket.getPayload() as GooglePayload;
+        const { sub, email, name, picture } = payload;
+
+        let user = await this.Repository.findByGoogleId(sub);
+
+        if (isSignup) {
+            if (user) {
+                throw new Error('User already exists. Please log in instead.');
+            } else {
+                const username = await generateRandomUsername(name);
+                user = await this.Repository.create({ googleId: sub, username, email, name, image: picture, authSource: 'google' });
+                console.log('user created', user);
+
+            }
+        } else {
+            if (!user) {
+                throw new Error('No account exists with this Google account. Please sign up first.');
+            }
+        }
+
+        const accessToken: string = await generateAccessToken(user);
+        const refreshToken: string = await generateRefreshToken(user);
+        const tokens = {accessToken: accessToken, refreshToken: refreshToken}
+        return { user, tokens };
+    }
+
 
     async login(credentials: { username: string, password: string }): Promise<{ user: User | null, message: string, token: string | null, refreshToken: string | null }> {
         try {
@@ -144,7 +184,7 @@ export class UserInteractorImpl implements UserInteractor {
 
     async updateLocation(userId: string, latitude: number, longitude: number): Promise<boolean> {
         console.log('caleeeeeeeeee2 ');
-        
+
         try {
             const success = await this.Repository.updateLocation(userId, latitude, longitude);
             return success;
@@ -154,7 +194,7 @@ export class UserInteractorImpl implements UserInteractor {
         }
 
     }
-    async getLocations(userId:string): Promise<User[] | null>{
+    async getLocations(userId: string): Promise<User[] | null> {
         try {
             const users = await this.Repository.getLocations(userId);
             return users;
@@ -164,7 +204,7 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-    async getSuggestions(userId: string): Promise<User[] | null>{
+    async getSuggestions(userId: string): Promise<User[] | null> {
         try {
             const users = await this.Repository.getSuggestedUsers(userId);
             return users;
@@ -174,16 +214,28 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-async checkEmail(email:string): Promise<boolean>{
-    try {
-        const success = await this.Repository.checkEmail(email);
-        return success;
-    } catch (error) {
-        throw error;
+    async checkEmail(email: string): Promise<boolean> {
+        try {
+            const success = await this.Repository.checkEmail(email);
+            return success;
+        } catch (error) {
+            throw error;
+        }
     }
+
+    async getTokens(refreshToken: string): Promise<Token> {        
+        const decoded = await this.tokenRepository.verifyRefreshToken(refreshToken);
+
+        const user = await this.Repository.findById(decoded.userId);
+        
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return this.tokenRepository.generateTokens(user);
+    }
+
 }
 
 
 
 
-}

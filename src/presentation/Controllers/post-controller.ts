@@ -141,9 +141,9 @@ export class PostController {
 
     async addPost(req: Request, res: Response, next: NextFunction) {
 
-        const { caption, cloudinaryUrls, tags, isChecked } = req.body;
-        const userId = req.params.userId;
-        const images = cloudinaryUrls;
+        const { caption, urls, tags, isChecked } = req.body;
+        const userId = req.user._id;
+        const images = urls;
 
         try {
             const isPostAdded = await this.interactor.addPost({ caption, images, tags, isChecked, userId });

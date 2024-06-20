@@ -29,7 +29,6 @@ class MessageInteractorImpl {
     sendMessage(sender, chatId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log('2');
                 var newMessage = {
                     sender: sender,
                     content: content,
@@ -58,7 +57,6 @@ class MessageInteractorImpl {
     }
     deleteMessage(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('3');
             if (!messageId) {
                 throw new Error('Message ID is required');
             }

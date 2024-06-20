@@ -16,7 +16,7 @@ const controller = new profileController(interactor)
 const profileRouter = express.Router();
 
 profileRouter.post('/update', processUpload, uploadToCloudinary, controller.updateProfile.bind(controller));
-profileRouter.get('/:userId', controller.onGetProfileData.bind(controller))
+profileRouter.get('/:userId',userAuth, controller.onGetProfileData.bind(controller))
 profileRouter.post('/followuser',controller.followUser.bind(controller));
 profileRouter.post('/unfollowuser', controller.unfollowUser.bind(controller))
 profileRouter.get('/:userId/getFollowers', controller.onGetFollowers.bind(controller))

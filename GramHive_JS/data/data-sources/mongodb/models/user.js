@@ -44,6 +44,14 @@ const userSchema = new mongoose_1.default.Schema({
             type: Number,
         },
     },
+    googleId: {
+        type: String
+    },
+    authSource: {
+        type: String,
+        enum: ['self', 'google'],
+        default: 'self',
+    },
 });
 const userModel = mongoose_1.default.model('User', userSchema);
 exports.default = userModel;

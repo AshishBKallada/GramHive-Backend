@@ -13,7 +13,6 @@ exports.FileUploadMiddleware = void 0;
 const s3Config_1 = require("../config/s3Config");
 const FileUploadMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const files = req.files;
-    console.log('FILES<<<<<<<', files);
     try {
         const uploadedFiles = yield Promise.all(files.map((file, index) => __awaiter(void 0, void 0, void 0, function* () {
             const params = {

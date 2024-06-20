@@ -144,10 +144,4 @@ export class ReportReporsitoryImpl implements IReportRepository {
             throw new Error('Failed to save report on post');
         }
     }
-
-
-
-
-
-
 }
