@@ -25,16 +25,10 @@ class AdminRepositoryImpl {
             return jwt.sign({ adminId: email }, 'shaantha_UK', { expiresIn: '1h' });
         };
     }
-    findByCredentials(email, password) {
+    findByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Admin Repository: findByCredentials', email, password);
-            const admin = yield admin_1.default.findOne({ email: email });
-            let token = null;
-            if (admin) {
-                console.log('admin valid');
-                token = this.generateToken(admin.email);
-            }
-            return { admin: admin ? admin.toObject() : null, token: token };
+            const admin = yield admin_1.default.findOne({ email });
+            return admin;
         });
     }
     getAllUsers() {
@@ -177,7 +171,7 @@ class AdminRepositoryImpl {
     getTransactions() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const transactions = yield ad_1.default.find({}).populate('user', 'username name');
+                const transactions = yield ad_1.default.find({}).populate('user', 'username name image');
                 if (!transactions) {
                     throw new Error('Database query returned null');
                 }

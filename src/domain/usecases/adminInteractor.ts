@@ -1,21 +1,28 @@
-import { Admin } from "../entities/admin";
+import { Admin, LoginRequest } from "../entities/admin/admin";
 import { AdminInteractor } from "../interfaces/usecases/adminInteractor";
 import { AdminRepository } from "../interfaces/repositories/admin-repository";
 import { User } from "../entities/user";
+import { AuthService } from "../services/admin/AuthService";
 
 
 export class AdminInteractorImpl implements AdminInteractor {
-    constructor(private readonly Repository: AdminRepository) { }
+    constructor(private readonly Repository: AdminRepository,private readonly authService:AuthService) { }
 
-    async login(credentials: { email: string, password: string }): Promise<{ admin: Admin | null, token: string | null }> {
-        try {
-            const { admin, token } = await this.Repository.findByCredentials(credentials.email, credentials.password);
-            return { admin, token };
-        } catch (error) {
-            console.error('Error during login:', error);
-            throw error;
+    async login(request: LoginRequest): Promise<{ admin: any, token: string } | null> {
+        const { email, password } = request;
+        const admin = await this.Repository.findByEmail(email);
+        if (!admin) {
+          throw new Error('Invalid email');
         }
-    }
+    
+    if (admin.password !== password) {
+        throw new Error('Invalid password');
+      }
+        const token = this.authService.generateToken({ id: admin.id, email: admin.email });
+    
+        return { admin, token };
+      }
+    
 
     async getAllUsers(): Promise<User[]> {
         try {

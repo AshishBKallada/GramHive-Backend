@@ -248,5 +248,40 @@ class userController {
             }
         });
     }
+    onForgotPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('called reset 88888mwonu');
+            try {
+                const { email } = req.body;
+                if (!email) {
+                    return res.status(400).json({ message: 'Email is required' });
+                }
+                const success = yield this.interactor.forgotPass(email);
+                if (success) {
+                    console.log('33333');
+                    res.json(success);
+                }
+                else {
+                    res.status(500).json({ message: 'Failed to send password reset link' });
+                }
+            }
+            catch (error) {
+                res.status(500).json({ message: 'Internal server error', error: error.message });
+            }
+        });
+    }
+    onResetPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { token, newPassword } = req.body;
+            try {
+                const success = yield this.interactor.resetPassword(token, newPassword);
+                console.log('contorller', success);
+                res.json(success);
+            }
+            catch (error) {
+                res.status(500).json({ message: 'Internal server error', error: error.message });
+            }
+        });
+    }
 }
 exports.userController = userController;

@@ -1,4 +1,4 @@
-import { Admin } from "../entities/admin";
+import { Admin } from "../entities/admin/admin";
 import { AdminRepository } from "../interfaces/repositories/admin-repository";
 import adminModel from "../../data/data-sources/mongodb/models/admin";
 import userModel from "../../data/data-sources/mongodb/models/user";
@@ -9,19 +9,10 @@ import AdModel from "../../data/data-sources/mongodb/models/ad";
 const jwt = require('jsonwebtoken');
 
 export class AdminRepositoryImpl implements AdminRepository {
-    async findByCredentials(email: string, password: string): Promise<{ admin: Admin | null, token: string | null }> {
-        console.log('Admin Repository: findByCredentials', email, password);
-
-        const admin = await adminModel.findOne({ email: email });
-        let token: string | null = null;
-
-        if (admin) {
-            console.log('admin valid');
-            token = this.generateToken(admin.email);
-        }
-
-        return { admin: admin ? admin.toObject() as Admin : null, token: token };
-    }
+    async findByEmail(email: string): Promise<any> {
+        const admin = await adminModel.findOne({ email });
+        return admin;
+      }
 
 
     generateToken = (email: any): string => {
@@ -173,7 +164,7 @@ export class AdminRepositoryImpl implements AdminRepository {
 
     async getTransactions(): Promise<any> {
         try {
-            const transactions = await AdModel.find({}).populate('user', 'username name');
+            const transactions = await AdModel.find({}).populate('user', 'username name image');
             if (!transactions) {
                 throw new Error('Database query returned null');
             }

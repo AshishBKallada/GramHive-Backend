@@ -233,5 +233,32 @@ export class UserRepositoryImpl implements UserRepository {
         return user ? user : null;
     }
 
+    async resetPassword(userId: string, newPassword: string): Promise<boolean> {
+        try {
+            console.log('repo');
+            
+            const updatedUser = await userModel.findByIdAndUpdate(
+                userId,
+                { password: newPassword },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            return false;
+        }
+    }
+
+    async findByEmail(email:string): Promise<User | null>{
+        const user = await userModel.findOne({email:email});
+        return user ? user : null;
+    }
+
+
+
 
 }

@@ -8,16 +8,16 @@ export class userController {
     async onGoogleAuth(req: Request, res: Response) {
         try {
             const { token, isSignup } = req.body;
-            console.log(token,isSignup);
-            const result = await this.interactor.googleAuth( token, isSignup );  
-            console.log('00000',result);
-                      
+            console.log(token, isSignup);
+            const result = await this.interactor.googleAuth(token, isSignup);
+            console.log('00000', result);
+
             res.json(result);
         } catch (error) {
             console.error(error);
             if (error.message.includes('User already exists')) {
                 console.log('33333333333333333');
-                
+
                 res.status(400).json({ message: error.message });
             } else if (error.message.includes('No account exists')) {
                 res.status(404).json({ message: error.message });
@@ -208,14 +208,49 @@ export class userController {
         }
     }
 
-    async onRefreshTokens(req: Request, res:Response): Promise<void>{
-        try {            
-            const {refreshToken} = req.body;
-
+    async onRefreshTokens(req: Request, res: Response): Promise<void> {
+        try {
+            const { refreshToken } = req.body;
             const tokens = await this.interactor.getTokens(refreshToken);
             res.json(tokens);
         } catch (error) {
-            res.status(401).json({message:error.message});
+            res.status(401).json({ message: error.message });
+        }
+    }
+
+    async onForgotPassword(req: Request, res: Response): Promise<void> {
+        console.log('called reset 88888mwonu');
+
+        try {
+            const { email } = req.body;
+            if (!email) {
+                return res.status(400).json({ message: 'Email is required' });
+            }
+
+            const success = await this.interactor.forgotPass(email);
+            if (success) {
+                console.log('33333');
+                res.json(success);
+            } else {
+                res.status(500).json({ message: 'Failed to send password reset link' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+    }
+
+    async onResetPassword(req: Request, res: Response): Promise<void> {
+        
+        const { token, newPassword } = req.body;
+
+        try {
+            const success = await this.interactor.resetPassword(token, newPassword);
+            console.log('contorller',success);
+            
+            res.json(success);
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error', error: error.message });
+
         }
     }
 

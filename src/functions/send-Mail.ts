@@ -1,10 +1,9 @@
-import Mailer from "../config/mailer";
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
+import Mailer from '../config/mailer';
 
-
-async function sendEmail(email: string, otp: string): Promise<{ success: boolean }> {
+async function sendEmail(email: string, content: string, type: 'otp' | 'link'): Promise<{ success: boolean }> {
     const transporter = nodemailer.createTransport({
-        service: "Gmail",
+        service: 'Gmail',
         auth: {
             user: Mailer.user,
             pass: Mailer.pass,
@@ -14,19 +13,29 @@ async function sendEmail(email: string, otp: string): Promise<{ success: boolean
         },
     });
 
+    let subject, text;
+
+    if (type === 'otp') {
+        subject = 'Signup Verification Mail from GramHive';
+        text = `Your OTP is ${content}. Use this OTP to complete your signup process.`;
+    } else if (type === 'link') {
+        subject = 'Password Reset Request';
+        text = `Click on the following link to reset your password: ${content}`;
+    }
+
     const mailOptions = {
         from: Mailer.user,
         to: email,
-        subject: 'hey this is a signup Verification mail from GramHive',
-        text: `Your otp is ${otp}. Use this OTP to complete your signup process`,
+        subject: subject,
+        text: text,
     };
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent: ", info.response);
+        console.log('Email sent:', info.response);
         return { success: true };
     } catch (error) {
-        console.error("Error sending email: ", error);
+        console.error('Error sending email:', error);
         return { success: false };
     }
 }

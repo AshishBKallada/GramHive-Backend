@@ -2,9 +2,11 @@ import express from "express";
 import { AdminController } from "../Controllers/admin-controller";
 import { AdminRepositoryImpl } from "../../domain/repositories/admin-repository";
 import { AdminInteractorImpl } from "../../domain/usecases/adminInteractor";
+import { AuthService } from "../../domain/services/admin/AuthService";
 
-const repository = new AdminRepositoryImpl()
-const interactor = new AdminInteractorImpl(repository)
+const repository = new AdminRepositoryImpl();
+const authService = new AuthService();
+const interactor = new AdminInteractorImpl(repository,authService)
 const controller = new AdminController(interactor)
 
 const  adminRouter = express.Router();

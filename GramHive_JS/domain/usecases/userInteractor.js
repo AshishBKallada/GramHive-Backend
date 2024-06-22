@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserInteractorImpl = void 0;
 const accessToken_generator_1 = require("../../functions/accessToken-generator");
 const refreshToken_generator_1 = require("../../functions/refreshToken-generator");
+const resetToken_1 = require("../../functions/resetToken");
 const username_generator_1 = require("../../functions/username-generator");
 const crypto_1 = __importDefault(require("crypto"));
 const google_auth_library_1 = require("google-auth-library");
@@ -247,6 +248,37 @@ class UserInteractorImpl {
                 throw new Error('User not found');
             }
             return this.tokenRepository.generateTokens(user);
+        });
+    }
+    forgotPass(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const user = yield this.Repository.findByEmail(email);
+                const userId = (_a = user === null || user === void 0 ? void 0 : user._id) === null || _a === void 0 ? void 0 : _a.toString();
+                const token = yield (0, resetToken_1.generateResetToken)(userId);
+                const success = yield this.mailer.sendPasswordResetLink(email, token);
+                return success;
+            }
+            catch (error) {
+                console.error('Error in forgotPass:', error);
+                return false;
+            }
+        });
+    }
+    resetPassword(token, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('token:', token);
+                const userId = yield (0, resetToken_1.getUserIdFromToken)(token);
+                console.log('interator userId decrypted:', userId);
+                const success = yield this.Repository.resetPassword(userId, newPassword);
+                return success;
+            }
+            catch (error) {
+                console.error('Error in resetting password:', error);
+                return false;
+            }
         });
     }
 }

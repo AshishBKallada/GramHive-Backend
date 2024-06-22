@@ -20,8 +20,16 @@ class MailerImpl {
         return __awaiter(this, void 0, void 0, function* () {
             const otp = (0, OTP_generator_1.generateRandomOTP)(4);
             console.log('OTP', otp);
-            const result = yield (0, send_Mail_1.default)(email, otp);
+            const result = yield (0, send_Mail_1.default)(email, otp, 'otp');
             return { otp: otp, success: result.success };
+        });
+    }
+    sendPasswordResetLink(email, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('token', token);
+            const link = `http://localhost:3000/reset-password/${token}`;
+            const result = yield (0, send_Mail_1.default)(email, link, 'link');
+            return result.success;
         });
     }
 }

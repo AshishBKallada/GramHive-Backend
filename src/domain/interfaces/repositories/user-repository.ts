@@ -17,4 +17,6 @@ export interface UserRepository {
     getSuggestedUsers(userId:string): Promise<User[] | null>
     checkEmail(email:string): Promise<boolean>
     findById(id:string):Promise<User | null>
+    resetPassword(userId:string,newPassword:string): Promise<boolean>
+    findByEmail(email:string): Promise<User | null>
 };

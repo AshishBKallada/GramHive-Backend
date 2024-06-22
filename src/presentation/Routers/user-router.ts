@@ -15,11 +15,12 @@ const interactor = new UserInteractorImpl(repository, tokenRepository, mailer)
 const controller = new userController(interactor)
 
 const userRouter = express.Router();
-
+userRouter.put('/reset-password', controller.onResetPassword.bind(controller));
+userRouter.post('/forgot-pass', controller.onForgotPassword.bind(controller));
 userRouter.post('/auth/refresh-token', controller.onRefreshTokens.bind(controller));
 userRouter.post('/auth/google', controller.onGoogleAuth.bind(controller));
-userRouter.post('/login', userValidationRules.login, handleValidationErrors, controller.login.bind(controller));
-userRouter.post('/signup', userValidationRules.signup, handleValidationErrors, controller.signup.bind(controller));
+userRouter.post('/login',controller.login.bind(controller));
+userRouter.post('/signup', controller.signup.bind(controller));
 userRouter.post('/check-email', userValidationRules.checkEmail, handleValidationErrors, controller.onCheckEmail.bind(controller));
 userRouter.post('/sendmail', userValidationRules.sendMail, handleValidationErrors, controller.sendMail.bind(controller));
 userRouter.post('/resendmail/:emailId', userValidationRules.resendMail, handleValidationErrors, controller.resendMail.bind(controller));

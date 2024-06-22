@@ -14,44 +14,24 @@ class AdminController {
     constructor(interactor) {
         this.interactor = interactor;
     }
-    onGoogleLogin(req, res) {
+    onLogin(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { token, isSignup } = req.body;
             try {
-                const result = yield this.interactor.googleAuthenticate({ token, isSignup });
+                const { email, password } = req.body;
+                const result = yield this.interactor.login({ email, password });
+                console.log('ADMIN CONTROLLER', result);
                 res.json(result);
             }
             catch (error) {
-                console.error(error);
-                if (error.message.includes('User already exists')) {
-                    res.status(400).json({ message: error.message });
+                if (error.message === 'Invalid email') {
+                    res.status(401).json({ message: 'Invalid email' });
                 }
-                else if (error.message.includes('No account exists')) {
-                    res.status(404).json({ message: error.message });
-                }
-                else {
-                    res.status(401).json({ message: 'Invalid token' });
-                }
-            }
-        });
-    }
-    onLogin(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log('ADMIN ROUTER ', req.body);
-                const { email, password } = req.body;
-                const { admin, token } = yield this.interactor.login({ email, password });
-                if (admin) {
-                    console.log('adminController:', admin, token);
-                    res.status(200).json({ message: 'Login successful', admin: admin, token: token });
+                else if (error.message === 'Invalid password') {
+                    res.status(401).json({ message: 'Invalid password' });
                 }
                 else {
-                    res.status(401).send('Invalid username or password');
+                    res.status(500).json({ message: 'Internal server error' });
                 }
-            }
-            catch (e) {
-                console.error('Error during login:', e);
-                res.status(500).send('Internal server error');
             }
         });
     }
@@ -60,7 +40,6 @@ class AdminController {
             try {
                 console.log('111');
                 const users = yield this.interactor.getAllUsers();
-                // console.log('AdminROuter users:', users);
                 res.json(users);
             }
             catch (e) {

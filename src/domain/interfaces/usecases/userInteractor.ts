@@ -17,4 +17,6 @@ export interface UserInteractor {
     getLocations(userId: string): Promise<User[] | null>
     getSuggestions(userId: string): Promise<User[] | null>
     getTokens(refreshToken:string):Promise<Token>
+    forgotPass(email:string):Promise<boolean>
+    resetPassword(token:string,newpassword:string):Promise<boolean>
 }

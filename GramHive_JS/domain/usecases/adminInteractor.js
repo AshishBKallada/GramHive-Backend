@@ -11,19 +11,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminInteractorImpl = void 0;
 class AdminInteractorImpl {
-    constructor(Repository) {
+    constructor(Repository, authService) {
         this.Repository = Repository;
+        this.authService = authService;
     }
-    login(credentials) {
+    login(request) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { admin, token } = yield this.Repository.findByCredentials(credentials.email, credentials.password);
-                return { admin, token };
+            const { email, password } = request;
+            const admin = yield this.Repository.findByEmail(email);
+            if (!admin) {
+                throw new Error('Invalid email');
             }
-            catch (error) {
-                console.error('Error during login:', error);
-                throw error;
+            if (admin.password !== password) {
+                throw new Error('Invalid password');
             }
+            const token = this.authService.generateToken({ id: admin.id, email: admin.email });
+            return { admin, token };
         });
     }
     getAllUsers() {

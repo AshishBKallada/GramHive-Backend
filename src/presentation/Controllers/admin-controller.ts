@@ -5,52 +5,32 @@ import { AdminInteractor } from "../../domain/interfaces/usecases/adminInteracto
 export class AdminController {
 
     constructor(private readonly interactor: AdminInteractor) { }
-async onGoogleLogin(req: Request, res: Response){
-    const { token, isSignup } = req.body;
 
-    try {
-      const result = await this.interactor.googleAuthenticate({ token, isSignup });
-      res.json(result);
-    } catch (error) { 
-      console.error(error);
-      if (error.message.includes('User already exists')) {
-        res.status(400).json({ message: error.message });
-      } else if (error.message.includes('No account exists')) {
-        res.status(404).json({ message: error.message });
-      } else {
-        res.status(401).json({ message: 'Invalid token' });
-      }
-    }
-}
-    async onLogin(req: Request, res: Response, next: NextFunction) {
+    async onLogin(req: Request, res: Response): Promise<void> {
         try {
-            console.log('ADMIN ROUTER ', req.body);
+            
             const { email, password } = req.body;
+            const result = await this.interactor.login({ email, password });
+            console.log('ADMIN CONTROLLER',result);
 
-            const { admin, token } = await this.interactor.login({ email, password });
-
-            if (admin) {
-                console.log('adminController:', admin, token);
-
-                res.status(200).json({ message: 'Login successful', admin: admin, token: token });
+            res.json(result);
+          } catch (error) {
+            if (error.message === 'Invalid email') {
+              res.status(401).json({ message: 'Invalid email' });
+            } else if (error.message === 'Invalid password') {
+              res.status(401).json({ message: 'Invalid password' });
             } else {
-                res.status(401).send('Invalid username or password');
+              res.status(500).json({ message: 'Internal server error' });
             }
-        } catch (e) {
-            console.error('Error during login:', e);
-            res.status(500).send('Internal server error');
-        }
-
-    }
+          }
+        
+      }
 
     async onGetUsers(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('111');
 
             const users: User[] = await this.interactor.getAllUsers();
-
-            // console.log('AdminROuter users:', users);
-
 
             res.json(users);
         } catch (e) {

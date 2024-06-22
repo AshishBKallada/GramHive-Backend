@@ -235,5 +235,27 @@ class UserRepositoryImpl {
             return user ? user : null;
         });
     }
+    resetPassword(userId, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('repo');
+                const updatedUser = yield user_1.default.findByIdAndUpdate(userId, { password: newPassword }, { new: true });
+                if (!updatedUser) {
+                    return false;
+                }
+                return true;
+            }
+            catch (error) {
+                console.error('Error resetting password:', error);
+                return false;
+            }
+        });
+    }
+    findByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_1.default.findOne({ email: email });
+            return user ? user : null;
+        });
+    }
 }
 exports.UserRepositoryImpl = UserRepositoryImpl;

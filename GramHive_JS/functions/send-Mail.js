@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const nodemailer = require('nodemailer');
 const mailer_1 = __importDefault(require("../config/mailer"));
-const nodemailer = require("nodemailer");
-function sendEmail(email, otp) {
+function sendEmail(email, content, type) {
     return __awaiter(this, void 0, void 0, function* () {
         const transporter = nodemailer.createTransport({
-            service: "Gmail",
+            service: 'Gmail',
             auth: {
                 user: mailer_1.default.user,
                 pass: mailer_1.default.pass,
@@ -26,19 +26,28 @@ function sendEmail(email, otp) {
                 rejectUnauthorized: false,
             },
         });
+        let subject, text;
+        if (type === 'otp') {
+            subject = 'Signup Verification Mail from GramHive';
+            text = `Your OTP is ${content}. Use this OTP to complete your signup process.`;
+        }
+        else if (type === 'link') {
+            subject = 'Password Reset Request';
+            text = `Click on the following link to reset your password: ${content}`;
+        }
         const mailOptions = {
             from: mailer_1.default.user,
             to: email,
-            subject: 'hey this is a signup Verification mail from GramHive',
-            text: `Your otp is ${otp}. Use this OTP to complete your signup process`,
+            subject: subject,
+            text: text,
         };
         try {
             const info = yield transporter.sendMail(mailOptions);
-            console.log("Email sent: ", info.response);
+            console.log('Email sent:', info.response);
             return { success: true };
         }
         catch (error) {
-            console.error("Error sending email: ", error);
+            console.error('Error sending email:', error);
             return { success: false };
         }
     });

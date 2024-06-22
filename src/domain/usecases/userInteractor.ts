@@ -1,6 +1,8 @@
 import { generateAccessToken } from '../../functions/accessToken-generator';
 import { generateRefreshToken } from '../../functions/refreshToken-generator';
+import { generateResetToken, getUserIdFromToken } from '../../functions/resetToken';
 import { generateRandomUsername } from '../../functions/username-generator';
+import { decryptResetToken } from '../../functions/verify-resetToken';
 import { SignupData } from '../entities/SignupData';
 import { GoogleAuthResponse, GooglePayload } from '../entities/googleauth';
 import { Token } from '../entities/tokens';
@@ -45,7 +47,7 @@ export class UserInteractorImpl implements UserInteractor {
 
         const accessToken: string = await generateAccessToken(user);
         const refreshToken: string = await generateRefreshToken(user);
-        const tokens = {accessToken: accessToken, refreshToken: refreshToken}
+        const tokens = { accessToken: accessToken, refreshToken: refreshToken }
         return { user, tokens };
     }
 
@@ -223,16 +225,45 @@ export class UserInteractorImpl implements UserInteractor {
         }
     }
 
-    async getTokens(refreshToken: string): Promise<Token> {        
+    async getTokens(refreshToken: string): Promise<Token> {
         const decoded = await this.tokenRepository.verifyRefreshToken(refreshToken);
 
         const user = await this.Repository.findById(decoded.userId);
-        
+
         if (!user) {
             throw new Error('User not found');
         }
         return this.tokenRepository.generateTokens(user);
     }
+
+    async forgotPass(email: string): Promise<boolean> {
+        try {
+            const user = await this.Repository.findByEmail(email);
+            const userId :string= user?._id?.toString();
+            const token = await generateResetToken(userId);
+            const success = await this.mailer.sendPasswordResetLink(email,token);
+            return success;
+        } catch (error) {
+            console.error('Error in forgotPass:', error);
+            return false;
+        }
+    }
+
+    async  resetPassword(token:string,newPassword:string):Promise<boolean>{
+        try {
+            console.log('token:',token);
+            
+           const userId = await getUserIdFromToken(token);
+           console.log('interator userId decrypted:',userId);
+           
+            const success = await this.Repository.resetPassword(userId,newPassword);
+            return success;
+        } catch (error) {
+            console.error('Error in resetting password:', error);
+            return false;
+        }
+    }
+
 
 }
 
