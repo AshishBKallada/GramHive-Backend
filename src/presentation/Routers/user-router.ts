@@ -4,8 +4,6 @@ import { UserRepositoryImpl } from '../../domain/repositories/user-repository';
 import { UserInteractorImpl } from '../../domain/usecases/userInteractor';
 import { MailerImpl } from '../../domain/external-libraries/mailer';
 import userAuth from '../../middlewares/authMiddleware';
-import { handleValidationErrors } from '../../middlewares/validationMiddleware';
-import { userValidationRules } from '../../validators/userValidator';
 import { TokenRepositoryImpl } from '../../domain/repositories/token-repository';
 
 const repository = new UserRepositoryImpl()
