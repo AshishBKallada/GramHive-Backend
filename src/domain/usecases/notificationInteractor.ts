@@ -6,9 +6,9 @@ import { INotificationInteractor } from "../interfaces/usecases/notificationInte
 export class NotificationInteractor implements INotificationInteractor {
     constructor(private readonly repository: INotificationRepository) { }
 
-    async getNotifications(userId: string): Promise<INotification[]> {
+    async getNotifications(userId: string,page:Number): Promise<INotification[]> {
         try {
-            const notifications = await this.repository.getUserNotifications(userId);
+            const notifications = await this.repository.getUserNotifications(userId,page);
             return notifications;
         } catch (error) {
             console.error("Error getting notifications:", error);

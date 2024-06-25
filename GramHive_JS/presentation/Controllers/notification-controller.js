@@ -17,8 +17,9 @@ class NotificationController {
     onGetNotifications(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = req.user._id;
+            const page = req.params.page;
             try {
-                const notifications = yield this.interactor.getNotifications(userId);
+                const notifications = yield this.interactor.getNotifications(userId, page);
                 return res.json(notifications);
             }
             catch (error) {

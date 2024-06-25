@@ -125,5 +125,41 @@ class AdminInteractorImpl {
             }
         });
     }
+    getDashboard() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.Repository.dashboardData();
+                return data;
+            }
+            catch (error) {
+                console.error('Error in getting dashboard details:', error);
+                throw error;
+            }
+        });
+    }
+    getChartOne() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.Repository.chartOneData();
+                return data;
+            }
+            catch (error) {
+                console.error('Error in getting chartOne details:', error);
+                throw error;
+            }
+        });
+    }
+    getChartTwo() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.Repository.chartTwoData();
+                return data;
+            }
+            catch (error) {
+                console.error('Error in getting chartTwo details:', error);
+                throw error;
+            }
+        });
+    }
 }
 exports.AdminInteractorImpl = AdminInteractorImpl;

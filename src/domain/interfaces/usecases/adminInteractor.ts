@@ -10,4 +10,7 @@ export interface AdminInteractor {
     PostBan(PostId: string): Promise<{ success: boolean; message: string }>
     userReports(): Promise<any>
     getTransactions(): Promise<any>
+    getDashboard():Promise<any>
+    getChartOne():Promise<any>
+    getChartTwo():Promise<any>
 }

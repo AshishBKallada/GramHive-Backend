@@ -6,23 +6,23 @@ import { AuthService } from "../services/admin/AuthService";
 
 
 export class AdminInteractorImpl implements AdminInteractor {
-    constructor(private readonly Repository: AdminRepository,private readonly authService:AuthService) { }
+    constructor(private readonly Repository: AdminRepository, private readonly authService: AuthService) { }
 
     async login(request: LoginRequest): Promise<{ admin: any, token: string } | null> {
         const { email, password } = request;
         const admin = await this.Repository.findByEmail(email);
         if (!admin) {
-          throw new Error('Invalid email');
+            throw new Error('Invalid email');
         }
-    
-    if (admin.password !== password) {
-        throw new Error('Invalid password');
-      }
+
+        if (admin.password !== password) {
+            throw new Error('Invalid password');
+        }
         const token = this.authService.generateToken({ id: admin.id, email: admin.email });
-    
+
         return { admin, token };
-      }
-    
+    }
+
 
     async getAllUsers(): Promise<User[]> {
         try {
@@ -103,6 +103,35 @@ export class AdminInteractorImpl implements AdminInteractor {
             return transactions;
         } catch (error) {
             console.error('Error in TransactionsInteractor:', error);
+            throw error;
+        }
+    }
+
+    async getDashboard(): Promise<any> {
+        try {
+            const data = await this.Repository.dashboardData();
+            return data;
+        } catch (error) {
+            console.error('Error in getting dashboard details:', error);
+            throw error;
+        }
+    }
+    async getChartOne(): Promise<any> {
+        try {
+            const data = await this.Repository.chartOneData();
+            return data;
+        } catch (error) {
+            console.error('Error in getting chartOne details:', error);
+            throw error;
+        }
+    }
+
+    async getChartTwo(): Promise<any> {
+        try {
+            const data = await this.Repository.chartTwoData();
+            return data;
+        } catch (error) {
+            console.error('Error in getting chartTwo details:', error);
             throw error;
         }
     }

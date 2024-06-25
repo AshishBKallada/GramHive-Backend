@@ -199,7 +199,9 @@ class userController {
             var _a;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+                console.log('Getting location', userId);
                 const users = yield this.interactor.getLocations(userId);
+                console.log('users locations', users);
                 return res.status(200).json({ success: true, message: 'User location updated successfully.', users });
             }
             catch (error) {

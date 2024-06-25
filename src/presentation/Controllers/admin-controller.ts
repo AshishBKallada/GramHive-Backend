@@ -121,4 +121,33 @@ export class AdminController {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
     }
-}
+
+    async onDashboard(req: Request, res: Response) {
+        try {
+          const data = await this.interactor.getDashboard(); 
+          console.log('Data', data);
+                   
+          res.json(data);
+        } catch (error) {
+          next(error);
+        }
+      }
+    
+      async onChartOne(req: Request, res: Response) {
+        try {
+          const data = await this.interactor.getChartOne();
+          res.json(data);
+        } catch (error) {
+          next(error);
+        }
+      }
+    
+      async onChartTwo(req: Request, res: Response) {
+        try {
+          const data = await this.interactor.getChartTwo();
+          res.json(data);
+        } catch (error) {
+          next(error);
+        }
+      }
+    }

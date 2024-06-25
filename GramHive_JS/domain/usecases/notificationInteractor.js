@@ -14,10 +14,10 @@ class NotificationInteractor {
     constructor(repository) {
         this.repository = repository;
     }
-    getNotifications(userId) {
+    getNotifications(userId, page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const notifications = yield this.repository.getUserNotifications(userId);
+                const notifications = yield this.repository.getUserNotifications(userId, page);
                 return notifications;
             }
             catch (error) {

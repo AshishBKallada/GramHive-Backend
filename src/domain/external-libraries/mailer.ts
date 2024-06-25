@@ -13,7 +13,7 @@ export class MailerImpl implements IMailer{
     async sendPasswordResetLink(email: string,token:string): Promise<boolean>{
         console.log('token', token);
         
-        const link = `http://localhost:3000/reset-password/${token}`;
+        const link = `http://localhost:5173/reset-password/${token}`;
         const result = await sendEmail(email, link, 'link');
         return result.success;
 }

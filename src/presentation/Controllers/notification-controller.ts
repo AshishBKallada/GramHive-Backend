@@ -6,8 +6,9 @@ export class NotificationController {
 
     async onGetNotifications(req: Request, res: Response): Promise<Response> {
         const userId = req.user._id;
+        const page = req.params.page;
         try {
-            const notifications = await this.interactor.getNotifications(userId);
+            const notifications = await this.interactor.getNotifications(userId,page);
             
             return res.json(notifications);
         } catch (error) {

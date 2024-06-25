@@ -15,7 +15,7 @@ const uploader = new StoryUploaderImpl()
 const interactor = new storyInteractorImpl(repository,uploader)
 const controller = new storyController(interactor)
 
-storyRouter.post('/upload/:userId', storyUploadMiddleware, storyValidationRules.uploadStory, handleValidationErrors, controller.addStory.bind(controller));
+storyRouter.post('/upload/:userId', storyUploadMiddleware, controller.addStory.bind(controller));
 storyRouter.get('/:userId/getstories', controller.onGetStories.bind(controller));
 
 export default storyRouter;

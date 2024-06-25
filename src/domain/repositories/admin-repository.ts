@@ -6,6 +6,7 @@ import { User } from "../entities/user";
 import ReportModel from "../../data/data-sources/mongodb/models/report";
 import postModel from "../../data/data-sources/mongodb/models/post";
 import AdModel from "../../data/data-sources/mongodb/models/ad";
+import { Ad } from "../entities/ad";
 const jwt = require('jsonwebtoken');
 
 export class AdminRepositoryImpl implements AdminRepository {
@@ -22,7 +23,6 @@ export class AdminRepositoryImpl implements AdminRepository {
     async getAllUsers(): Promise<User[]> {
         try {
             const users = await userModel.find({});
-            // console.log('adminrepository',users);
 
             return users.map(user => user.toObject() as User);
         } catch (error) {
@@ -173,6 +173,31 @@ export class AdminRepositoryImpl implements AdminRepository {
             console.error('Error in TransactionsRepository:', error);
             throw error;
         }
+    }
+
+    async  dashboardData(): Promise<any> {
+        try {
+          const totalUsers: number = await userModel.countDocuments();
+      
+          const totalRevenueResult: Ad[] = await AdModel.find({ payment: 'paid' });
+          let totalRevenue: number = 0;
+          totalRevenueResult.forEach((ad: Ad) => {
+            totalRevenue += ad.rate;
+          });      
+          return {
+            totalUsers,
+            totalRevenue,
+          };
+        } catch (error) {
+          console.error('Error fetching dashboard data:', error);
+          throw error; 
+        }
+      }
+    async chartOneData():Promise<any>{
+
+    }
+    async chartTwoData():Promise<any>{
+
     }
 
 

@@ -35,7 +35,6 @@ class AdminRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const users = yield user_1.default.find({});
-                // console.log('adminrepository',users);
                 return users.map(user => user.toObject());
             }
             catch (error) {
@@ -181,6 +180,34 @@ class AdminRepositoryImpl {
                 console.error('Error in TransactionsRepository:', error);
                 throw error;
             }
+        });
+    }
+    dashboardData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const totalUsers = yield user_1.default.countDocuments();
+                const totalRevenueResult = yield ad_1.default.find({ payment: 'paid' });
+                let totalRevenue = 0;
+                totalRevenueResult.forEach((ad) => {
+                    totalRevenue += ad.rate;
+                });
+                return {
+                    totalUsers,
+                    totalRevenue,
+                };
+            }
+            catch (error) {
+                console.error('Error fetching dashboard data:', error);
+                throw error;
+            }
+        });
+    }
+    chartOneData() {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
+    chartTwoData() {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 }

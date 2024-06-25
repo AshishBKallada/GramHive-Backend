@@ -176,7 +176,11 @@ export class userController {
     async onGetLocations(req: Request, res: Response) {
         try {
             const userId = req.user?._id;
+            console.log('Getting location',userId);
+            
             const users = await this.interactor.getLocations(userId);
+            console.log('users locations',users);
+            
             return res.status(200).json({ success: true, message: 'User location updated successfully.', users });
         } catch (error) {
             console.error('Error retrieving user data:', error);

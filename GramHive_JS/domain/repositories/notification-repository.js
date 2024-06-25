@@ -27,10 +27,12 @@ class NotificationRepositoryImpl {
             }
         });
     }
-    getUserNotifications(userId) {
+    getUserNotifications(userId, page) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield notifications_1.default.find({ userId }).sort({ _id: -1 }).exec();
+                const ITEMS_PER_PAGE = 9;
+                const skip = (page - 1) * ITEMS_PER_PAGE;
+                return yield notifications_1.default.find({ userId }).skip(skip).limit(ITEMS_PER_PAGE).sort({ _id: -1 }).exec();
             }
             catch (error) {
                 console.error('Error retrieving user notifications:', error);

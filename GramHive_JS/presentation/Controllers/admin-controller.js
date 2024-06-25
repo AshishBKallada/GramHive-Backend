@@ -138,5 +138,39 @@ class AdminController {
             }
         });
     }
+    onDashboard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.interactor.getDashboard();
+                console.log('Data', data);
+                res.json(data);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    onChartOne(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.interactor.getChartOne();
+                res.json(data);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    onChartTwo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield this.interactor.getChartTwo();
+                res.json(data);
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
 }
 exports.AdminController = AdminController;

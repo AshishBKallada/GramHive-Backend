@@ -23,11 +23,8 @@ export class profileController {
     }
 
     async onGetProfileData(req: Request, res: Response) {
-        try {
-
+        try {            
             const userId = req.params.userId;
-
-
             const { posts, followers, following } = await this.interactor.getProfileData(userId);
 
             if (posts && followers && following) {

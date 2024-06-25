@@ -27,7 +27,7 @@ class MailerImpl {
     sendPasswordResetLink(email, token) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('token', token);
-            const link = `http://localhost:3000/reset-password/${token}`;
+            const link = `http://localhost:5173/reset-password/${token}`;
             const result = yield (0, send_Mail_1.default)(email, link, 'link');
             return result.success;
         });
