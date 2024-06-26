@@ -37,3 +37,10 @@ export const server = app.listen(port, () => {
 const io = createSocketIoServer(server);
 
 routes(app);
+app.get('/test', (req, res) => {
+    res.send('This is a test message!');
+});
+
+app.use("*", (req, res) => {
+    res.status(404).send('Page not found');
+});
