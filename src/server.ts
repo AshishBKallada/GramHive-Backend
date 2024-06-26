@@ -9,7 +9,6 @@ import helmet from 'helmet';
 import { rateLimiter } from './middlewares/rateLimiter';
 import errorHandler from './middlewares/errorHandler';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
-import xssClean from 'xss-clean';
 import compression from 'compression';
 import hpp from 'hpp';
 const morgan = require('morgan');
@@ -19,7 +18,6 @@ const port = config.PORT;
 
 app.use(helmet({ xssFilter: true }));
 app.use(ExpressMongoSanitize());
-app.use(xssClean());
 app.use(compression());
 app.use(hpp());
 app.use(morgan('dev'));

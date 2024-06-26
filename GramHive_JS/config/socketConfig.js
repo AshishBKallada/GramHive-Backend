@@ -27,12 +27,12 @@ const createSocketIoServer = (httpServer) => {
     io.on('connection', (socket) => {
         socket.on('setup', (userId) => {
             socket.join(userId);
-            console.log('User connected'.blue, userId);
+            console.log('User connected', userId);
             socket.emit('connected');
         });
         socket.on('join chat', (room) => {
             socket.join(room);
-            console.log('User joined rooom'.red, room);
+            console.log('User joined rooom', room);
         });
         socket.on('typing', (room) => {
             socket.in(room).emit('typing');
@@ -48,12 +48,14 @@ const createSocketIoServer = (httpServer) => {
             chat.users.forEach((user) => {
                 if (user._id === newMessageReceived.sender._id)
                     return;
-                socket.in(user._id).emit('message received', newMessageReceived);
-                socket.in(user._id).emit('notification received', {
-                    senderId: newMessageReceived.sender._id,
-                    isRead: false,
-                    date: new Date(),
-                });
+                if (user._id) {
+                    socket.in(user._id).emit('message received', newMessageReceived);
+                    socket.in(user._id).emit('notification received', {
+                        senderId: newMessageReceived.sender._id,
+                        isRead: false,
+                        date: new Date(),
+                    });
+                }
                 // socket.in(user._id).emit('notification',{data:'huhuh'});
             });
         });

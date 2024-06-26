@@ -3,4 +3,5 @@ export interface followers{
     username:string,
     name:string,
     image:string,
+    follower_id?:string,
 }

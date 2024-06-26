@@ -223,7 +223,6 @@ export class userController {
     }
 
     async onForgotPassword(req: Request, res: Response): Promise<void> {
-        console.log('called reset 88888mwonu');
 
         try {
             const { email } = req.body;
@@ -239,23 +238,25 @@ export class userController {
                 res.status(500).json({ message: 'Failed to send password reset link' });
             }
         } catch (error) {
-            res.status(500).json({ message: 'Internal server error', error: error.message });
+            res.status(500).json({ message: 'Internal server error', error:String(error) });
         }
     }
 
     async onResetPassword(req: Request, res: Response): Promise<void> {
-        
         const { token, newPassword } = req.body;
-
+    
         try {
             const success = await this.interactor.resetPassword(token, newPassword);
-            console.log('contorller',success);
-            
+            console.log('controller', success);
             res.json(success);
         } catch (error) {
-            res.status(500).json({ message: 'Internal server error', error: error.message });
-
+            if (error instanceof Error) {
+                res.status(500).json({ message: 'Internal server error', error: error.message });
+            } else {
+                res.status(500).json({ message: 'Internal server error', error: String(error) });
+            }
         }
     }
+    
 
 }

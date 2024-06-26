@@ -99,7 +99,7 @@ class PostRepositoryImpl {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const users = yield followers_1.default.find({ followed_id: userId });
-                const userIds = users.map(user => user.follower_id);
+                const userIds = users.map((user) => user.follower_id);
                 const posts = yield post_1.default.find({
                     $and: [
                         { $or: [{ userId: { $in: userIds } }, { userId: userId }] },
@@ -113,7 +113,7 @@ class PostRepositoryImpl {
                     .skip((page - 1) * 2)
                     .limit(2);
                 const savedPosts = yield save_1.default.find({ user: userId }).select('post');
-                const savedPostsData = savedPosts.map(savedPost => savedPost.post);
+                const savedPostsData = savedPosts.map((savedPost) => savedPost.post);
                 if (posts && savedPostsData) {
                     const savedPostIds = savedPostsData.map((objectId) => objectId.toString());
                     posts.forEach(post => {
@@ -245,7 +245,7 @@ class PostRepositoryImpl {
             }
             catch (error) {
                 console.error('Error retrieving posts:', error);
-                return null;
+                return [];
             }
         });
     }

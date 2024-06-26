@@ -2,6 +2,7 @@ import { UserRelationship } from "../../entities/userRelationship";
 import { PostData } from "../../entities/PostData";
 import { followers } from "../../entities/follower";
 import { INotification } from "../../entities/notifications";
+import { User } from "../../entities/user";
 
 export interface profileInteractor{
     updateProfile(data: { userId: string, username: string, name: string, website: string, bio: string, gender: string, image: string }): Promise<User | null>;

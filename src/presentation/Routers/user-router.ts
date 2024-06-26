@@ -12,6 +12,7 @@ const mailer = new MailerImpl()
 const interactor = new UserInteractorImpl(repository, tokenRepository, mailer)
 const controller = new userController(interactor)
 
+
 const userRouter = express.Router();
 userRouter.put('/reset-password', controller.onResetPassword.bind(controller));
 userRouter.post('/forgot-pass', controller.onForgotPassword.bind(controller));

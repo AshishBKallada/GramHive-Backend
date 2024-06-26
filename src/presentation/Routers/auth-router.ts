@@ -1,5 +1,5 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import userModel from '../../data/data-sources/mongodb/models/user';
 import { generateAccessToken } from '../../functions/accessToken-generator';
 
@@ -15,7 +15,9 @@ authRouter.post('/refresh-token', async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, 'thadavil__aanu');
+        const decoded = jwt.verify(refreshToken, 'thadavil__aanu') as JwtPayload & {
+            userId:string;
+        }
 
         
         const user = await userModel.findById(decoded.userId);

@@ -1,6 +1,7 @@
 "use strict";
 
 import { Server, Socket } from "socket.io";
+import { User } from "../domain/entities/user";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
@@ -14,24 +15,24 @@ const initializeSocket = (server:Server) => {
         }
     });
     io.on('connection', (socket:Socket) => {
-        console.log('Connection established to socket.io'.cyan);
+        console.log('Connection established to socket.io');
         socket.on('setup', (userId) => {
             socket.join(userId);
-            console.log('User connected'.blue, userId);
+            console.log('User connected', userId);
             socket.emit('connected');
         });
         socket.on('join chat', (room) => {
             socket.join(room);
-            console.log('User joined room'.red, room);
+            console.log('User joined room', room);
         });
         socket.on('new message', (newMessageReceived) => {
             var chat = newMessageReceived.chat;
             if (!chat.users)
                 return console.log('chat users undefined');
-            chat.users.forEach((user) => {
+            chat.users.forEach((user:User) => {
                 if (user._id === newMessageReceived.sender._id)
                     return;
-                socket.in(user._id).emit('message received', newMessageReceived);
+                socket.in(user._id || "").emit('message received', newMessageReceived);
             });
         });
     });

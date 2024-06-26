@@ -12,16 +12,17 @@ export class NotificationRepositoryImpl implements INotificationRepository {
             return false;
         }
     }
-    async getUserNotifications(userId: string, page: Number): Promise<INotification[]> {
+    async getUserNotifications(userId: string, page: number): Promise<INotification[]> {
         try {
-            const ITEMS_PER_PAGE = 9;
-            const skip = (page - 1) * ITEMS_PER_PAGE;
+            const ITEMS_PER_PAGE: number = 9;
+            const skip: number = (page - 1) * ITEMS_PER_PAGE;
             return await NotificationModel.find({ userId }).skip(skip).limit(ITEMS_PER_PAGE).sort({ _id: -1 }).exec();
         } catch (error) {
             console.error('Error retrieving user notifications:', error);
             return [];
         }
     }
+    
     async updateNotifications(userId: string): Promise<boolean> {
         try {
             await NotificationModel.updateMany({ userId: userId, read: false }, { read: true });

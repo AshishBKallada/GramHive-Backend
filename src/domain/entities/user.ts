@@ -3,7 +3,7 @@ export interface Location {
     longitude: number;
   }
   
-  export interface User {
+  export interface User  {
     _id?:string;
     userId?: string;
     username: string;

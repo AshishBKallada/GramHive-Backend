@@ -6,7 +6,7 @@ export interface postInteractor {
     savePost(postId: string, userId: string): Promise<boolean>
     deletePost(postId: string): Promise<boolean>
     addPost(data: PostData): Promise<boolean>;
-    getLikes(postId: string): Promise<Like[] | null>
+    getLikes(postId: string): Promise<any[] | null>
     removeLike(postId: string, userId: string): Promise<any>
     addLike(postId: string, userId: string): Promise<any>
     reportPost(postId:string, author:string,userId:string): Promise<boolean>

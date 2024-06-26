@@ -1,5 +1,6 @@
 import followModel from "../../data/data-sources/mongodb/models/followers";
 import { NoteModel } from "../../data/data-sources/mongodb/models/note";
+import { followers } from "../entities/follower";
 import { Note } from "../entities/note";
 import { NoteReply } from "../entities/noteReply";
 import { INoteRepository } from "../interfaces/repositories/note-repository";
@@ -41,10 +42,11 @@ export class NoteRepositoryImpl implements INoteRepository {
         try {
             const followers = await followModel.find({ follower_id: userId });
             const followerIds = followers.map((follower) => follower.followed_id);
-
+    
             const notes = await Promise.all(
                 followerIds.map((followerId) => NoteModel.findOne({ userId: followerId }).populate('userId', 'username name image'))
             );
+    
             const filteredNotes = notes.filter((note) => note !== null);
             return filteredNotes;
         } catch (error) {
@@ -52,6 +54,7 @@ export class NoteRepositoryImpl implements INoteRepository {
             throw error;
         }
     }
+    
     async saveReply(Reply: NoteReply): Promise<boolean> {
         try {
             const { noteId, ...restOfReply } = Reply;

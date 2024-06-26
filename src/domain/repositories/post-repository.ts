@@ -5,6 +5,7 @@ import saveModel from "../../data/data-sources/mongodb/models/save";
 import followModel from "../../data/data-sources/mongodb/models/followers";
 import reportModel from "../../data/data-sources/mongodb/models/report";
 import { User } from "../entities/user";
+import { followers } from "../entities/follower";
 
 export class PostRepositoryImpl implements PostRepository {
     async addPost(postData: PostData): Promise<boolean> {
@@ -71,7 +72,7 @@ export class PostRepositoryImpl implements PostRepository {
         }
     }
 
-    async getLikes(postId: string): Promise<likes[] | null> {
+    async getLikes(postId: string): Promise<any | null> {
         try {
 
             const post = await postModel.findById(postId).populate('likes.user');
@@ -89,7 +90,7 @@ export class PostRepositoryImpl implements PostRepository {
     async getHomePosts(userId: string, page: number, pageSize: number): Promise<PostData[] | null> {
         try {
             const users = await followModel.find({ followed_id: userId });
-            const userIds = users.map(user => user.follower_id);
+            const userIds = users.map((user:followers) => user.follower_id);
 
             const posts = await postModel.find({
                 $and: [
@@ -106,7 +107,7 @@ export class PostRepositoryImpl implements PostRepository {
 
 
             const savedPosts = await saveModel.find({ user: userId }).select('post');
-            const savedPostsData = savedPosts.map(savedPost => savedPost.post);
+            const savedPostsData = savedPosts.map((savedPost:PostData )=> savedPost.post);
 
             if (posts && savedPostsData) {
                 const savedPostIds = savedPostsData.map((objectId: any) => objectId.toString());
@@ -227,7 +228,7 @@ export class PostRepositoryImpl implements PostRepository {
             return posts;
         } catch (error) {
             console.error('Error retrieving posts:', error);
-            return null;
+            return [];
         }
     }
 

@@ -252,7 +252,6 @@ class userController {
     }
     onForgotPassword(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('called reset 88888mwonu');
             try {
                 const { email } = req.body;
                 if (!email) {
@@ -268,7 +267,7 @@ class userController {
                 }
             }
             catch (error) {
-                res.status(500).json({ message: 'Internal server error', error: error.message });
+                res.status(500).json({ message: 'Internal server error', error: String(error) });
             }
         });
     }
@@ -277,11 +276,16 @@ class userController {
             const { token, newPassword } = req.body;
             try {
                 const success = yield this.interactor.resetPassword(token, newPassword);
-                console.log('contorller', success);
+                console.log('controller', success);
                 res.json(success);
             }
             catch (error) {
-                res.status(500).json({ message: 'Internal server error', error: error.message });
+                if (error instanceof Error) {
+                    res.status(500).json({ message: 'Internal server error', error: error.message });
+                }
+                else {
+                    res.status(500).json({ message: 'Internal server error', error: String(error) });
+                }
             }
         });
     }

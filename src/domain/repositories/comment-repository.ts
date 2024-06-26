@@ -43,7 +43,7 @@ export class CommentRepositoryImpl implements CommentRepository {
     }
 
 
-    async getComments(postId: string): Promise<Comment[] | null> {
+    async getComments(postId: string): Promise<any[] | null> {
         try {
 
             const post = await postModel

@@ -11,15 +11,15 @@ const initializeSocket = (server) => {
         }
     });
     io.on('connection', (socket) => {
-        console.log('Connection established to socket.io'.cyan);
+        console.log('Connection established to socket.io');
         socket.on('setup', (userId) => {
             socket.join(userId);
-            console.log('User connected'.blue, userId);
+            console.log('User connected', userId);
             socket.emit('connected');
         });
         socket.on('join chat', (room) => {
             socket.join(room);
-            console.log('User joined room'.red, room);
+            console.log('User joined room', room);
         });
         socket.on('new message', (newMessageReceived) => {
             var chat = newMessageReceived.chat;
@@ -28,7 +28,7 @@ const initializeSocket = (server) => {
             chat.users.forEach((user) => {
                 if (user._id === newMessageReceived.sender._id)
                     return;
-                socket.in(user._id).emit('message received', newMessageReceived);
+                socket.in(user._id || "").emit('message received', newMessageReceived);
             });
         });
     });
