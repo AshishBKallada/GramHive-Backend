@@ -5,7 +5,9 @@ import config from "./server";
 export async function connectToMongoDB(): Promise<void> {
   const MONGODB_URI = config.MONGODB;
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI,{
+      ssl:true,
+    });
     console.log('Connected to MongoDB');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);

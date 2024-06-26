@@ -29,6 +29,9 @@ userRouter.get('/getsearchuser/:userId', controller.getSearchUser.bind(controlle
 userRouter.post('/updatelocation',userAuth, controller.onUpdatelocation.bind(controller));
 userRouter.get('/getlocations',userAuth, controller.onGetLocations.bind(controller));
 userRouter.get('/getsuggestions', controller.onGetSuggestions.bind(controller));
+userRouter.get('/test', (req, res) => {
+    res.send('This is a test message!');
+  });
 
 export default userRouter;
 

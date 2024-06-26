@@ -19,7 +19,9 @@ function connectToMongoDB() {
     return __awaiter(this, void 0, void 0, function* () {
         const MONGODB_URI = server_1.default.MONGODB;
         try {
-            yield mongoose_1.default.connect(MONGODB_URI);
+            yield mongoose_1.default.connect(MONGODB_URI, {
+                ssl: true,
+            });
             console.log('Connected to MongoDB');
         }
         catch (error) {
