@@ -9,7 +9,7 @@ export const createSocketIoServer = (httpServer: any) => {
     const io = new Server(httpServer, {
         pingTimeout: 60000,
         cors: {
-            origin: 'http://localhost:5173',
+            origin: "https://gramhive6.vercel.app",
         },
     });
 

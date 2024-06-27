@@ -21,7 +21,7 @@ const createSocketIoServer = (httpServer) => {
     const io = new socket_io_1.Server(httpServer, {
         pingTimeout: 60000,
         cors: {
-            origin: 'http://localhost:5173',
+            origin: "https://gramhive6.vercel.app",
         },
     });
     io.on('connection', (socket) => {

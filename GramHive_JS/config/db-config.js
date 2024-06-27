@@ -22,7 +22,7 @@ function connectToMongoDB() {
             yield mongoose_1.default.connect(MONGODB_URI, {
                 ssl: true,
             });
-            console.log('Connected to MongoDB');
+            console.log('Connected to MongoDB:)');
         }
         catch (error) {
             console.error('Error connecting to MongoDB:', error);
