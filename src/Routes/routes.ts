@@ -22,7 +22,7 @@ const routes: Function = (app: Application) => {
     app.use('/profile', profileRouter)
     app.use('/auth', authRouter)
     app.use('/story', storyRouter)
-    app.use('/chats', chatRouter)
+    app.use('/chats', chatRouter) 
     app.use('/messages', messageRouter)
     app.use('/reports', reportRouter)
     app.use('/ads', adRouter)
