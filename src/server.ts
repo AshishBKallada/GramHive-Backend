@@ -15,7 +15,7 @@ const morgan = require('morgan');
 
 const app = express();
 const port = config.PORT;
-
+app.use(cors({ origin: config.ORIGIN, credentials: true, preflightContinue: true }));
 app.use(helmet({ xssFilter: true }));
 app.use(ExpressMongoSanitize());
 app.use(compression());
@@ -24,7 +24,6 @@ app.use(morgan('dev'));
 app.use(rateLimiter);
 app.use(errorHandler);
 app.use(cookieParser());
-app.use(cors({ origin: config.ORIGIN, credentials: true, preflightContinue: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
