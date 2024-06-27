@@ -40,7 +40,6 @@ routes(app);
 app.get('/test', (req, res) => {
     res.send('This is a test message!');
 });
-
 app.use("*", (req, res) => {
     res.status(404).send('Page not found');
 });
