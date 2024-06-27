@@ -14,6 +14,7 @@ const initializeSocket = (server:Server) => {
             origin: 'https://gramhive6.vercel.app',
         }
     });
+    
     io.on('connection', (socket:Socket) => {
         console.log('Connection established to socket.io');
         socket.on('setup', (userId) => {
