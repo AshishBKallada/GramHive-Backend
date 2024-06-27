@@ -37,6 +37,7 @@ export const server = app.listen(port, () => {
 const io = createSocketIoServer(server);
 
 routes(app);
+
 app.get('/test', (req, res) => {
     res.send('This is a test message!');
 });
