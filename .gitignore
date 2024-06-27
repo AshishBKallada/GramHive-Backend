@@ -1,2 +1,5 @@
 .env 
 GramHive_JS/firebaseKey/firebase-service-key.json
+node_modules/
+dist/
+GramHive_JS/
