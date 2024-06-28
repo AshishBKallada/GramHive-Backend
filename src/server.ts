@@ -16,7 +16,7 @@ const morgan = require('morgan');
 const app = express();
 const port = config.PORT;
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors({ origin: config.ORIGIN, credentials: true, preflightContinue: true }));
 app.use(helmet({ xssFilter: true }));
 app.use(ExpressMongoSanitize());
@@ -26,7 +26,7 @@ app.use(morgan('dev'));
 // app.use(rateLimiter);
 app.use(errorHandler);
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 connectToMongoDB();
 
