@@ -18,7 +18,6 @@ export class postInteractorImpl implements postInteractor {
     ) { }
 
     async getHomePosts(userId: string, page: number, pageSize: number): Promise<PostData[] | null> {
-        console.log('2');
         try {
             const HomePosts = await this.Repository.getHomePosts(userId, page, pageSize);
             return HomePosts;
@@ -28,7 +27,6 @@ export class postInteractorImpl implements postInteractor {
         }
     }
     async addPost(data: PostData): Promise<boolean> {
-        console.log('2', data);
 
         try {
             const isPostAdded = await this.Repository.addPost(data);
@@ -79,26 +77,31 @@ export class postInteractorImpl implements postInteractor {
     async addLike(postId: string, userId: string): Promise<any> {
         try {
             const post = await this.Repository.addLike(postId, userId);
-
-            const username = await getUserName(userId);
-
-            const notification: INotification = {
-                userId: post.userId,
-                type: 'like',
-                postId: postId,
-                message: `${username} liked your post`,
-                createdAt: new Date(),
-                read: false
-            };
-            await this.NotiRepository.addNotification(notification);
-
-
+    
+            let notification = null;
+    
+            if (post.userId !== userId) {
+                const username = await getUserName(userId);
+    
+                notification = {
+                    userId: post.userId,
+                    type: 'like',
+                    postId: postId,
+                    message: `${username} liked your post`,
+                    createdAt: new Date(),
+                    read: false
+                };
+    
+                await this.NotiRepository.addNotification(notification);
+            }
+    
             return { post, notification };
         } catch (error) {
-            console.error('Error getting comments:', error);
+            console.error('Error adding like:', error);
             return false;
         }
     }
+    
     async removeLike(postId: string, userId: string): Promise<any> {
         try {
             console.log('RMEOVE LIKE interactor ', postId, userId);
