@@ -11,8 +11,6 @@ export class AdminController {
             
             const { email, password } = req.body;
             const result = await this.interactor.login({ email, password });
-            console.log('ADMIN CONTROLLER',result);
-
             res.json(result);
           } catch (error) {
             if (error.message === 'Invalid email') {
