@@ -16,7 +16,8 @@ export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunct
     if (decoded.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied. Not authorized.' });
     }
-
+    console.log('double ok');
+    
     req.user = decoded;
     next();
   } catch (ex) {
