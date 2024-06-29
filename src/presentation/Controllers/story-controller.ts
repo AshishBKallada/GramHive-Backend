@@ -38,6 +38,8 @@ export class storyController {
 
     async onUpdateViews(req: Request, res: Response) {
         try {
+            console.log('backend calld999999999999999');
+            
             const { userId, viewer } = req.body;
             console.log('seenby cintrller',userId, viewer);
             
