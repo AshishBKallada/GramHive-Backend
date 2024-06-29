@@ -17,7 +17,7 @@ const controller = new storyController(interactor)
 
 storyRouter.post('/upload/:userId', storyUploadMiddleware, controller.addStory.bind(controller));
 storyRouter.get('/:userId/getstories', controller.onGetStories.bind(controller));
-storyRouter.get('/updateview', controller.onUpdateViews.bind(controller));
+storyRouter.put('/updateview', controller.onUpdateViews.bind(controller));
 
 
 export default storyRouter;

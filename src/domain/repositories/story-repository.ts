@@ -76,11 +76,15 @@ export class StoryRepositoryimpl implements StoryRepository {
 
   async updateView(userId: string, viewer: string): Promise<boolean> {
     try {
+      console.log('seenby cintrller',userId, viewer);
+
         const isViewUpdated = await storyModel.findOneAndUpdate(
             { user: userId },
             { $addToSet: { seenBy: { user: viewer, time: new Date() } } },
             { new: true, upsert: true }
         );
+        console.log(!!isViewUpdated);
+        
 
         return !!isViewUpdated;
     } catch (error) {

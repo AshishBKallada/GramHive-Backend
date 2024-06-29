@@ -46,6 +46,8 @@ export class storyInteractorImpl implements storyInteractor {
 
     async updateView(userId:string, viewer:string) : Promise<boolean>{
         try {
+            console.log('seenby cintrller',userId, viewer);
+
             const success = await this.Repository.updateView(userId, viewer);
             return success
         } catch (error) {

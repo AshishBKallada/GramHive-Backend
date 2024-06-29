@@ -39,6 +39,8 @@ export class storyController {
     async onUpdateViews(req: Request, res: Response) {
         try {
             const { userId, viewer } = req.body;
+            console.log('seenby cintrller',userId, viewer);
+            
             const success = await this.interactor.updateView(userId, viewer);
     
             if (success) {
