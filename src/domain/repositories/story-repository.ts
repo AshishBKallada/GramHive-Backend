@@ -5,6 +5,7 @@ import { StoryRepository } from "../interfaces/repositories/story-repository";
 import mongoose from "mongoose";
 
 export class StoryRepositoryimpl implements StoryRepository {
+
   async addStory(userId: string, imageUrl: string): Promise<boolean> {
     try {
       const addStory = await storyModel.create({ user: userId, story: imageUrl });
@@ -71,6 +72,23 @@ export class StoryRepositoryimpl implements StoryRepository {
       return null;
     }
   }
+
+
+  async updateView(userId: string, viewer: string): Promise<boolean> {
+    try {
+        const isViewUpdated = await storyModel.findOneAndUpdate(
+            { user: userId },
+            { $addToSet: { seenBy: { user: viewer, time: new Date() } } },
+            { new: true, upsert: true }
+        );
+
+        return !!isViewUpdated;
+    } catch (error) {
+        console.error('Error updating view:', error);
+        return false;
+    }
+}
+
 
 
 

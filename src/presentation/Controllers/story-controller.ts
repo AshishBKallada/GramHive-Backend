@@ -24,15 +24,33 @@ export class storyController {
         }
     }
 
-    async onGetStories(req:Request, res:Response){
+    async onGetStories(req: Request, res: Response) {
         try {
             const userId = req.params.userId
             const stories = await this.interactor.getStories(userId)
-                        
-            return res.status(200).json({ success: true, message:'retreived stories successfully',stories});
+
+            return res.status(200).json({ success: true, message: 'retreived stories successfully', stories });
         } catch (error) {
             console.error('Error retreiving stories:', error);
             return res.status(500).json({ success: false, error: 'Internal server error' });
         }
     }
+
+    async onUpdateViews(req: Request, res: Response) {
+        try {
+            const { userId, viewer } = req.body;
+            const success = await this.interactor.updateView(userId, viewer);
+    
+            if (success) {
+                return res.status(200).json({ success: true, message: 'Updated story view successfully' });
+            } else {
+                return res.status(400).json({ success: false, message: 'Failed to update story view' });
+            }
+        } catch (error) {
+            console.error('Error updating story view:', error);
+            return res.status(500).json({ success: false, error: 'Internal server error' });
+        }
+    }
+    
+
 }
