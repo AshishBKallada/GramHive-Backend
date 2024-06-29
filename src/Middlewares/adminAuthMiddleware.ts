@@ -7,6 +7,8 @@ export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunct
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
   if (!token) {
+    console.log('no token');
+    
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
@@ -14,6 +16,8 @@ export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunct
     const decoded = jwt.verify(token, JWT_SECRET) as { role: string };
 
     if (decoded.role !== 'admin') {
+        console.log('role != admin');
+
       return res.status(403).json({ message: 'Access denied. Not authorized.' });
     }
     console.log('double ok');
