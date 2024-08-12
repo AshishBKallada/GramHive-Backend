@@ -86,7 +86,7 @@ export class PostController {
     }
 
 
-    async deletePost(req: Request, res: Response) {
+    async  deletePost(req: Request, res: Response) {
         try {
 
             const postId: string = req.params.postId;

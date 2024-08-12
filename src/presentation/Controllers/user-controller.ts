@@ -29,8 +29,7 @@ export class userController {
 
     async login(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log('Login Controller');
-            console.log('logindata', req.body);
+         
 
             const { username, password } = req.body;
             console.log(username, password);

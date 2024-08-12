@@ -6,7 +6,6 @@ import { IChatRepository } from "../interfaces/repositories/chat-repository";
 export class ChatRepositoryImpl implements IChatRepository {
 
     async checkIfChatExists(userId: string, currentUserId: string): Promise<any> {
-        console.log('3',userId, currentUserId);
         
         var isChat = await chatModel.find({
             isGroupChat: false,
